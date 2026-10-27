@@ -1,0 +1,81 @@
+{
+  "created_at": "2026-10-26T14:37:40.759155+00:00",
+  "configuration": {
+    "version": 1,
+    "dataset_sha256": "5f2476deeedd3467bac3b6702bd01452f7cea491e614095b8e38d76a2ea0e24d",
+    "dataset_cases": 60,
+    "dataset_name": "vietnamese_messages_v1.jsonl",
+    "model_status": {
+      "ready": true,
+      "run_id": "XGBoost_d6_s42",
+      "kind": "xgboost",
+      "folder": "inference_XGBoost_d6_s42",
+      "feature_count": 21,
+      "thresholds": {
+        "warning_threshold": 0.11384317278862,
+        "high_threshold": 0.47364333271980286,
+        "warning_precision_met": true,
+        "selected_on": "validation",
+        "validation_metrics": {
+          "accuracy": 0.8418662262592899,
+          "precision": 0.8372816108972461,
+          "recall": 0.9912357581069238,
+          "f1": 0.9077775102335661,
+          "f2": 0.9560762832217489,
+          "roc_auc": 0.9173979465510377,
+          "average_precision": 0.9767788575726714,
+          "false_positive_rate": 0.7040358744394619,
+          "tn": 462,
+          "fp": 1099,
+          "fn": 50,
+          "tp": 5655
+        }
+      },
+      "message": "Mô hình ML đã sẵn sàng."
+    },
+    "model_files_sha256": {
+      "PHISHVN_CODE_LICENSE.txt": "ae6be4f39f82def15e2a83a8b7145fb3c41957886f33d222fb112ce322546a00",
+      "README.txt": "8b0e7bc01ebd26c2a226d8298de0789b66a2fa2d87b5b5d1e69300363a7f97fa",
+      "config.json": "ee6d1e3b691484003499b9aba739a7d92d6432d15c03060081fa070ca6723b98",
+      "model.ubj": "21cad34c07619483dd23aaf614347d2285129c3e084adc42b24d6476faaa1032",
+      "predict_url.py": "c981387893c6efb9aee8235192890e3c35b9104aabfbb15b2cd6d2f9734aff33",
+      "requirements.txt": "644153695819ecf8d16429a1f390180536f1742e6e354a311779daeb4cc232a4",
+      "url_features.py": "a6b3c4b9b63d2112518a7603d2f0e67dca60134a91e242e2c469dd0151069dbe",
+      "url_preprocessing.py": "2a6cf8e9c17bc76e30ce3cb4c00b1b3a71604c30592f550983fa2ddc6f0c3e19"
+    },
+    "source_sha256": {
+      "app/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "app/fusion.py": "e8239bf59da0d23d2125afe38adc84b83c7e1012bace7687bc4a62aed1c69195",
+      "app/llm_service.py": "87100e79f7934c8db4b19b2dd8757014647646112072460330739212ee33b24a",
+      "app/main.py": "ec58a255cc6d786928578dffa3e913083ed3d4d9ad09a9cb1c472ea8f3ded672",
+      "app/ml_service.py": "727f030cb91023e6df8b7d69bfb676b9510fa95a912ee03ca0409b6db4cb55f1",
+      "app/privacy.py": "2ec22e1c77aec6018b4df7a9debcf690a5c133a6703ff8403af1e61de93c5d4a",
+      "app/schemas.py": "61087ae6c7f337e079fda25f34cc95fd74a6c235567b6d0b54ae9f8285059724",
+      "app/settings.py": "1677a55a6915b3834381c24c6075309062f97c4f9a66d10bf0aebe4e5970286b",
+      "app/urls.py": "9a447cfc61d24a5bea61e23dba8727c732d73268e13f39a4eef9d433fb741b7c",
+      "evaluation/__init__.py": "ef8df0d8cf22b4dfba01ef3b9f0478fea0cf7dbf8594857cdd23dac3983beffa",
+      "evaluation/metrics.py": "79f637796138cd9da89a8f1d206f3390981156f24ba5947a0c9300be09833f9f",
+      "evaluation/run.py": "fb25cd71073963c26492e57af8146e833aede92d4b8f2f89f16d0922509c63cc"
+    },
+    "llm": {
+      "endpoint": "https://mkp-api.fptcloud.com/v1/chat/completions",
+      "model": "DeepSeek-V4-Flash",
+      "max_tokens": 4096,
+      "timeout_seconds": 90,
+      "temperature": 0.1,
+      "top_p": 1,
+      "top_k": 40,
+      "prompt_version": "baseline-1.0",
+      "live": true
+    },
+    "seed": 20261026,
+    "workers": 2,
+    "versions": {
+      "httpx": "0.28.1",
+      "xgboost-cpu": "3.0.5",
+      "numpy": "2.1.3",
+      "pandas": "2.2.3",
+      "pydantic": "2.14.1"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "verified_at": "2026-10-26T15:07:26.518477+00:00",
+  "implementation": "scikit-learn",
+  "summary_sha256": "8833e3e80a54f5b7f5ba8f1e72cd5dc94560a135663a0b7629d45834eeffbed8",
+  "results_sha256": "c52da17e0c6e5106b50da86dd54ef8fcb713fdb786c3b164e5840050d5a6e32f",
+  "unique_completed_attempts": 200,
+  "verified_metrics": {
+    "url_model_only": {
+      "accuracy": 0.87,
+      "precision": 0.7936507936507936,
+      "recall": 1.0,
+      "f1": 0.8849557522123894,
+      "false_positive_rate": 0.26,
+      "coverage": 1.0
+    },
+    "llm_only": {
+      "accuracy": 0.69,
+      "precision": 0.9230769230769231,
+      "recall": 0.48,
+      "f1": 0.631578947368421,
+      "false_positive_rate": 0.04,
+      "coverage": 0.78
+    },
+    "llm_with_url_model": {
+      "accuracy": 0.89,
+      "precision": 0.819672131147541,
+      "recall": 1.0,
+      "f1": 0.9009009009009009,
+      "false_positive_rate": 0.22,
+      "coverage": 1.0
+    },
+    "fusion_independent": {
+      "accuracy": 0.87,
+      "precision": 0.7936507936507936,
+      "recall": 1.0,
+      "f1": 0.8849557522123894,
+      "false_positive_rate": 0.26,
+      "coverage": 1.0
+    },
+    "fusion_with_url_model": {
+      "accuracy": 0.87,
+      "precision": 0.7936507936507936,
+      "recall": 1.0,
+      "f1": 0.8849557522123894,
+      "false_positive_rate": 0.26,
+      "coverage": 1.0
+    }
+  }
+}

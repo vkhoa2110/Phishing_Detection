@@ -1,0 +1,28 @@
+{
+  "docx": "Bao_cao_Phishing_ML_LLM_RAG_Le_Van_Khoa.docx",
+  "pdf": "Bao_cao_Phishing_ML_LLM_RAG_Le_Van_Khoa.pdf",
+  "pdf_pages": 51,
+  "chapters": 7,
+  "numbered_tables": 20,
+  "figures": 7,
+  "references": 18,
+  "external_source_links": 43,
+  "corpus_sources": 25,
+  "abstract_words": 276,
+  "paper_size": "A4",
+  "normal_font": "Times New Roman 13",
+  "margins_cm": {
+    "top": 2,
+    "bottom": 2,
+    "left": 3,
+    "right": 2
+  },
+  "no_unresolved_fields": true,
+  "no_actual_api_key": true,
+  "no_text_outside_safe_area": true,
+  "rag_status": "corpus_ready_runtime_not_implemented",
+  "artifact_sha256": {
+    "docx": "bf63a7d3975d09093ed427c0212951d37726bbc4fea29fa049d6617edc581a4c",
+    "pdf": "492cf860d4cefab95f61217d1fae284a9336b79383b61bf95cd01a198c40f29c"
+  }
+}

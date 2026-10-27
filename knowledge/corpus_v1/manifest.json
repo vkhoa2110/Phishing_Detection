@@ -1,0 +1,31 @@
+{
+  "snapshot": "vi-phishing-knowledge-v1",
+  "catalog_sha256": "bcb70e56110e22b07697a68526571195d3aae8866368a1a5ccfb674490266c2d",
+  "expanded_catalog_sha256": "502a9792cc4ba106006d74eb4c28169695ab01156c052dd370cf3f132d754b76",
+  "collector_sha256": "ab62bba3201178b62f0140b359a9bbb3e3e1e07541eba1fac6f707612a4246af",
+  "collected_at": "2026-10-26T16:23:47.502801+00:00",
+  "files": {
+    "documents.jsonl": "6741d6496d019afae14c263fba44ff8b5a7b39828305a85e0f2b299572b6dc83",
+    "sources.csv": "f6e3365c58fc108313042733862590d94eea189b5bafd0c25bdb572e0779aa45",
+    "collection_report.json": "6c0852d52de1f0aaf94a695d2877637838aac893e234811d8f455261784db2b8",
+    "deferred_sources.jsonl": "a2424071c0789156e26cb9b29fd986ea8cb2401c525c2a82a054e9044693f584"
+  },
+  "packages": {
+    "httpx": "0.28.1",
+    "beautifulsoup4": "4.15.0",
+    "trafilatura": "2.3.1"
+  },
+  "collection_phase": {
+    "catalog_sha256": "c873075c5b14d92ea7aa6c7ecae10eda01290d77ae80f0cca12973169d5f1a8c",
+    "expanded_catalog_sha256": "81cde6382700bc7a7887ebde85bd9c57bfceca8ca755d5528bfe323a82448f6d",
+    "files": {
+      "documents.jsonl": "16e9975f02f855a6a653a291a9edd522dabcf31ac2d429d1b68e185e86307b7b",
+      "sources.csv": "8260d36a032eda2c4984d4ce2e8e6e114821660dbd36c649cfde31fddadb7dc9",
+      "collection_report.json": "ab2b0c8dd438cd90f1a3e7dfc9a34a72de09e0695a07bf3da1deb7a44d9b3b29",
+      "deferred_sources.jsonl": "a2424071c0789156e26cb9b29fd986ea8cb2401c525c2a82a054e9044693f584"
+    }
+  },
+  "curation_completed_at": "2026-10-26T16:27:23.485440+00:00",
+  "curation_validator_sha256": "f12d835055a6082ab266555ff40093ce2f144c495662125af092ea54e5ad1edf",
+  "curation_scope": "Source relevance, note fidelity, duplicate control and metadata; not independent expert approval."
+}

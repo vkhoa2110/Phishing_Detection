@@ -1,0 +1,20 @@
+{
+  "first.last@example.org": [
+    [
+      "first.last"
+    ],
+    []
+  ],
+  "https://example.org/ahttps://example.com/b": [
+    [
+      "https://example.org/ahttps://example.com/b"
+    ],
+    []
+  ],
+  "malformed_0": {
+    "http_status": 500
+  },
+  "malformed_1": {
+    "http_status": 200
+  }
+}

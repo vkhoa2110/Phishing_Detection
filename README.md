@@ -2,6 +2,13 @@
 
 Bản cơ bản cho dự án của **Lê Văn Khoa**: giao diện tiếng Việt kiểm tra URL, email và tin nhắn, kết hợp mô hình ML đã huấn luyện với DeepSeek-V4-Flash qua API FPT. **Chưa sử dụng RAG.**
 
+Báo cáo dự án, cập nhật theo hiện trạng ngày 26/10/2026:
+
+- [Bản Word để chỉnh sửa](deliverables/bao_cao_phishing_2026_10_26/Bao_cao_Phishing_ML_LLM_RAG_Le_Van_Khoa.docx)
+- [Bản PDF để xem](deliverables/bao_cao_phishing_2026_10_26/Bao_cao_Phishing_ML_LLM_RAG_Le_Van_Khoa.pdf)
+
+Báo cáo gồm kết quả PhishVN đã đo, thiết kế RAG và danh mục 25 nguồn tài liệu; phần RAG chưa tích hợp runtime được ghi riêng là công việc cần hoàn thiện.
+
 Ứng dụng gồm FastAPI và giao diện HTML/CSS/JavaScript, chạy cùng một địa chỉ. Không cần Node.js, npm, GPU hoặc cơ sở dữ liệu. Các tệp giao diện và biểu tượng nằm sẵn trong dự án, không dùng CDN.
 
 ## 1. Đặt thư mục mô hình
@@ -129,7 +136,7 @@ python -m pytest -q
 
 Các test không gọi FPT thật và không phát sinh phí. Chúng kiểm tra tách URL, che dữ liệu, sự đồng ý gửi API, cấu trúc LLM, quy tắc kết hợp và giữ kết quả ML khi API lỗi. Giao diện được kiểm tra riêng ở kích thước máy tính và điện thoại.
 
-**Chưa gọi được FPT bằng key thật của bạn; cũng chưa có tệp trọng số `inference_XGBoost_d6_s42` bạn vừa xuất.** Bộ nạp đã được kiểm tra bằng một gói XGBoost nhỏ có cùng định dạng xuất của notebook. Bạn cần thêm gói model của mình và API key để chạy toàn bộ luồng với tài nguyên thật. Không có số đo Accuracy/F1 mới được tạo ra bởi bản giao diện này.
+Đã bổ sung kiểm thử với trọng số `inference_XGBoost_d6_s42` thật và API FPT thật. Model được đánh giá trên tập test PhishVN chính thức; hai cấu hình LLM được so sánh trên cùng 100 URL test. Xem [báo cáo PhishVN](docs/PHISHVN_EVALUATION.md) để đọc phương pháp, ngưỡng, số đo và giới hạn. Khi cài trên máy khác, vẫn cần đặt gói model và cấu hình API key riêng.
 
 ## 8. Xử lý lỗi thường gặp
 
@@ -139,4 +146,16 @@ Các test không gọi FPT thật và không phát sinh phí. Chúng kiểm tra 
 - **JSON không hoàn chỉnh/hết token:** tăng `LLM_MAX_TOKENS` có kiểm soát rồi khởi động lại; không hạ mức cảnh báo dựa vào phản hồi lỗi.
 - **Máy công ty bắt buộc proxy:** `httpx.AsyncClient` đang đặt `trust_env=False` trong `app/main.py`. Cấu hình proxy phù hợp môi trường của bạn trước khi gọi API; không tắt kiểm tra HTTPS.
 - **Cổng 8000 bận:** đặt `PORT=8001` trong `.env` rồi mở đúng cổng. Mặc định không bind `0.0.0.0`.
+
+## 9. Đánh giá có và không có model URL
+
+**Đánh giá URL trên PhishVN:** xem [kết quả trên tập test chính thức](docs/PHISHVN_EVALUATION.md). Lượt này kiểm tra đúng phiên bản dữ liệu, fingerprint và feature của notebook; chạy ML trên toàn bộ 8.941 URL test và so sánh hai cấu hình LLM trên cùng 100 URL test có nhãn.
+
+Đã có bộ chẩn đoán **60 email/tin nhắn tiếng Việt có URL**, cân bằng 30 phishing / 30 thông thường, và công cụ chạy hai cấu hình LLM thật với cùng prompt. Kết quả model URL, nhận định LLM và quy tắc fusion được đo riêng để phân biệt tác động của từng thành phần.
+
+Xem [đánh giá và diễn giải kết quả](docs/EVALUATION.md), [phương pháp và cách chạy](evaluation/README.md), [kết quả từng mẫu](reports/url_model_ablation_v1/comparison.csv) và [báo cáo lần chạy](reports/url_model_ablation_v1/report.md). Đây là dữ liệu mô phỏng tự gán nhãn, phục vụ chẩn đoán; không phải số đo Accuracy/F1 trên dữ liệu ngoài thực tế. Chạy `--live` sử dụng API key và token tài khoản FPT.
+
+## 10. Kho tài liệu chuẩn bị cho RAG
+
+Đã thu thập **25 nguồn riêng biệt từ 11 đơn vị**, gồm 15 cảnh báo thủ đoạn, 7 hướng dẫn/quy trình hợp lệ, 2 hướng dẫn xử lý sự cố và 1 tài liệu kết hợp. [Hướng dẫn kho tài liệu](knowledge/README.md), [danh mục nguồn CSV](knowledge/corpus_v1/sources.csv) và [corpus tóm lược có provenance](knowledge/corpus_v1/documents.jsonl) được lưu trong dự án. Nội dung là bản tóm lược biên tập có nguồn dẫn; 14 nguồn có ngày công bố được xác minh, các nguồn còn lại để trống thay vì đoán. Giai đoạn này chuẩn bị tài liệu; ứng dụng vẫn chạy baseline chưa dùng truy xuất RAG.
 

@@ -1,0 +1,14 @@
+BÁO CÁO PHISHING ML + LLM + RAG
+
+Bản Word có thể chỉnh sửa; PDF là bản xem đã cập nhật mục lục và số trang.
+Bản giao nằm thêm ở /home/khoa/BCTT/ với cùng tên.
+
+Phạm vi ghi nhận đến 26/10/2026: baseline và số đo PhishVN đã có; RAG mới có corpus, chưa tích hợp runtime. Không có kết quả RAG giả định.
+
+Nguồn biên soạn: report_content.py. Công cụ dựng: build_report.py, cần python-docx và matplotlib.
+Chạy từ thư mục dự án: .venv/bin/python deliverables/bao_cao_phishing_2026_10_26/build_report.py
+Sau đó cập nhật trường/mục lục trong Word hoặc LibreOffice Writer và xuất PDF.
+finalize_report.py dùng Python hệ thống có UNO, cần một LibreOffice Writer listener tại cổng cục bộ 20173.
+
+assets/ chứa hình tự vẽ và ảnh giao diện chạy thật bằng dữ liệu minh họa. evidence/ chứa bằng chứng phục vụ báo cáo và kiểm tra bàn giao.
+Các file đầu vào của sinh viên được giữ nguyên; không sửa mã runtime hoặc ngưỡng để viết báo cáo.

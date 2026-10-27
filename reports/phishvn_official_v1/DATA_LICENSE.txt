@@ -1,0 +1,12 @@
+Source data: PhishVN V4 (PhishVN_v3.1.0_open.zip).
+Creator: Thai Nguyen Vu.
+DOI: https://doi.org/10.17632/b97hxbxtpd.4
+Dataset: https://data.mendeley.com/datasets/b97hxbxtpd/4
+License: Creative Commons Attribution 4.0 International (CC BY 4.0).
+License text: https://creativecommons.org/licenses/by/4.0/
+
+The CSV/JSONL prediction artifacts derive URLs, IDs, source labels and confidence
+tiers from this dataset. The evaluation adds model scores, LLM responses and
+metrics. It retains the original split and label meanings. Credit the source
+when redistributing dataset-derived rows. Dataset URLs are research inputs;
+the evaluation does not visit their destination pages.

@@ -1,0 +1,10 @@
+{
+  "command": ".venv/bin/python -m pytest -q",
+  "passed": 60,
+  "failed": 0,
+  "warnings": 1,
+  "warning": "StarletteDeprecationWarning: HTTPX test transport deprecation",
+  "elapsed_seconds": 1.5,
+  "coverage_measured": false,
+  "external_llm_calls": 0
+}

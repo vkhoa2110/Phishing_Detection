@@ -1,0 +1,443 @@
+{
+  "version": "vi-phishing-knowledge-v1",
+  "language": "vi",
+  "sources": [
+    {
+      "id": "VN-RAG-001",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "impersonation",
+        "otp",
+        "investment",
+        "malware"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/nang-cao-canh-giac-truoc-25-kich-ban-lua-dao-tren-khong-gian-mang-nam-2026-1788865614",
+      "date_hint": "08/09/2026",
+      "published_at": "2026-09-08",
+      "anchors": [
+        "25",
+        "OTP"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-001"
+    },
+    {
+      "id": "VN-RAG-002",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "government",
+        "traffic_fine",
+        "phishing_link"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/canh-bao-thu-doan-gia-danh-co-quan-cong-an-gui-tin-nhan-phat-nguoi-kem-duong-link-gia-mao-de-lua-dao-chiem-doat-tai-san-1788945012",
+      "date_hint": "09/09/2026",
+      "published_at": "2026-09-09",
+      "anchors": [
+        "phạt nguội",
+        "OTP"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-002"
+    },
+    {
+      "id": "VN-RAG-003",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "shopping",
+        "refund",
+        "delivery",
+        "remote_control"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/xuat-hien-thu-doan-lua-dao-moi-khi-mua-hang-online-1790562304",
+      "date_hint": "28/09/2026",
+      "published_at": "2026-09-28",
+      "anchors": [
+        "hoàn tiền",
+        "OTP"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-003"
+    },
+    {
+      "id": "VN-RAG-004",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "recruitment",
+        "bank_account",
+        "otp",
+        "identity"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/canh-giac-voi-chieu-tro-tuyen-dung-viec-nhe-luong-cao-de-thue-muon-tai-khoan-ngan-hang-1792292719",
+      "anchors": [
+        "tài khoản",
+        "tuyển dụng"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-004"
+    },
+    {
+      "id": "VN-RAG-005",
+      "publisher": "Công an tỉnh Tuyên Quang",
+      "kind": "scam_warning",
+      "topics": [
+        "recruitment",
+        "advance_fee",
+        "task_scam"
+      ],
+      "url": "https://congan.tuyenquang.gov.vn/vi/tin-bai/canh-bao-tinh-trang-lua-dao-tuyen-cong-tac-vien-online-gia-tang?id=198292&type=NEWS",
+      "anchors": [
+        "cộng tác viên",
+        "phí"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-005"
+    },
+    {
+      "id": "VN-RAG-006",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "government",
+        "vneid",
+        "malware",
+        "accessibility"
+      ],
+      "url": "https://bocongan.gov.vn/bai-viet/canh-bao-thu-doan-lua-dao-cai-ung-dung-vneid-gia-mao-d22-t45880",
+      "anchors": [
+        "VNeID",
+        "ứng dụng"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-006"
+    },
+    {
+      "id": "VN-RAG-007",
+      "publisher": "Bộ Công an",
+      "kind": "incident_response",
+      "topics": [
+        "mistaken_transfer",
+        "banking",
+        "qr",
+        "otp"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/canh-giac-thu-doan-lua-dao-va-quy-trinh-xu-ly-an-toan-khi-chuyen-nham-tien-qua-tai-khoan-1770361075",
+      "anchors": [
+        "chuyển nhầm",
+        "ngân hàng"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-007"
+    },
+    {
+      "id": "VN-RAG-008",
+      "publisher": "Chống Lừa Đảo",
+      "kind": "scam_warning",
+      "topics": [
+        "recovery_scam",
+        "advance_fee",
+        "incident_response"
+      ],
+      "url": "https://chongluadao.vn/blog/2023/07/chieu-tro-ho-tro-lay-lai-tien-lua-dao-chong-lua-dao/",
+      "anchors": [
+        "lấy lại tiền",
+        "lừa đảo"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-008"
+    },
+    {
+      "id": "VN-RAG-009",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "investment",
+        "social_engineering",
+        "advance_fee"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/canh-bao-thu-doan-du-do-tham-gia-dau-tu-tai-chinh-san-chung-khoan-tien-ao-tren-khong-gian-mang-d22-t44828",
+      "anchors": [
+        "đầu tư",
+        "tiền ảo"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-009"
+    },
+    {
+      "id": "VN-RAG-010",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "government",
+        "social_insurance",
+        "qr",
+        "otp"
+      ],
+      "url": "https://bocongan.gov.vn/bai-viet/bac-ninh-canh-bao-thu-doan-lua-dao-moi-nham-vao-nguoi-huong-che-do-huu-tri-bao-hiem-xa-hoi-1759801015",
+      "anchors": [
+        "bảo hiểm",
+        "OTP"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-010"
+    },
+    {
+      "id": "VN-RAG-011",
+      "publisher": "Công an tỉnh Tuyên Quang",
+      "kind": "scam_warning",
+      "topics": [
+        "deepfake",
+        "impersonation",
+        "urgent_transfer"
+      ],
+      "url": "https://congan.tuyenquang.gov.vn/vi/tin-bai/canh-bao-deepfake-quay-tro-lai-chiem-doat-tien-trong-tai-khoan-ngan-hang?id=215975&type=NEWS",
+      "anchors": [
+        "Deepfake",
+        "ngân hàng"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-011"
+    },
+    {
+      "id": "VN-RAG-012",
+      "publisher": "VNU CyberSafe - Đại học Quốc gia Hà Nội",
+      "kind": "scam_warning",
+      "topics": [
+        "email",
+        "account_takeover",
+        "university",
+        "urgency"
+      ],
+      "url": "https://cybersafe.vnu.edu.vn/news/canh-bao-khan-cap-cac-thu-doan-lua-dao-qua-email-dang-tan-cong-he-thong-vnu-cap-nhat-cac-truong-hop-co-that",
+      "anchors": [
+        "email",
+        "tài khoản"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-012"
+    },
+    {
+      "id": "VN-RAG-013",
+      "publisher": "Trường Đại học Công nghệ - ĐHQGHN",
+      "kind": "scam_warning",
+      "topics": [
+        "university",
+        "family_emergency",
+        "urgent_transfer"
+      ],
+      "url": "https://uet.vnu.edu.vn/canh-bao-ve-cac-hinh-thuc-thu-doan-lua-dao-phu-huynh-sinh-vien/",
+      "anchors": [
+        "phụ huynh",
+        "chuyển tiền"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-013"
+    },
+    {
+      "id": "VN-RAG-014",
+      "publisher": "Trường Đại học Ngoại ngữ - ĐHQGHN",
+      "kind": "scam_warning",
+      "topics": [
+        "scholarship",
+        "university",
+        "forged_document"
+      ],
+      "url": "https://student.ulis.vnu.edu.vn/bo-giao-duc-va-dao-tao-canh-bao-thong-tin-gia-ve-hoc-bong-tai-tro-du-hoc/",
+      "anchors": [
+        "học bổng",
+        "giả"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-014"
+    },
+    {
+      "id": "VN-RAG-015",
+      "publisher": "Bưu điện Việt Nam - Vietnam Post",
+      "kind": "scam_warning",
+      "topics": [
+        "delivery",
+        "impersonation",
+        "advance_fee"
+      ],
+      "url": "https://vnpost.vn/vi/hoat-dong-nganh/canh-bao-hanh-vi-mao-danh-vietnam-post-lua-dao-khach-hang-duoi-nhieu-hinh-thuc",
+      "anchors": [
+        "giả mạo",
+        "khách hàng"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-015"
+    },
+    {
+      "id": "VN-RAG-016",
+      "publisher": "Vietcombank",
+      "kind": "scam_warning",
+      "topics": [
+        "banking",
+        "forged_document",
+        "otp",
+        "personal_data"
+      ],
+      "url": "https://vietcombank.com.vn/vi-VN/Trang-thong-tin-dien-tu/Articles/2026/03/31/20260330_CBRR-gia-mao-chuong-trinh-lai-suat-cua-VCB",
+      "anchors": [
+        "giả mạo",
+        "OTP"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-016",
+      "date_hint": "31/03/2026",
+      "published_at": "2026-03-31"
+    },
+    {
+      "id": "VN-RAG-017",
+      "publisher": "BIDV",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "otp",
+        "authentication",
+        "banking"
+      ],
+      "url": "https://bidv.com.vn/bidv/ca-nhan/thong-bao/ngan-hang-so/thong-bao-ap-dung-phuong-thuc-xac-thuc-giao-dich-bang-ma-smart-otp",
+      "date_hint": "09/10/2024",
+      "published_at": "2024-10-09",
+      "anchors": [
+        "Smart OTP",
+        "SMS OTP"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-017"
+    },
+    {
+      "id": "VN-RAG-018",
+      "publisher": "BIDV",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "otp",
+        "banking",
+        "account_security"
+      ],
+      "url": "https://bidv.com.vn/smartbanking/faq/",
+      "anchors": [
+        "OTP",
+        "SmartBanking"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-018"
+    },
+    {
+      "id": "VN-RAG-019",
+      "publisher": "Google",
+      "kind": "mixed_guidance",
+      "topics": [
+        "email",
+        "phishing",
+        "incident_response"
+      ],
+      "url": "https://support.google.com/mail/answer/8253?hl=vi",
+      "anchors": [
+        "lừa đảo",
+        "Gmail"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-019"
+    },
+    {
+      "id": "VN-RAG-020",
+      "publisher": "Google",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "mfa",
+        "authentication",
+        "account_security"
+      ],
+      "url": "https://support.google.com/accounts/answer/185839?hl=vi",
+      "anchors": [
+        "Xác minh 2 bước",
+        "Google"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-020"
+    },
+    {
+      "id": "VN-RAG-021",
+      "publisher": "Google",
+      "kind": "incident_response",
+      "topics": [
+        "account_takeover",
+        "recovery",
+        "email"
+      ],
+      "url": "https://support.google.com/accounts/answer/6294825?hl=vi",
+      "anchors": [
+        "tài khoản",
+        "bảo mật"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-021"
+    },
+    {
+      "id": "VN-RAG-022",
+      "publisher": "Microsoft",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "security_notification",
+        "account_activity",
+        "email"
+      ],
+      "url": "https://support.microsoft.com/vi-vn/accounts-billing/security/what-is-the-recent-activity-page",
+      "anchors": [
+        "hoạt động",
+        "Microsoft"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-022"
+    },
+    {
+      "id": "VN-RAG-023",
+      "publisher": "Microsoft",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "mfa",
+        "authentication",
+        "qr"
+      ],
+      "url": "https://support.microsoft.com/vi-vn/accounts-billing/security/how-to-use-two-step-verification-with-your-microsoft-account",
+      "anchors": [
+        "xác minh hai bước",
+        "Microsoft"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-023"
+    },
+    {
+      "id": "VN-RAG-024",
+      "publisher": "Vietcombank",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "biometrics",
+        "banking",
+        "official_channel"
+      ],
+      "url": "https://vietcombank.com.vn/vi-VN/KHCN/Truy-cap-nhanh/Tin-noi-bat/Articles/2024/10/24/STH-update-new",
+      "anchors": [
+        "sinh trắc học",
+        "Digibank"
+      ],
+      "date_hint": "24/10/2024",
+      "published_at": "2024-10-24",
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-024"
+    },
+    {
+      "id": "VN-RAG-025",
+      "publisher": "Trường Đại học Công nghệ - ĐHQGHN",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "scholarship",
+        "university",
+        "official_notice"
+      ],
+      "url": "https://uet.vnu.edu.vn/chuong-trinh-hoc-bong-goertek-nam-2027/",
+      "anchors": [
+        "Goertek",
+        "2027"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-025"
+    },
+    {
+      "id": "VN-RAG-026",
+      "publisher": "Microsoft",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "mfa",
+        "authentication",
+        "account_security"
+      ],
+      "url": "https://support.microsoft.com/vi-vn/security/what-is-multifactor-authentication",
+      "anchors": [
+        "đa yếu tố",
+        "xác thực"
+      ],
+      "notes_ref": "corpus_v1/documents.jsonl#VN-RAG-023",
+      "duplicate_of": "VN-RAG-023"
+    }
+  ]
+}

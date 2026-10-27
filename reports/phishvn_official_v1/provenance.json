@@ -1,0 +1,97 @@
+{
+  "doi": "https://data.mendeley.com/datasets/b97hxbxtpd/4",
+  "archive_sha256": "308351e9d0c0fca13a81f2f63524a7dee08ccba6c775848d125b3da5525d0ab5",
+  "notebook_sha256": "6b3ad945670c9b0b55f44a2d202e17724a8454d629436e3eabd0822c4d68292e",
+  "recovered_fingerprint": "d3d1ee19f42b",
+  "fingerprint_configuration": {
+    "RUN_TREES": true,
+    "RUN_BERT": true,
+    "ML_SEEDS": [
+      42,
+      2026,
+      3407
+    ],
+    "BERT_SEEDS": [
+      42
+    ],
+    "SEED": 42,
+    "SMOKE_TEST": false,
+    "DATASET_ID": "b97hxbxtpd",
+    "DATASET_VERSION": 4,
+    "DATA_ARCHIVE": "PhishVN_v3.1.0_open.zip",
+    "DATA_SHA256": "308351e9d0c0fca13a81f2f63524a7dee08ccba6c775848d125b3da5525d0ab5",
+    "DATA_SCOPE": "all",
+    "CPU_THREADS": 8,
+    "BOOST_ROUNDS": 1800,
+    "EARLY_STOPPING": 100,
+    "MIN_WARNING_PRECISION": 0.8,
+    "MIN_HIGH_PRECISION": 0.95,
+    "MIN_HIGH_COUNT": 30,
+    "MODEL_ID": "amahdaouy/DomURLs_BERT",
+    "MODEL_REVISION": "ba5fa28ae1361f8115630e252ac49535ffe3bab1",
+    "BERT_MAX_LENGTH": 256,
+    "BERT_EPOCHS": 4,
+    "BERT_LR": 2e-05,
+    "BERT_BATCH_SIZE": 0,
+    "BERT_EFFECTIVE_BATCH": 64,
+    "BERT_GRAD_CHECKPOINTING": null,
+    "pipeline_version": "urltrain-2.1",
+    "package_versions": {
+      "torch": "2.11.0+cu130",
+      "transformers": "4.57.6",
+      "tokenizers": "0.22.2",
+      "datasets": "4.4.2",
+      "accelerate": "1.12.0",
+      "xgboost": "3.0.5",
+      "lightgbm": "4.6.0",
+      "scikit-learn": "1.7.2",
+      "pandas": "2.2.3",
+      "numpy": "2.1.3",
+      "tldextract": "5.3.0"
+    },
+    "feature_sha256": "a6b3c4b9b63d2112518a7603d2f0e67dca60134a91e242e2c469dd0151069dbe",
+    "preprocessing_sha256": "2a6cf8e9c17bc76e30ce3cb4c00b1b3a71604c30592f550983fa2ddc6f0c3e19",
+    "used_split_ids_sha256": "89613b902e9f843a964f9b574b06856783e0e893092ed57eabfb0844fe87a13c",
+    "bert_runtime": {
+      "gpu": "NVIDIA A100-SXM4-40GB",
+      "bf16": true,
+      "auto_batch": 64
+    }
+  },
+  "splits": {
+    "train": {
+      "raw": 36909,
+      "clean": 36909,
+      "invalid_ids": [],
+      "duplicates": 0,
+      "benign": 11004,
+      "phishing": 25905,
+      "sha256": "568e788eda4bdf62531adcddd093373ef6a1e97feec1354063ae337325367b61"
+    },
+    "val": {
+      "raw": 7266,
+      "clean": 7266,
+      "invalid_ids": [],
+      "duplicates": 0,
+      "benign": 1561,
+      "phishing": 5705,
+      "sha256": "d9ef64d29df6639af698ef228e5af5ec6f8ae44c8f1a1dd1367f9ba6d073d81f"
+    },
+    "test": {
+      "raw": 8941,
+      "clean": 8941,
+      "invalid_ids": [],
+      "duplicates": 0,
+      "benign": 3845,
+      "phishing": 5096,
+      "sha256": "b692882e8ae26b2c0b217c090e92d3a19307a26acbfb3c8c89692db26d409bc9"
+    }
+  },
+  "disjoint_columns_checked": [
+    "id",
+    "model_input",
+    "domain_group"
+  ],
+  "feature_source_matches_notebook": true,
+  "preprocessing_source_matches_notebook": true
+}
