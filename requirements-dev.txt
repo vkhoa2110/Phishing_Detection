@@ -1,4 +1,0 @@
--r requirements.txt
--r requirements-rag-collect.txt
-pytest>=8,<10
-

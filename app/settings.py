@@ -11,7 +11,7 @@ load_dotenv(ROOT / ".env", override=False)
 @dataclass(frozen=True)
 class Settings:
     root: Path = ROOT
-    model_dir: str = os.getenv("MODEL_DIR", "inference_XGBoost_d6_s42")
+    model_dir: str = os.getenv("MODEL_DIR", "models/inference_XGBoost_d6_s42")
     endpoint: str = os.getenv("FPT_ENDPOINT", "https://mkp-api.fptcloud.com/v1/chat/completions")
     llm_model: str = os.getenv("FPT_MODEL", "DeepSeek-V4-Flash")
     api_key: str = os.getenv("FPT_API_KEY", "")

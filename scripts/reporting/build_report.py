@@ -1,8 +1,10 @@
 """Build the Vietnamese project report from local evidence; never load .env or call LLMs."""
 from pathlib import Path
+import argparse
 import json
 import re
 import hashlib
+import shutil
 from collections import OrderedDict
 from docx import Document
 from docx.shared import Cm, Pt, RGBColor
@@ -19,7 +21,9 @@ from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-ASSETS = HERE / 'assets'
+REPORT_SOURCE = ROOT / 'docs/reports/2026-10-26'
+OUTPUT = ROOT / 'artifacts/report-builds/2026-10-26'
+ASSETS = OUTPUT / 'assets'
 NAME = 'Bao_cao_Phishing_ML_LLM_RAG_Le_Van_Khoa'
 REFS = {
  'bcp': ('Báo Điện tử Chính phủ', 'Dự báo năm 2026, mức độ tinh vi của lừa đảo trực tuyến gia tăng', '07/01/2026', 'https://baochinhphu.vn/du-bao-nam-2026-muc-do-tinh-vi-cua-cac-hinh-thuc-lua-dao-truc-tuyen-se-tang-102260107101756364.htm'),
@@ -219,7 +223,7 @@ class Report:
                 pp.paragraph_format.first_line_indent=Cm(0);pp.paragraph_format.space_after=Pt(2)
                 pp.paragraph_format.line_spacing=1.05
                 rr=pp.add_run(text+'  ·  ');rr.font.size=Pt(11);field(pp,f' PAGEREF {bm} \\h ')
-        self.doc.save(HERE/(NAME+'.docx'))
+        self.doc.save(OUTPUT/(NAME+'.docx'))
 
 def diagrams():
     plt.rcParams.update({'font.family':'DejaVu Sans','font.size':10,'savefig.facecolor':'white'})
@@ -262,7 +266,7 @@ def diagrams():
     arrow(ax,(9.8,2.8),(8.7,1.9),True)
     ax.text(.2,.8,'Toàn bộ luồng này\nchưa tích hợp runtime.',fontsize=10,color='#725d33')
     fig.savefig(ASSETS/'rag_du_kien.png',dpi=220,bbox_inches='tight');plt.close(fig)
-    metrics=json.loads((ROOT/'reports/phishvn_official_v1/url_model_metrics.json').read_text())['test']
+    metrics=json.loads((ROOT/'artifacts/evaluations/phishvn_official_v1/url_model_metrics.json').read_text())['test']
     fig,axes=plt.subplots(1,2,figsize=(11,4.5))
     names=['WARNING','HIGH','0,5'];xs=range(3)
     for field_,label,color in [('precision','Precision','#3b6b8d'),('recall','Recall','#2c8b78'),('f1','F1','#bd8d39')]:
@@ -275,10 +279,21 @@ def diagrams():
     fig.tight_layout();fig.savefig(ASSETS/'danh_doi_nguong.png',dpi=220);plt.close(fig)
 
 if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--out',type=Path,default=OUTPUT,help='Build destination; published report snapshots are never overwritten.')
+    args=parser.parse_args()
+    OUTPUT=args.out.resolve()
+    if OUTPUT.is_relative_to(ROOT/'docs/reports'):
+        parser.error('Choose an output directory outside the published report snapshots.')
+    ASSETS=OUTPUT/'assets'
+    ASSETS.mkdir(parents=True,exist_ok=True)
+    (OUTPUT/'evidence').mkdir(exist_ok=True)
+    for name in ['giao_dien.png','xac_nhan_du_lieu.png','ket_qua_ml.png']:
+        shutil.copy2(REPORT_SOURCE/'assets'/name,ASSETS/name)
     from report_content import compose, appendices
     diagrams();b=Report();b.front();compose(b);b.finish();appendices(b)
-    b.doc.save(HERE/(NAME+'.docx'))
-    manifest={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [ROOT/'app/fusion.py',ROOT/'app/llm_service.py',ROOT/'inference_XGBoost_d6_s42/config.json',ROOT/'reports/phishvn_official_v1/summary.json',ROOT/'reports/phishvn_official_v1/url_model_metrics.json',ROOT/'knowledge/corpus_v1/documents.jsonl']}
-    (HERE/'evidence/report_inputs.json').write_text(json.dumps(manifest,indent=2)+'\n')
-    print('Created',HERE/(NAME+'.docx'))
+    b.doc.save(OUTPUT/(NAME+'.docx'))
+    manifest={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [ROOT/'app/fusion.py',ROOT/'app/llm_service.py',ROOT/'models/inference_XGBoost_d6_s42/config.json',ROOT/'artifacts/evaluations/phishvn_official_v1/summary.json',ROOT/'artifacts/evaluations/phishvn_official_v1/url_model_metrics.json',ROOT/'data/knowledge/corpus_v1/documents.jsonl']}
+    (OUTPUT/'evidence/report_inputs.json').write_text(json.dumps(manifest,indent=2)+'\n')
+    print('Created',OUTPUT/(NAME+'.docx'))
     print('References',len(b.refs),'captions',len(b.captions))

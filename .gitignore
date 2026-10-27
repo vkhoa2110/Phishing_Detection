@@ -1,11 +1,30 @@
+# Local credentials and Python environments.
 .env
+.env.*
+!.env.example
 .venv/
 __pycache__/
 .pytest_cache/
 *.py[cod]
+.ipynb_checkpoints/
+
+# Model exports and raw third-party data are installed locally.
+/models/*
+!/models/README.md
 inference_*/
-models/
 *.joblib
 *.ubj
 *.zip
+/data/raw/*
+!/data/raw/README.md
+
+# Keep reviewed snapshots versioned; new runs and report builds are local outputs.
+/artifacts/evaluations/*
+!/artifacts/evaluations/phishvn_official_v1/
+!/artifacts/evaluations/url_model_ablation_v1/
+!/artifacts/evaluations/pilot_1536_tokens/
+/artifacts/report-builds/
+/data/knowledge/corpus_refresh*/
+~$*.docx
+.~lock.*#
 

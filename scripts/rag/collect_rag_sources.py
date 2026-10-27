@@ -23,6 +23,7 @@ from bs4 import BeautifulSoup
 import trafilatura
 
 AGENT = "PhishLensResearch/0.1"
+ROOT = Path(__file__).resolve().parents[2]
 TRUSTED_HOSTS = {
     "bocongan.gov.vn", "www.bocongan.gov.vn", "congan.tuyenquang.gov.vn",
     "chongluadao.vn", "www.chongluadao.vn", "cybersafe.vnu.edu.vn", "uet.vnu.edu.vn",
@@ -228,8 +229,8 @@ async def collect(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--catalog", type=Path, default=Path("knowledge/source_catalog.json"))
-    parser.add_argument("--out", type=Path, default=Path("knowledge/corpus_v1"))
+    parser.add_argument("--catalog", type=Path, default=ROOT / "data/knowledge/source_catalog.json")
+    parser.add_argument("--out", type=Path, default=ROOT / "data/knowledge/corpus_refresh")
     parser.add_argument("--review-dir", type=Path)
     args = parser.parse_args()
     asyncio.run(collect(args))

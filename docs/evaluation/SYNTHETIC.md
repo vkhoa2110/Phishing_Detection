@@ -1,6 +1,6 @@
 # Kết quả so sánh có và không có model URL
 
-**Phạm vi: báo cáo này chỉ là kiểm thử ngữ cảnh trên dữ liệu mô phỏng. Đánh giá model URL trên tập test PhishVN chính thức và so sánh LLM trên cùng URL được trình bày trong [PHISHVN_EVALUATION.md](PHISHVN_EVALUATION.md). Không dùng bảng 60 thông điệp dưới đây thay cho số đo chất lượng bộ phân loại URL.**
+**Phạm vi: báo cáo này chỉ là kiểm thử ngữ cảnh trên dữ liệu mô phỏng. Đánh giá model URL trên tập test PhishVN chính thức và so sánh LLM trên cùng URL được trình bày trong [PHISHVN_EVALUATION.md](PHISHVN.md). Không dùng bảng 60 thông điệp dưới đây thay cho số đo chất lượng bộ phân loại URL.**
 
 Ngày 26/10/2026, chạy thật với `DeepSeek-V4-Flash` qua FPT và trọng số `XGBoost_d6_s42`. **Trên bộ chẩn đoán này, bổ sung model URL làm giảm chất lượng nhận diện thông điệp vì tăng cảnh báo nhầm; chưa quan sát được lợi ích về recall.** Đây là kết luận cho 60 mẫu mô phỏng được tự gán nhãn, chưa chứng minh chất lượng trên dữ liệu thực tế.
 
@@ -26,9 +26,9 @@ HIGH/WARNING đều tính là cảnh báo dương; LOW là âm. Accuracy dùng t
 
 Coverage nhánh LLM có metadata là 98,33%; các cấu hình còn lại 100%. Coverage 100% của fusion phản ánh khả năng dùng lại ML khi LLM lỗi, không có nghĩa mọi phản hồi LLM đều hợp lệ.
 
-![So sánh các số đo](../reports/url_model_ablation_v1/metrics.png)
+![So sánh các số đo](../../artifacts/evaluations/url_model_ablation_v1/metrics.png)
 
-![Ma trận nhầm lẫn](../reports/url_model_ablation_v1/confusion_matrices.png)
+![Ma trận nhầm lẫn](../../artifacts/evaluations/url_model_ablation_v1/confusion_matrices.png)
 
 ## Điều gì làm kết quả giảm?
 
@@ -58,15 +58,15 @@ Nhãn do một bên tự soạn, nhiều mẫu có dấu hiệu lừa đảo rõ
 
 ## Tệp và cách kiểm chứng
 
-- [Dữ liệu và nhãn](../evaluation/data/vietnamese_messages_v1.jsonl), [phương pháp và lệnh chạy](../evaluation/README.md).
-- [Kết quả từng mẫu CSV](../reports/url_model_ablation_v1/comparison.csv), [đầu ra chi tiết JSONL](../reports/url_model_ablation_v1/results.jsonl).
-- [Số đo JSON](../reports/url_model_ablation_v1/summary.json), [manifest và hash](../reports/url_model_ablation_v1/manifest.json), [báo cáo tự sinh](../reports/url_model_ablation_v1/report.md).
-- [Đối chiếu số đo bằng scikit-learn](../reports/url_model_ablation_v1/independent_metric_check.json).
+- [Dữ liệu và nhãn](../../data/evaluation/vietnamese_messages_v1.jsonl), [phương pháp và lệnh chạy](METHODS.md).
+- [Kết quả từng mẫu CSV](../../artifacts/evaluations/url_model_ablation_v1/comparison.csv), [đầu ra chi tiết JSONL](../../artifacts/evaluations/url_model_ablation_v1/results.jsonl).
+- [Số đo JSON](../../artifacts/evaluations/url_model_ablation_v1/summary.json), [manifest và hash](../../artifacts/evaluations/url_model_ablation_v1/manifest.json), [báo cáo tự sinh](../../artifacts/evaluations/url_model_ablation_v1/report.md).
+- [Đối chiếu số đo bằng scikit-learn](../../artifacts/evaluations/url_model_ablation_v1/independent_metric_check.json).
 
 Mã kiểm thử đạt **43/43 test**: gồm 31 test có sẵn và 12 test mới cho dữ liệu, số đo, baseline độc lập, chống rò nhãn, checkpoint, giới hạn số lần gọi và dừng khi lỗi tài khoản. Các unit test mô phỏng HTTP; 120 lần gọi trong báo cáo là FPT thật. Script đối chiếu độc lập xác nhận số đo của năm cấu hình và tính nhất quán của 120 checkpoint, không gọi thêm API.
 
 ```bash
 .venv/bin/python -m pytest -q
-.venv/bin/python scripts/verify_evaluation.py reports/url_model_ablation_v1
-.venv/bin/python scripts/plot_evaluation.py reports/url_model_ablation_v1
+.venv/bin/python scripts/evaluation/verify_evaluation.py artifacts/evaluations/url_model_ablation_v1
+.venv/bin/python scripts/evaluation/plot_evaluation.py artifacts/evaluations/url_model_ablation_v1
 ```

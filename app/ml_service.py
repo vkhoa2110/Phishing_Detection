@@ -38,7 +38,7 @@ class ModelService:
                 return self.status()
             self.predictor, self.spec, self.path = None, {}, self._resolve()
             if not self.path:
-                self.error = "Đặt thư mục inference_XGBoost_d6_s42 vào thư mục dự án rồi bấm Nạp lại."
+                self.error = "Đặt thư mục models/inference_XGBoost_d6_s42 vào thư mục dự án rồi bấm Nạp lại."
                 return self.status()
             try:
                 config_path = self.path / "config.json"

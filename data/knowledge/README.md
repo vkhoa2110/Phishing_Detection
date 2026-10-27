@@ -60,15 +60,15 @@ Không đưa email người dùng, mẫu test PhishVN hoặc bộ 200 thông đi
 Từ thư mục chứa `run.py`:
 
 ```bash
-.venv/bin/python -m pip install -r requirements-rag-collect.txt
-.venv/bin/python scripts/validate_rag_corpus.py
+.venv/bin/python -m pip install -r requirements/rag-collection.txt
+.venv/bin/python scripts/rag/validate_rag_corpus.py
 .venv/bin/python -m pytest -q tests/test_rag_collection.py
 ```
 
 Để tải lại, chọn thư mục snapshot mới nhằm giữ nguyên bản đã chốt:
 
 ```bash
-.venv/bin/python scripts/collect_rag_sources.py --out knowledge/corpus_refresh
+.venv/bin/python scripts/rag/collect_rag_sources.py --out data/knowledge/corpus_refresh
 ```
 
 Collector chỉ tải các URL trong danh mục đã duyệt và từ chối redirect ra ngoài danh sách host. Không đi theo các liên kết nghi vấn nằm trong bài, không tải ứng dụng hay tệp đính kèm và không gọi LLM. Khi nội dung gốc thay đổi, bản tóm lược cũ cần được rà soát lại; tải thành công và khớp chủ đề không tự chứng minh tóm lược vẫn đầy đủ hoặc chính xác.

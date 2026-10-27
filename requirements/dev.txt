@@ -1,0 +1,3 @@
+-r base.txt
+-r rag-collection.txt
+pytest>=8,<10

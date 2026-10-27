@@ -11,6 +11,7 @@ import re
 spec = importlib.util.spec_from_file_location("rag_collector", Path(__file__).with_name("collect_rag_sources.py"))
 collector = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(collector)
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def validate(corpus, catalog_path):
@@ -64,8 +65,8 @@ def validate(corpus, catalog_path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("corpus", type=Path, nargs="?", default=Path("knowledge/corpus_v1"))
-    parser.add_argument("--catalog", type=Path, default=Path("knowledge/source_catalog.json"))
+    parser.add_argument("corpus", type=Path, nargs="?", default=ROOT / "data/knowledge/corpus_v1")
+    parser.add_argument("--catalog", type=Path, default=ROOT / "data/knowledge/source_catalog.json")
     args = parser.parse_args()
     validate(args.corpus, args.catalog)
 

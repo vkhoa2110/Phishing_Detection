@@ -1,8 +1,8 @@
 # Đánh giá có và không có model URL
 
-**Đánh giá URL có nhãn thật:** công cụ `python -m evaluation.phishvn` dùng PhishVN V4, kiểm tra archive/manifest, khôi phục fingerprint huấn luyện và giữ nguyên train/validation/test theo nguồn. Báo cáo ở [docs/PHISHVN_EVALUATION.md](../docs/PHISHVN_EVALUATION.md). Phần bên dưới là bộ chẩn đoán ngữ cảnh mô phỏng, có mục đích khác.
+**Đánh giá URL có nhãn thật:** công cụ `python -m evaluation.phishvn` dùng PhishVN V4, kiểm tra archive/manifest, khôi phục fingerprint huấn luyện và giữ nguyên train/validation/test theo nguồn. Báo cáo ở [docs/evaluation/PHISHVN.md](PHISHVN.md). Phần bên dưới là bộ chẩn đoán ngữ cảnh mô phỏng, có mục đích khác.
 
-Bộ `data/vietnamese_messages_v1.jsonl` gồm **60 thông điệp tiếng Việt có URL**: 30 nhãn phishing (`1`), 30 nhãn thông thường (`0`). Sáu nhóm ngân hàng, giao hàng, công việc, mua sắm, cơ quan nhà nước và ngữ cảnh/prompt injection; mỗi nhóm có 5 mẫu mỗi lớp. Đây là dữ liệu mô phỏng do người viết công cụ soạn, chưa được thẩm định độc lập. Nhãn đã cố định trước khi gọi model, dựa vào hành vi trong thông điệp, không phải kết quả dự đoán.
+Bộ `data/evaluation/vietnamese_messages_v1.jsonl` gồm **60 thông điệp tiếng Việt có URL**: 30 nhãn phishing (`1`), 30 nhãn thông thường (`0`). Sáu nhóm ngân hàng, giao hàng, công việc, mua sắm, cơ quan nhà nước và ngữ cảnh/prompt injection; mỗi nhóm có 5 mẫu mỗi lớp. Đây là dữ liệu mô phỏng do người viết công cụ soạn, chưa được thẩm định độc lập. Nhãn đã cố định trước khi gọi model, dựa vào hành vi trong thông điệp, không phải kết quả dự đoán.
 
 Có sáu cặp `pair_id` dùng cùng URL trong hai ngữ cảnh đối lập, nhằm kiểm tra việc điểm URL lấn át ngữ cảnh. Các mẫu còn lại dùng URL khác nhau. Các miền ví dụ và địa chỉ IP tài liệu được dùng cho tình huống giả lập; một số mẫu có chuỗi URL công khai. Không truy cập website khi đánh giá. Mẫu có URL trông đáng ngờ nhưng chỉ trích dẫn trong bài học phòng chống phishing được gán `0`.
 
@@ -24,26 +24,26 @@ Từ thư mục chứa `run.py`, dùng Python 3.12 và gói model thật:
 
 ```bash
 python3.12 -m venv .venv
-.venv/bin/python -m pip install -r requirements-eval.txt
+.venv/bin/python -m pip install -r requirements/evaluation.txt
 .venv/bin/python -m pytest -q
 ```
 
 Chỉ chạy model URL tại máy, không gọi API:
 
 ```bash
-.venv/bin/python -m evaluation.run --out reports/offline_url_v1
+.venv/bin/python -m evaluation.run --out artifacts/evaluations/offline_url_v1
 ```
 
 Đánh giá cả hai cấu hình LLM, dùng `FPT_API_KEY` trong `.env`. Lệnh này sử dụng API thật và token của tài khoản:
 
 ```bash
-.venv/bin/python -m evaluation.run --live --max-tokens 4096 --max-new-calls 120 --out reports/url_model_ablation_v1
-.venv/bin/python scripts/plot_evaluation.py reports/url_model_ablation_v1
+.venv/bin/python -m evaluation.run --live --max-tokens 4096 --max-new-calls 120 --out artifacts/evaluations/url_model_ablation_new
+.venv/bin/python scripts/evaluation/plot_evaluation.py artifacts/evaluations/url_model_ablation_new
 ```
 
-Thư mục kết quả đã có trong dự án chứa lần chạy thật. Khi lặp đúng lệnh và cấu hình, kết quả đã checkpoint được tái sử dụng, không gửi lại API. Để tạo lần chạy độc lập mới, chọn thư mục `--out` mới. Dùng `--max-new-calls 2` để giới hạn lượt thử; đó là báo cáo chưa hoàn tất, không phải kết quả toàn bộ bộ test. `--timeout` mặc định 90 giây, `--workers` nhận 1 hoặc 2. Thay đổi model, dữ liệu, mã đánh giá, prompt hoặc tham số cần thư mục kết quả mới.
+Các snapshot đã chốt trong `artifacts/evaluations/` giữ lần chạy thật. Sau khi tổ chức lại mã, dùng thư mục `--out` mới vì hash mã nguồn đã thay đổi; không chạy tiếp vào snapshot cũ. Khi lặp đúng lệnh và cấu hình, kết quả đã checkpoint được tái sử dụng, không gửi lại API. Để tạo lần chạy độc lập mới, chọn thư mục `--out` mới. Dùng `--max-new-calls 2` để giới hạn lượt thử; đó là báo cáo chưa hoàn tất, không phải kết quả toàn bộ bộ test. `--timeout` mặc định 90 giây, `--workers` nhận 1 hoặc 2. Thay đổi model, dữ liệu, mã đánh giá, prompt hoặc tham số cần thư mục kết quả mới.
 
-Ứng dụng hiện có thể đặt `LLM_MAX_TOKENS` khác trong `.env`; công cụ ghi đè có chủ đích bằng `--max-tokens` và ghi giá trị thật vào manifest. Lượt chính dùng 4.096 cho cả hai nhánh. Lượt thử 1.536 token đã xuất hiện phản hồi bị cắt và được lưu riêng tại `reports/pilot_1536_tokens`, không gộp vào kết quả chính.
+Ứng dụng hiện có thể đặt `LLM_MAX_TOKENS` khác trong `.env`; công cụ ghi đè có chủ đích bằng `--max-tokens` và ghi giá trị thật vào manifest. Lượt chính dùng 4.096 cho cả hai nhánh. Lượt thử 1.536 token đã xuất hiện phản hồi bị cắt và được lưu riêng tại `artifacts/evaluations/pilot_1536_tokens`, không gộp vào kết quả chính.
 
 ## Số đo và đầu ra
 

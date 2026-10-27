@@ -47,7 +47,7 @@ Model đạt Recall cao tại WARNING, với đánh đổi rõ về FPR. Cảnh 
 
 Riêng phần gold/silver của test có 4.332 URL (487 phishing, 3.845 benign). Tại WARNING, Recall = 98,97% nhưng Precision = **29,99%**, F1 = **46,04%**. Tập đầy đủ có thêm nhiều mẫu phishing bronze, nên Precision/F1 cao hơn. Phải báo cả thành phần lớp và tier, không coi kết quả toàn bộ là đại diện riêng cho dữ liệu đã xác minh.
 
-Kết quả này thay thế việc dùng số đo trên 60 thông điệp mô phỏng để suy luận chất lượng model URL. [Bộ 60 thông điệp](EVALUATION.md) được giữ cho mục đích kiểm tra ngữ cảnh và logic fusion.
+Kết quả này thay thế việc dùng số đo trên 60 thông điệp mô phỏng để suy luận chất lượng model URL. [Bộ 60 thông điệp](SYNTHETIC.md) được giữ cho mục đích kiểm tra ngữ cảnh và logic fusion.
 
 ## So sánh có và không có model URL trên cùng URL test
 
@@ -55,7 +55,7 @@ Lấy cố định 100 URL từ split test: 50 benign, 50 phishing, seed `202610
 
 LLM đọc chính URL với `mode=url`, không tạo email giả rồi gán nhãn email theo nhãn URL. Nhánh độc lập không nhận điểm ML và không dùng ML trong quyết định của nó; nhánh còn lại nhận thêm đúng score/ngưỡng ML. Giữ prompt `baseline-1.0`, model `DeepSeek-V4-Flash`, temperature 0,1, tối đa 4.096 token, timeout 90 giây. Hai nhánh cùng nhận URL đã qua cùng quy tắc che dữ liệu. Chỉ gửi URL và metadata cần thiết, không gửi nhãn, source, tier hoặc ID dataset cho LLM.
 
-Kết quả số đo của năm cấu hình, coverage, lỗi API và thống kê theo cặp được lưu trong [summary.json](../reports/phishvn_official_v1/summary.json). Bảng từng URL và từng quyết định ở [comparison.csv](../reports/phishvn_official_v1/comparison.csv), phản hồi đầy đủ ở [results.jsonl](../reports/phishvn_official_v1/results.jsonl). Không tự retry hoặc thay phản hồi lỗi bằng một lần gọi thuận lợi hơn.
+Kết quả số đo của năm cấu hình, coverage, lỗi API và thống kê theo cặp được lưu trong [summary.json](../../artifacts/evaluations/phishvn_official_v1/summary.json). Bảng từng URL và từng quyết định ở [comparison.csv](../../artifacts/evaluations/phishvn_official_v1/comparison.csv), phản hồi đầy đủ ở [results.jsonl](../../artifacts/evaluations/phishvn_official_v1/results.jsonl). Không tự retry hoặc thay phản hồi lỗi bằng một lần gọi thuận lợi hơn.
 
 Đã hoàn tất **200/200 phản hồi hợp lệ**, không có lỗi API/JSON. Mỗi nhánh chạy một lần trên mỗi URL. Nhãn HIGH/WARNING là dự đoán dương, LOW là âm, UNKNOWN là abstain. Accuracy dùng toàn bộ 100 mẫu; Recall và F1 giữ mẫu dương UNKNOWN trong mẫu số, thay vì chỉ chấm trên các mẫu LLM chịu trả lời. Vì vậy cần đọc cùng coverage và số UNKNOWN.
 
@@ -67,9 +67,9 @@ Kết quả số đo của năm cấu hình, coverage, lỗi API và thống kê
 | Model URL + LLM độc lập + fusion | 87% | 79,37% | 100% | 88,50% | 26% | 100% | 50 / 13 / 37 / 0 | 0 / 0 |
 | Model URL + LLM nhận điểm URL + fusion | 87% | 79,37% | 100% | 88,50% | 26% | 100% | 50 / 13 / 37 / 0 | 0 / 0 |
 
-![Số đo trên 100 URL PhishVN](../reports/phishvn_official_v1/metrics.png)
+![Số đo trên 100 URL PhishVN](../../artifacts/evaluations/phishvn_official_v1/metrics.png)
 
-![Ma trận nhầm lẫn trên 100 URL PhishVN](../reports/phishvn_official_v1/confusion_matrices.png)
+![Ma trận nhầm lẫn trên 100 URL PhishVN](../../artifacts/evaluations/phishvn_official_v1/confusion_matrices.png)
 
 **Nhận định sau khi dùng đúng loại test:** model URL giúp LLM đưa ra được kết luận trên các URL mà LLM độc lập thiếu căn cứ. Thêm metadata sửa đúng 26 mẫu so với baseline, làm sai thêm 6 mẫu; Accuracy tăng 20 điểm phần trăm. Baseline có 22 UNKNOWN (19 phishing, 3 benign), nên F1 thấp không chỉ là phân loại nhầm: một phần lớn là từ chối kết luận. Trên 78 mẫu baseline có kết luận, selective accuracy là 88,46%; chỉ số này không thay thế Accuracy trên toàn bộ test. Việc giảm abstain cần được cân nhắc cùng sự tăng FPR từ 4% lên 22%.
 
@@ -79,7 +79,7 @@ Kết quả này không chứng minh mô hình kết hợp luôn tốt hơn LLM 
 
 ## Kiểm chứng và giới hạn báo cáo trước
 
-Các số đo năm cấu hình được đối chiếu độc lập bằng scikit-learn với 200 checkpoint duy nhất. Bộ unit test hiện đạt **50/50**, gồm kiểm tra archive/manifest, chống trùng domain giữa các split, ánh xạ nhãn, fingerprint, và baseline LLM không bị fusion ML ảnh hưởng. [independent_metric_check.json](../reports/phishvn_official_v1/independent_metric_check.json) lưu hash của kết quả đã kiểm chứng.
+Các số đo năm cấu hình được đối chiếu độc lập bằng scikit-learn với 200 checkpoint duy nhất. Bộ unit test hiện đạt **50/50**, gồm kiểm tra archive/manifest, chống trùng domain giữa các split, ánh xạ nhãn, fingerprint, và baseline LLM không bị fusion ML ảnh hưởng. [independent_metric_check.json](../../artifacts/evaluations/phishvn_official_v1/independent_metric_check.json) lưu hash của kết quả đã kiểm chứng.
 
 Bộ 60 thông điệp mô phỏng trước đó gán nhãn hành vi trong tin nhắn, có các URL chỉ để minh họa. FPR 96,67% ở báo cáo đó là cảnh báo trong các thông điệp nhãn benign, không phải FPR URL trên PhishVN. Trên tập URL đúng nguồn, FPR tại WARNING là 29,26%, tại HIGH là 7,23%. Hai phép đo có nhiệm vụ và ground truth khác nhau; kết luận model URL kém dựa riêng trên 60 thông điệp là diễn giải quá rộng.
 
@@ -91,20 +91,20 @@ Chạy toàn bộ ML, kiểm tra nguồn và chuẩn bị mẫu 100 URL, không 
 
 ```bash
 .venv/bin/python -m evaluation.phishvn \
-  --archive /home/khoa/BCTT/PhishVN_v3.1.0_open.zip \
-  --notebook /home/khoa/BCTT/Train_URL_Phishing_GPU.ipynb \
-  --out reports/phishvn_offline_v1
+  --archive data/raw/PhishVN_v3.1.0_open.zip \
+  --notebook notebooks/Train_URL_Phishing_GPU.ipynb \
+  --out artifacts/evaluations/phishvn_offline_v1
 ```
 
-Chạy phép so sánh LLM thật: thêm `--live`, dùng thư mục `--out` mới cho cấu hình mới. Tối đa 200 lần gọi mới cho 100 URL, hai lượt đồng thời; chạy lại đúng cấu hình và cùng thư mục sẽ dùng checkpoint đã có. Kết quả lần chạy đã bàn giao nằm ở `reports/phishvn_official_v1`.
+Chạy phép so sánh LLM thật: thêm `--live`, dùng thư mục `--out` mới cho cấu hình mới. Tối đa 200 lần gọi mới cho 100 URL, hai lượt đồng thời; chạy lại đúng cấu hình và cùng thư mục sẽ dùng checkpoint đã có. Kết quả lần chạy đã bàn giao nằm ở `artifacts/evaluations/phishvn_official_v1`.
 
 ```bash
 .venv/bin/python -m evaluation.phishvn \
-  --archive /home/khoa/BCTT/PhishVN_v3.1.0_open.zip \
-  --notebook /home/khoa/BCTT/Train_URL_Phishing_GPU.ipynb \
-  --out reports/phishvn_official_v1 --live
-.venv/bin/python scripts/verify_evaluation.py reports/phishvn_official_v1
-.venv/bin/python scripts/plot_evaluation.py reports/phishvn_official_v1
+  --archive data/raw/PhishVN_v3.1.0_open.zip \
+  --notebook notebooks/Train_URL_Phishing_GPU.ipynb \
+  --out artifacts/evaluations/phishvn_new --live
+.venv/bin/python scripts/evaluation/verify_evaluation.py artifacts/evaluations/phishvn_new
+.venv/bin/python scripts/evaluation/plot_evaluation.py artifacts/evaluations/phishvn_new
 ```
 
 `provenance.json` lưu kiểm tra archive, split và fingerprint. `url_model_metrics.json` lưu kết quả toàn bộ validation/test và theo tier/source; `val_predictions.csv`/`test_predictions.csv` lưu từng điểm. `selected_ids.csv` và manifest khóa mẫu so sánh LLM. Script đọc hằng số notebook bằng AST, không thực thi notebook, không cài GPU, không train và không mở các URL trong dataset.

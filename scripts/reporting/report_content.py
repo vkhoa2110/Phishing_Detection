@@ -4,6 +4,7 @@ import json
 
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
+REPORT_SOURCE=ROOT/'docs/reports/2026-10-26'
 
 def compose(b):
     b.h('CHƯƠNG 1. GIỚI THIỆU',1)
@@ -176,7 +177,7 @@ def compose(b):
     b.h('4.5.1. Kho đã thu thập',3)
     b.p('Kho corpus_v1 có 25 bản tóm lược nội dung riêng biệt từ 11 đơn vị công bố, sau khi loại một ứng viên trùng nội dung. Mỗi bản lưu mã nguồn, tiêu đề, URL, đơn vị, chủ đề, thời điểm thu thập, hash phản hồi/văn bản/tóm lược và ngày công bố nếu xác minh được. Có 14 nguồn xác minh được ngày; 11 nguồn để null. review_status=assistant_curated không đồng nghĩa đã được chuyên gia độc lập thẩm định.')
     b.p('Đây là bản tóm lược biên tập khoảng 80–100 từ theo cách đếm khoảng trắng, không phải toàn văn được tải lại để phân phối. text chứa kiến thức tóm lược, context_note ghi giới hạn sử dụng. Quyền đối với nguồn gốc thuộc đơn vị công bố. Các cảnh báo và quy trình cũ chỉ là kiến thức có thời điểm, không thay thế tra cứu danh tiếng tên miền hoặc quy định hiện hành.')
-    b.p('Bảng 4.3 cho thấy kho không chỉ gồm lừa đảo. Hướng dẫn hợp lệ về OTP, xác thực hai bước và khôi phục tài khoản được giữ để kiểm tra tình huống có từ khóa nhạy cảm nhưng hành vi không đáng ngờ. Danh sách 25 URL nằm ở Phụ lục B và knowledge/corpus_v1/sources.csv.')
+    b.p('Bảng 4.3 cho thấy kho không chỉ gồm lừa đảo. Hướng dẫn hợp lệ về OTP, xác thực hai bước và khôi phục tài khoản được giữ để kiểm tra tình huống có từ khóa nhạy cảm nhưng hành vi không đáng ngờ. Danh sách 25 URL nằm ở Phụ lục B và data/knowledge/corpus_v1/sources.csv.')
     b.table('Bảng 4.3. Cơ cấu kho tài liệu RAG ban đầu',['Loại','Số nguồn','Vai trò'],[
       ['Cảnh báo thủ đoạn','15','Mạo danh, VNeID, tuyển dụng, đầu tư, hoàn tiền, giao hàng, email và học bổng.'],
       ['Quy trình hợp lệ','7','Đối chiếu xác thực, thông báo tài khoản, cập nhật sinh trắc học và thông báo học bổng có nguồn.'],
@@ -209,7 +210,7 @@ def compose(b):
 
     b.h('CHƯƠNG 5. CÀI ĐẶT VÀ TRIỂN KHAI',1)
     b.h('5.1. Môi trường và tài nguyên')
-    b.p('Môi trường kiểm chứng hiện tại dùng Python 3.12.15 trên Linux. Các thư viện chính được ghim trong requirements.txt: FastAPI 0.162.0, Uvicorn 0.54.0, HTTPX 0.28.1, Pydantic 2.14.1, NumPy 2.1.3, pandas 2.2.3, scikit-learn 1.7.2, tldextract 5.3.0 và XGBoost 3.0.5. Trên Linux x86_64, dự án dùng xgboost-cpu để suy luận mà không tải phụ thuộc GPU.')
+    b.p('Môi trường kiểm chứng hiện tại dùng Python 3.12.15 trên Linux. Các thư viện chính được ghim trong requirements/base.txt: FastAPI 0.162.0, Uvicorn 0.54.0, HTTPX 0.28.1, Pydantic 2.14.1, NumPy 2.1.3, pandas 2.2.3, scikit-learn 1.7.2, tldextract 5.3.0 và XGBoost 3.0.5. Trên Linux x86_64, dự án dùng xgboost-cpu để suy luận mà không tải phụ thuộc GPU.')
     b.p('Gói mô hình lưu thông tin môi trường huấn luyện Colab với NVIDIA A100; thông tin này mô tả lần xuất model, không phải yêu cầu chạy ứng dụng. Mốc đo ML cục bộ của báo cáo sử dụng Intel Core i5-11400H. Không suy thời gian huấn luyện hay hiệu năng GPU từ phép đo suy luận CPU. LLM chạy tại dịch vụ FPT nên máy người dùng không cần GPU cho phần đó.')
     b.h('5.2. Tổ chức mã nguồn')
     b.p('Mã nguồn được công bố tại https://github.com/vkhoa2110/Phishing_Detection. Bản làm việc dùng viết báo cáo còn có các tệp thực nghiệm và tài liệu mới chưa đồng bộ toàn bộ lên remote; người tái lập cần gói bàn giao tương ứng. Gói trọng số và .env không nằm trong Git, nên clone repository đơn thuần chưa đủ để chạy ML thật hoặc gọi LLM. [[local]]')
@@ -220,10 +221,10 @@ def compose(b):
       ['app/ml_service.py','Nạp gói model, kiểm tra schema/ngưỡng và dự đoán.'],
       ['app/llm_service.py; app/schemas.py','Prompt, giao tiếp FPT, schema và kiểm tra quote.'],
       ['app/fusion.py; app/static/','Quy tắc kết luận và giao diện web.'],
-      ['inference_XGBoost_d6_s42/','Trọng số, config, mã tiền xử lý và đặc trưng được xuất.'],
-      ['evaluation/; scripts/verify_evaluation.py','Chạy đánh giá, checkpoint, metrics và kiểm chứng độc lập.'],
-      ['reports/phishvn_official_v1/','Số đo toàn bộ URL test và 100 URL gọi LLM thật.'],
-      ['knowledge/; scripts/collect_rag_sources.py','Corpus, danh mục và công cụ thu thập nguồn được duyệt.'],
+      ['models/inference_XGBoost_d6_s42/','Trọng số, config, mã tiền xử lý và đặc trưng được xuất.'],
+      ['evaluation/; scripts/evaluation/verify_evaluation.py','Chạy đánh giá, checkpoint, metrics và kiểm chứng độc lập.'],
+      ['artifacts/evaluations/phishvn_official_v1/','Số đo toàn bộ URL test và 100 URL gọi LLM thật.'],
+      ['data/knowledge/; scripts/rag/collect_rag_sources.py','Corpus, danh mục và công cụ thu thập nguồn được duyệt.'],
       ['tests/','Kiểm thử baseline, đánh giá, provenance và collection.']
     ],widths=[7,9],size=10)
     b.h('5.3. Hiện thực và giao diện các chức năng chính')
@@ -308,7 +309,7 @@ def compose(b):
     b.p('Đối chiếu baseline công bố là phần còn thiếu. Mã PhishVN phát hành có Logistic Regression và Random Forest, hỗ trợ nhiều seed và báo F1/AP/AUC; benchmark chính cần chú ý phạm vi core so với bronze. Báo cáo chưa có bảng số đo tham chiếu tái lập cùng phạm vi nên không khẳng định XGBoost vượt baseline PhishVN. Các số trung bình nhiều seed nêu trong đề cương chưa được đưa vào bảng kết quả ở đây vì notebook cục bộ không lưu output/tệp tổng hợp đủ kiểm chứng. [[baseline]] [[datasheet]]')
     b.p('Kế hoạch đối chiếu là cố định mã phát hành dib-113195, cùng 21 đặc trưng, chạy LogReg/RF và ứng viên XGBoost trên cùng split/core; báo ngưỡng 0,5 để đối chiếu giao thức tham chiếu và báo thêm ngưỡng chọn bằng validation. Nếu dùng toàn bộ bronze phải thành bảng riêng. Lặp seed chỉ cho mô hình ngẫu nhiên, lưu từng dự đoán và độ lệch chuẩn; không chọn model bằng kết quả test. So sánh giao thức khác phải ghi rõ thay vì ghép số đẹp nhất của mỗi bên.')
     b.h('6.6. Thời gian phản hồi và khả năng tái lập')
-    ml=json.loads((HERE/'evidence/ml_latency.json').read_text())
+    ml=json.loads((REPORT_SOURCE/'evidence/ml_latency.json').read_text())
     b.p(f'Đo mới 30 batch liên tiếp, mỗi batch 5 URL, sau một batch làm nóng bằng model thật trên Intel Core i5-11400H và Python 3.12.15: median {ml["p50_ms"]:.2f} ms, p95 {ml["p95_ms"]:.2f} ms, lớn nhất {ml["max_ms"]:.2f} ms. Phép đo bao gồm hàm predict ở máy cục bộ, không gồm tải model, giao diện hoặc mạng. Kết quả đáp ứng mục tiêu dưới một giây trong phép thử này, chưa chứng nhận trên máy chuẩn 4 lõi/RAM 8 GB.')
     b.p('Từ 100 lượt mỗi nhánh trong dữ liệu PhishVN đã lưu, thời gian LLM độc lập trung bình 3,71 giây và p95 7,06 giây; LLM nhận ML trung bình 2,96 giây và p95 5,94 giây. Không có RAG trong phép đo. Hai nhánh gọi API một lần/mẫu, không chạy thử tải hoặc hoán đổi thứ tự có kiểm soát nên không kết luận metadata làm API nhanh hơn về bản chất.')
     b.p('Hiện vật tái lập gồm archive SHA-256, manifest split, mã notebook, fingerprint, hash prompt, model/config, danh sách 100 ID, checkpoint và tệp kết quả từng mẫu. Tái lập phân loại ML có thể cố định rõ; phản hồi API LLM vẫn có biến thiên và phiên bản nhà cung cấp có thể thay đổi. Temperature thấp không tạo bảo đảm bitwise deterministic.')
@@ -373,30 +374,30 @@ def compose(b):
 def appendices(b):
     b.h('PHỤ LỤC A. CÀI ĐẶT VÀ SỬ DỤNG',1)
     b.h('A.1. Chuẩn bị và cài đặt')
-    b.p('Yêu cầu Python 3.11 hoặc 3.12, truy cập gói mã nguồn và gói inference_XGBoost_d6_s42 đã xuất. Các lệnh dưới chạy trong thư mục có run.py. Không cần tài khoản demo, Node.js hoặc cơ sở dữ liệu. API key chỉ cần khi bật LLM.')
-    b.code('git clone https://github.com/vkhoa2110/Phishing_Detection.git\ncd Phishing_Detection\npython3 -m venv .venv\n.venv/bin/python -m pip install -r requirements.txt')
-    b.p('Nếu dùng gói bàn giao có thư mục phishing_baseline, mở đúng thư mục đó thay cho tên sau clone. Giải nén model cạnh run.py để có inference_XGBoost_d6_s42/model.ubj và config.json. Gói này bị loại khỏi Git nên phải cung cấp riêng từ nguồn tin cậy. Các tệp Python trong gói sẽ được import; không nạp gói không rõ nguồn.')
-    b.code('phishing_baseline/\n  run.py\n  app/\n  inference_XGBoost_d6_s42/\n    model.ubj\n    config.json\n    predict_url.py\n    url_features.py\n    url_preprocessing.py')
+    b.p('Yêu cầu Python 3.11 hoặc 3.12, truy cập gói mã nguồn và gói models/inference_XGBoost_d6_s42 đã xuất. Các lệnh dưới chạy trong thư mục có run.py. Không cần tài khoản demo, Node.js hoặc cơ sở dữ liệu. API key chỉ cần khi bật LLM.')
+    b.code('git clone https://github.com/vkhoa2110/Phishing_Detection.git\ncd Phishing_Detection\npython3 -m venv .venv\n.venv/bin/python -m pip install -r requirements/base.txt')
+    b.p('Nếu dùng gói bàn giao có thư mục phishing_baseline, mở thư mục gốc có run.py. Giải nén model trong models/ tại thư mục gốc repository để có models/inference_XGBoost_d6_s42/model.ubj và config.json. Gói này bị loại khỏi Git nên phải cung cấp riêng từ nguồn tin cậy. Các tệp Python trong gói sẽ được import; không nạp gói không rõ nguồn.')
+    b.code('Phishing_Detection/\n  run.py\n  app/\n  models/inference_XGBoost_d6_s42/\n    model.ubj\n    config.json\n    predict_url.py\n    url_features.py\n    url_preprocessing.py')
     b.h('A.2. Cấu hình và chạy')
     b.p('Sao chép .env.example thành .env và tự điền FPT_API_KEY nếu dùng API. Không chia sẻ hoặc commit tệp .env. Ví dụ sau chỉ chứa tên biến và giá trị công khai; không có khóa thật.')
-    b.code('MODEL_DIR=inference_XGBoost_d6_s42\nFPT_ENDPOINT=https://mkp-api.fptcloud.com/v1/chat/completions\nFPT_MODEL=DeepSeek-V4-Flash\nLLM_ALLOWED_HOSTS=mkp-api.fptcloud.com\nLLM_TIMEOUT_SECONDS=45\nLLM_MAX_TOKENS=1024\nPORT=8000')
+    b.code('MODEL_DIR=models/inference_XGBoost_d6_s42\nFPT_ENDPOINT=https://mkp-api.fptcloud.com/v1/chat/completions\nFPT_MODEL=DeepSeek-V4-Flash\nLLM_ALLOWED_HOSTS=mkp-api.fptcloud.com\nLLM_TIMEOUT_SECONDS=45\nLLM_MAX_TOKENS=1024\nPORT=8000')
     b.code('.venv/bin/python run.py\n# Mở bằng trình duyệt: http://127.0.0.1:8000')
     b.p('Trên Windows, tạo môi trường bằng py -3.12 -m venv .venv và thay .venv/bin/python bằng .venv\\Scripts\\python.exe. Nếu thiếu model, giao diện báo rõ, không dự đoán giả. Nếu không có API key, tắt LLM để kiểm tra URL bằng ML. RAG chưa có công tắc chạy trong baseline.')
     b.h('A.3. Thao tác kiểm tra và xử lý lỗi')
     b.p('Chọn loại đầu vào, dán dữ liệu và chọn có dùng LLM hay không. Nếu dùng, kiểm tra bản đã che rồi xác nhận hoặc hủy. Kết quả có mức chung và trạng thái từng thành phần; LOW không bảo đảm an toàn. Có thể tải JSON khi cần; tệp có thể chứa dữ liệu lượt kiểm tra. Không nhập dữ liệu cá nhân thật trong bản demo hoặc ảnh báo cáo.')
     b.p('Lỗi 401/403 cần kiểm tra key và quyền model; 402 cần kiểm tra số dư; 429 cần xem hạn mức. JSON bị cắt cần xem giới hạn token, không tự chấp nhận kết luận thiếu. Cổng bận thì đổi PORT rồi mở đúng địa chỉ. Ứng dụng không tự retry. Nếu thay model hoặc ngưỡng, phải lưu cấu hình mới và không dùng checkpoint của cấu hình cũ.')
     b.h('A.4. Kiểm thử và tái lập kết quả đã có')
-    b.code('.venv/bin/python -m pip install -r requirements-dev.txt\n.venv/bin/python -m pytest -q\n.venv/bin/python scripts/validate_rag_corpus.py')
-    b.p('Lệnh validator chốt lại metadata/hash corpus cục bộ; cần sao lưu snapshot trước khi chủ động chỉnh nội dung. Các lệnh kiểm thử không gọi FPT. Để kiểm chứng số đo đã lưu mà không phát sinh token, cài thêm requirements-eval.txt rồi chạy:')
-    b.code('.venv/bin/python -m pip install -r requirements-eval.txt\n.venv/bin/python scripts/verify_evaluation.py reports/phishvn_official_v1')
+    b.code('.venv/bin/python -m pip install -r requirements/dev.txt\n.venv/bin/python -m pytest -q\n.venv/bin/python scripts/rag/validate_rag_corpus.py')
+    b.p('Lệnh validator chốt lại metadata/hash corpus cục bộ; cần sao lưu snapshot trước khi chủ động chỉnh nội dung. Các lệnh kiểm thử không gọi FPT. Để kiểm chứng số đo đã lưu mà không phát sinh token, cài thêm requirements/evaluation.txt rồi chạy:')
+    b.code('.venv/bin/python -m pip install -r requirements/evaluation.txt\n.venv/bin/python scripts/evaluation/verify_evaluation.py artifacts/evaluations/phishvn_official_v1')
     b.p('Đánh giá URL từ archive và notebook, không gọi LLM, dùng thư mục kết quả mới:')
-    b.code('.venv/bin/python -m evaluation.phishvn \\\n  --archive /duong/dan/PhishVN_v3.1.0_open.zip \\\n  --notebook /duong/dan/Train_URL_Phishing_GPU.ipynb \\\n  --out reports/phishvn_offline_new')
+    b.code('.venv/bin/python -m evaluation.phishvn \\\n  --archive /duong/dan/PhishVN_v3.1.0_open.zip \\\n  --notebook /duong/dan/Train_URL_Phishing_GPU.ipynb \\\n  --out artifacts/evaluations/phishvn_offline_new')
     b.p('Thêm --live mới gọi FPT và phát sinh token; cần kiểm tra ngân sách trước khi chạy. Không chạy thí nghiệm mới đè lên hồ sơ đã khóa. Giấy phép dữ liệu PhishVN là CC BY 4.0; ghi công Thai Nguyen Vu và DOI khi phân phối lại các URL/nhãn trích từ dữ liệu.')
 
     b.h('PHỤ LỤC B. DANH MỤC 25 NGUỒN RAG',1)
     b.p('Danh mục dưới đây lấy trực tiếp từ corpus_v1/documents.jsonl. Mỗi mục là nguồn của một bản tóm lược, không khẳng định bài gốc được sao chép đầy đủ hoặc nội dung còn là chính sách hiện hành. Ngày chưa xác minh được giữ là “chưa xác minh”. Một URL Microsoft trùng nội dung đã bị loại và không xuất hiện trong 25 mục này.')
     from build_report import hyperlink
-    docs=[json.loads(s) for s in (ROOT/'knowledge/corpus_v1/documents.jsonl').read_text().splitlines()]
+    docs=[json.loads(s) for s in (ROOT/'data/knowledge/corpus_v1/documents.jsonl').read_text().splitlines()]
     for d in docs:
         p=b.p(f'{d["id"]} · {d["title"]}',bold=True,small=True);p.paragraph_format.keep_with_next=True
         p=b.p(f'Đơn vị: {d["publisher"]}. Ngày công bố: {d.get("published_at") or "chưa xác minh"}. Nhóm: {d["kind"]}.',small=True)
@@ -408,18 +409,18 @@ def appendices(b):
     b.h('C.1. Hiện vật để kiểm tra số liệu')
     b.p('Tất cả đường dẫn sau là tương đối so với thư mục có run.py. Bản làm việc và gói bàn giao có thể chứa tệp chưa có trên GitHub. Không suy rằng một liên kết repository tự chứng minh mọi kết quả được nhắc trong báo cáo.')
     for a,z in [
-      ('inference_XGBoost_d6_s42/config.json','Run, seed, feature_names, ngưỡng và thông tin validation.'),
-      ('reports/phishvn_official_v1/provenance.json','Archive, split, fingerprint và kiểm tra tính nhất quán.'),
-      ('reports/phishvn_official_v1/url_model_metrics.json','Chỉ số toàn bộ URL test, core, tier và nguồn.'),
-      ('reports/phishvn_official_v1/test_predictions.csv','Từng điểm URL và nhãn để tính lại ma trận.'),
-      ('reports/phishvn_official_v1/selected_ids.csv','Danh sách 100 URL được chọn cho so sánh LLM.'),
-      ('reports/phishvn_official_v1/summary.json','Chỉ số năm cấu hình, số thay đổi theo cặp, usage và timing.'),
-      ('reports/phishvn_official_v1/results.jsonl','Đầu vào và kết quả từng mẫu; không có API key.'),
-      ('reports/phishvn_official_v1/independent_metric_check.json','Kiểm chứng số đo độc lập.'),
-      ('reports/url_model_ablation_v1/','Kết quả 60 thông điệp mô phỏng, tách khỏi PhishVN.'),
-      ('knowledge/corpus_v1/documents.jsonl; sources.csv','Tóm lược và danh mục 25 nguồn.'),
-      ('knowledge/corpus_v1/manifest.json; validation.json','Hash theo giai đoạn và kiểm tra corpus.'),
-      ('deliverables/bao_cao_phishing_2026_10_26/evidence/','Số đo độ trễ mới, lỗi biên đã kiểm tra và hash đầu vào báo cáo.')
+      ('models/inference_XGBoost_d6_s42/config.json','Run, seed, feature_names, ngưỡng và thông tin validation.'),
+      ('artifacts/evaluations/phishvn_official_v1/provenance.json','Archive, split, fingerprint và kiểm tra tính nhất quán.'),
+      ('artifacts/evaluations/phishvn_official_v1/url_model_metrics.json','Chỉ số toàn bộ URL test, core, tier và nguồn.'),
+      ('artifacts/evaluations/phishvn_official_v1/test_predictions.csv','Từng điểm URL và nhãn để tính lại ma trận.'),
+      ('artifacts/evaluations/phishvn_official_v1/selected_ids.csv','Danh sách 100 URL được chọn cho so sánh LLM.'),
+      ('artifacts/evaluations/phishvn_official_v1/summary.json','Chỉ số năm cấu hình, số thay đổi theo cặp, usage và timing.'),
+      ('artifacts/evaluations/phishvn_official_v1/results.jsonl','Đầu vào và kết quả từng mẫu; không có API key.'),
+      ('artifacts/evaluations/phishvn_official_v1/independent_metric_check.json','Kiểm chứng số đo độc lập.'),
+      ('artifacts/evaluations/url_model_ablation_v1/','Kết quả 60 thông điệp mô phỏng, tách khỏi PhishVN.'),
+      ('data/knowledge/corpus_v1/documents.jsonl; sources.csv','Tóm lược và danh mục 25 nguồn.'),
+      ('data/knowledge/corpus_v1/manifest.json; validation.json','Hash theo giai đoạn và kiểm tra corpus.'),
+      ('docs/reports/2026-10-26/evidence/','Số đo độ trễ mới, lỗi biên đã kiểm tra và hash đầu vào báo cáo.')
     ]:
         p=b.p(a,bold=True,small=True);p.paragraph_format.first_line_indent=0;p.paragraph_format.keep_with_next=True
         b.p(z,small=True)

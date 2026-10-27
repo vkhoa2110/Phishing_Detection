@@ -1,4 +1,4 @@
-"""Run with: python -m evaluation.run --live --out reports/url_model_ablation_v1"""
+"""Run with: python -m evaluation.run --live --out artifacts/evaluations/url_model_ablation_new"""
 import argparse
 import asyncio
 from collections import Counter
@@ -24,7 +24,7 @@ from app.settings import ROOT, Settings
 from app.urls import extract_urls
 from .metrics import measure, paired_comparison, prediction
 
-DATASET = Path(__file__).parent / "data/vietnamese_messages_v1.jsonl"
+DATASET = ROOT / "data/evaluation/vietnamese_messages_v1.jsonl"
 ARMS = ("llm_only", "llm_with_url_model")
 SYSTEMS = ("url_model_only", "llm_only", "llm_with_url_model", "fusion_independent", "fusion_with_url_model")
 FATAL_CODES = {"API_KEY_MISSING", "API_KEY_INVALID", "ENDPOINT_INVALID", "HTTP_400", "HTTP_401", "HTTP_402", "HTTP_403", "HTTP_404", "HTTP_429"}
@@ -285,7 +285,7 @@ async def evaluate(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", type=Path, default=DATASET)
-    parser.add_argument("--out", type=Path, default=Path("reports/url_model_ablation_v1"))
+    parser.add_argument("--out", type=Path, default=ROOT / "artifacts/evaluations/url_model_ablation_new")
     parser.add_argument("--live", action="store_true", help="Send synthetic dataset text to FPT; incurs API usage.")
     parser.add_argument("--max-new-calls", type=int, default=120, help="Maximum new API attempts; cached results are never retried.")
     parser.add_argument("--max-tokens", type=int, default=4096)

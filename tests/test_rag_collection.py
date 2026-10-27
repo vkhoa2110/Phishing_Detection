@@ -8,7 +8,7 @@ import httpx
 import pytest
 
 
-spec = importlib.util.spec_from_file_location("rag_collector", Path(__file__).parents[1] / "scripts/collect_rag_sources.py")
+spec = importlib.util.spec_from_file_location("rag_collector", Path(__file__).parents[1] / "scripts/rag/collect_rag_sources.py")
 collector = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(collector)
 
@@ -111,7 +111,7 @@ def test_catalog_resolves_single_canonical_note_and_rejects_duplicates(tmp_path)
 
 def test_delivered_corpus_has_unique_sources_provenance_and_short_notes():
     root = Path(__file__).parents[1]
-    documents = [json.loads(line) for line in (root / "knowledge/corpus_v1/documents.jsonl").read_text(encoding="utf-8").splitlines()]
+    documents = [json.loads(line) for line in (root / "data/knowledge/corpus_v1/documents.jsonl").read_text(encoding="utf-8").splitlines()]
     assert 20 <= len(documents) <= 30
     for field in ("id", "source_text_sha256", "summary_sha256"):
         assert len({d[field] for d in documents}) == len(documents)
@@ -123,10 +123,10 @@ def test_delivered_corpus_has_unique_sources_provenance_and_short_notes():
         assert len(doc["text"].split()) <= 150
         assert doc["source_text_sha256"] != doc["summary_sha256"]
         assert doc["published_at"] is None or re_date(doc["published_at"])
-    manifest = json.loads((root / "knowledge/corpus_v1/manifest.json").read_text())
-    assert manifest["catalog_sha256"] == collector.sha((root / "knowledge/source_catalog.json").read_bytes())
+    manifest = json.loads((root / "data/knowledge/corpus_v1/manifest.json").read_text())
+    assert manifest["catalog_sha256"] == collector.sha((root / "data/knowledge/source_catalog.json").read_bytes())
     for name, expected in manifest["files"].items():
-        assert expected == collector.sha((root / "knowledge/corpus_v1" / name).read_bytes())
+        assert expected == collector.sha((root / "data/knowledge/corpus_v1" / name).read_bytes())
 
 
 def re_date(value):

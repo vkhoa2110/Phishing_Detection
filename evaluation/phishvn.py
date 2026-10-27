@@ -250,7 +250,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path, required=True)
     parser.add_argument("--notebook", type=Path, required=True)
-    parser.add_argument("--out", type=Path, default=Path("reports/phishvn_official_v1"))
+    parser.add_argument("--out", type=Path, default=Path(__file__).resolve().parents[1] / "artifacts/evaluations/phishvn_new")
     parser.add_argument("--llm-sample", type=int, default=100)
     parser.add_argument("--seed", type=int, default=20261026)
     parser.add_argument("--live", action="store_true")
