@@ -24,6 +24,12 @@ inference_*/
 !/artifacts/evaluations/url_model_ablation_v1/
 !/artifacts/evaluations/pilot_1536_tokens/
 /artifacts/report-builds/
+# Academic reports, their assets, and report-generation sources stay local.
+/docs/reports/
+/scripts/reporting/
+/requirements/reporting.txt
+*.docx
+*.pdf
 /data/knowledge/corpus_refresh*/
 ~$*.docx
 .~lock.*#

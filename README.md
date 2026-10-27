@@ -31,8 +31,8 @@ Khi bật LLM, cấu hình `FPT_API_KEY` trong `.env` hoặc nhập ở giao di�
 ├── models/                 # Gói mô hình suy luận cài cục bộ
 ├── notebooks/              # Notebook huấn luyện và xuất model
 ├── artifacts/evaluations/  # Kết quả thực nghiệm đã chốt
-├── docs/                   # Hướng dẫn, thiết kế, đánh giá và báo cáo
-├── scripts/                # Công cụ evaluation / rag / reporting
+├── docs/                   # Hướng dẫn, thiết kế và đánh giá
+├── scripts/                # Công cụ evaluation / rag
 ├── tests/                  # Kiểm thử tự động
 ├── requirements/           # Phụ thuộc theo mục đích sử dụng
 ├── requirements.txt        # Điểm cài đặt cho ứng dụng
@@ -42,15 +42,14 @@ Khi bật LLM, cấu hình `FPT_API_KEY` trong `.env` hoặc nhập ở giao di�
 
 Xem [quy ước thư mục và bảng đường dẫn cũ–mới](docs/PROJECT_STRUCTURE.md). Repository nằm ngay tại thư mục đang mở; không còn tầng thư mục `phishing_baseline/` ở máy cục bộ.
 
-## Báo cáo và tài liệu
+## Tài liệu
 
-- [Báo cáo Word](docs/reports/2026-10-26/Bao_cao_Phishing_ML_LLM_RAG_Le_Van_Khoa.docx) · [Báo cáo PDF](docs/reports/2026-10-26/Bao_cao_Phishing_ML_LLM_RAG_Le_Van_Khoa.pdf).
 - [Mục lục tài liệu](docs/README.md) · [Kiến trúc baseline](docs/architecture/BASELINE.md).
 - [Kết quả URL trên PhishVN](docs/evaluation/PHISHVN.md) · [Chẩn đoán thông điệp mô phỏng](docs/evaluation/SYNTHETIC.md).
 - [Phương pháp và lệnh đánh giá](docs/evaluation/METHODS.md) · [Kết quả theo lần chạy](artifacts/README.md).
 - [Kho 25 nguồn RAG](data/knowledge/README.md) · [Danh mục nguồn kèm URL](data/knowledge/corpus_v1/sources.csv).
 
-Các báo cáo ngày 26/10/2026 giữ nguyên nội dung và số liệu. Đường dẫn bên trong snapshot theo cấu trúc tại thời điểm tạo; đối chiếu vị trí hiện tại trong [bảng chuyển đổi](docs/PROJECT_STRUCTURE.md#đối-chiếu-đường-dẫn-cũmới).
+Báo cáo Word/PDF và các tệp phục vụ biên soạn được giữ cục bộ trong `docs/reports/`, không theo dõi trên Git. Đường dẫn lịch sử của dữ liệu thực nghiệm được đối chiếu trong [bảng chuyển đổi](docs/PROJECT_STRUCTURE.md#đối-chiếu-đường-dẫn-cũmới).
 
 ## Phát triển và kiểm thử
 
@@ -59,6 +58,6 @@ Các báo cáo ngày 26/10/2026 giữ nguyên nội dung và số liệu. Đư�
 .venv/bin/python -m pytest -q
 ```
 
-Các test chạy offline, không gọi FPT. Có thể dùng `make run`, `make test` hoặc `make help` trên môi trường có Make. [Các profile phụ thuộc](requirements/README.md) và [các công cụ](scripts/README.md) mô tả lệnh đánh giá, thu thập và dựng báo cáo.
+Các test chạy offline, không gọi FPT. Có thể dùng `make run`, `make test` hoặc `make help` trên môi trường có Make. [Các profile phụ thuộc](requirements/README.md) và [các công cụ](scripts/README.md) mô tả lệnh đánh giá và thu thập.
 
 Kết quả hiện có gồm đánh giá model trên 8.941 URL test PhishVN, phép so sánh LLM trên cùng 100 URL và bộ chẩn đoán 60 thông điệp mô phỏng. Chúng có nhiệm vụ khác nhau; giới hạn diễn giải được trình bày trong từng báo cáo. Phần RAG chưa có kết quả phân loại để so sánh.

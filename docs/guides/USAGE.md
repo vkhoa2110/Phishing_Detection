@@ -2,13 +2,6 @@
 
 Bản cơ bản cho dự án của **Lê Văn Khoa**: giao diện tiếng Việt kiểm tra URL, email và tin nhắn, kết hợp mô hình ML đã huấn luyện với DeepSeek-V4-Flash qua API FPT. **Chưa sử dụng RAG.**
 
-Báo cáo dự án, cập nhật theo hiện trạng ngày 26/10/2026:
-
-- [Bản Word để chỉnh sửa](../reports/2026-10-26/Bao_cao_Phishing_ML_LLM_RAG_Le_Van_Khoa.docx)
-- [Bản PDF để xem](../reports/2026-10-26/Bao_cao_Phishing_ML_LLM_RAG_Le_Van_Khoa.pdf)
-
-Báo cáo gồm kết quả PhishVN đã đo, thiết kế RAG và danh mục 25 nguồn tài liệu; phần RAG chưa tích hợp runtime được ghi riêng là công việc cần hoàn thiện.
-
 Ứng dụng gồm FastAPI và giao diện HTML/CSS/JavaScript, chạy cùng một địa chỉ. Không cần Node.js, npm, GPU hoặc cơ sở dữ liệu. Các tệp giao diện và biểu tượng nằm sẵn trong dự án, không dùng CDN.
 
 ## 1. Đặt thư mục mô hình

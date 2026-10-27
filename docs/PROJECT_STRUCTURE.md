@@ -15,9 +15,9 @@ Tổ chức lại ngày **27/10/2026**. Git repository và môi trường `.venv
 | `notebooks/` | Huấn luyện và xuất model | Nguồn có thể kiểm tra, không chứa khóa bí mật |
 | `artifacts/evaluations/` | Dự đoán, checkpoint, chỉ số và biểu đồ | Mỗi thí nghiệm một thư mục; không sửa snapshot đã chốt |
 | `artifacts/report-builds/` | Bản dựng báo cáo mới | Đầu ra cục bộ, được Git bỏ qua |
-| `docs/` | Hướng dẫn và báo cáo đã phát hành | Tách thiết kế, hướng dẫn, đánh giá và báo cáo |
-| `scripts/` | Công cụ dòng lệnh theo nhóm | `evaluation/`, `rag/`, `reporting/` |
-| `requirements/` | Profile phụ thuộc | `base`, `dev`, `evaluation`, `rag-collection`, `reporting` |
+| `docs/` | Hướng dẫn, thiết kế và đánh giá | Báo cáo Word/PDF trong `docs/reports/` chỉ giữ cục bộ |
+| `scripts/` | Công cụ dòng lệnh theo nhóm | `evaluation/`, `rag/`; công cụ biên soạn báo cáo chỉ giữ cục bộ |
+| `requirements/` | Profile phụ thuộc | `base`, `dev`, `evaluation`, `rag-collection` |
 | `tests/` | Test tự động | Chạy từ gốc bằng `python -m pytest` |
 
 `requirements.txt` ở gốc giữ lệnh cài ứng dụng quen thuộc và dẫn tới `requirements/base.txt`. Trạng thái thuật toán, prompt và ngưỡng không được đổi để tổ chức thư mục.
@@ -29,8 +29,8 @@ Tổ chức lại ngày **27/10/2026**. Git repository và môi trường `.venv
 | `knowledge/` | `data/knowledge/` |
 | `evaluation/data/` | `data/evaluation/` |
 | `reports/` | `artifacts/evaluations/` |
-| `deliverables/bao_cao_phishing_2026_10_26/` | `docs/reports/2026-10-26/` |
-| Các script Python trong thư mục báo cáo | `scripts/reporting/` |
+| `deliverables/bao_cao_phishing_2026_10_26/` | `docs/reports/2026-10-26/` (cục bộ, Git bỏ qua) |
+| Các script Python trong thư mục báo cáo | `scripts/reporting/` (cục bộ, Git bỏ qua) |
 | `scripts/collect_rag_sources.py` | `scripts/rag/collect_rag_sources.py` |
 | `scripts/validate_rag_corpus.py` | `scripts/rag/validate_rag_corpus.py` |
 | `scripts/plot_evaluation.py` | `scripts/evaluation/plot_evaluation.py` |
@@ -59,7 +59,7 @@ Hash mã nguồn hiện tại thay đổi do chuyển đường dẫn. Khi chạ
 
 ## Dữ liệu cục bộ và Git
 
-Git theo dõi mã nguồn, tài liệu, bộ mẫu, corpus đã rà soát và ba snapshot thí nghiệm đã chốt. `.env`, `.venv`, trọng số, archive gốc, kết quả chạy mới và bản dựng báo cáo mới được bỏ qua. Muốn phát hành một thí nghiệm mới, rà soát nội dung và bổ sung ngoại lệ `.gitignore` có chủ đích.
+Git theo dõi mã ứng dụng, tài liệu kỹ thuật, bộ mẫu, corpus đã rà soát và ba snapshot thí nghiệm đã chốt. `.env`, `.venv`, trọng số, archive gốc, kết quả chạy mới, toàn bộ báo cáo Word/PDF cùng hình/minh chứng và mã biên soạn báo cáo được bỏ qua. Các tệp báo cáo đã ngừng theo dõi vẫn được giữ trên máy cục bộ. Muốn phát hành một thí nghiệm mới, rà soát nội dung và bổ sung ngoại lệ `.gitignore` có chủ đích.
 
 ## Kiểm tra sau khi chuyển thư mục
 

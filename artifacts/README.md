@@ -10,4 +10,4 @@ Các snapshot đã chốt:
 
 Mỗi snapshot giữ nguyên CSV/JSONL, manifest, checkpoint, chỉ số và hình đã tạo. Không chỉnh tên đường dẫn hay hash bên trong file lịch sử. Xem [bảng chuyển đổi](../docs/PROJECT_STRUCTURE.md#đối-chiếu-đường-dẫn-cũmới) khi đối chiếu đường dẫn trước ngày tổ chức lại.
 
-Kết quả chạy mới và `report-builds/` bị Git bỏ qua mặc định. Chọn thư mục `--out` mới cho cấu hình mới; không ghi đè snapshot đã chốt. Báo cáo Word/PDF công bố nằm ở [docs/reports/](../docs/reports/README.md).
+Kết quả chạy mới và `report-builds/` bị Git bỏ qua mặc định. Chọn thư mục `--out` mới cho cấu hình mới; không ghi đè snapshot đã chốt. Báo cáo Word/PDF được giữ cục bộ và không theo dõi trên Git.
