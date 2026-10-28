@@ -1,0 +1,17 @@
+{
+  "version": "rag-v2-probes-20261028",
+  "created_at": "2026-10-28T03:44:38.747483+00:00",
+  "corpus_sha256": "a65c476e01f5d992ac701a42bb01d2a05948283029229d4669d0e107cb18e56f",
+  "files": {
+    "rag_retrieval_dev_v2.jsonl": "c625c8fae2ad97207f4984e347f89102c25c92927aea0d2d1976b5f9227c61f3",
+    "rag_retrieval_test_v2.jsonl": "394da831ba735f391e223c4fb6dbe4badff6a369191e253386dfd21b30ff4f76"
+  },
+  "annotation": "assistant_authored_not_human_verified",
+  "purpose": "Exploratory retrieval stress probes, not phishing gold or independent human benchmark.",
+  "split_limitations": "Distinct input wording; source topics and some underlying claims shared. Not family-held-out generalization.",
+  "relevance_policy": "A relevant summary supports the target claim, service and documented time scope. Generic topic similarity alone is insufficient. No-match can still have related background documents. Negative labels mean no supported target claim, not safe message.",
+  "selection_policy": "Fixed BM25 1.2/0.75, E5-small and RRF60; top3; thresholds dev-only at >=90% dev hit; no test tuning.",
+  "live_provider_calls": 0,
+  "source_id_reservation_note": "Only document identifiers remapped 026..037 to 101..112 to reserve rejected v1 catalog IDs. Texts, claims, relevance decisions and split membership unchanged; early run inputs archived beside its predictions.",
+  "frozen_at": "2026-10-28T03:46:52.407352+00:00"
+}

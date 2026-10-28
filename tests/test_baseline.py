@@ -5,7 +5,7 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from app.fusion import fuse
+from app.fusion import fuse, fuse_legacy
 from app.llm_service import LLMFailure, normalize_endpoint, parse_verdict
 from app.main import create_app
 from app.privacy import redact
@@ -84,15 +84,17 @@ def test_invalid_and_too_many_urls():
     (None, "LOW", "text", "LOW"),
     (None, None, "text", "UNKNOWN"),
 ])
-def test_fusion(ml, llm, mode, expected):
+def test_legacy_fusion(ml, llm, mode, expected):
     urls = [{"status": "ok", "risk_level": ml}] if ml else []
     llm_data = {"status": "ok", "verdict": {"risk_level": llm}} if llm else {"status": "error"}
-    assert fuse(mode, urls, llm_data, [])["risk_level"] == expected
+    assert fuse_legacy(mode, urls, llm_data, [])["risk_level"] == expected
 
 
 def test_missing_url_classifier_does_not_become_safe():
     result = fuse("text", [{"status": "unavailable"}], {"status": "ok", "verdict": {"risk_level": "LOW"}}, [])
-    assert result["risk_level"] == "UNKNOWN"
+    assert result["scope"] == "message" and result["risk_level"] == "LOW"
+    assert result["assessments"]["url"]["risk_level"] == "UNKNOWN"
+    assert result["requires_review"]
 
 
 def test_invalid_quote_is_not_accepted():

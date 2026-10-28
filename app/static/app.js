@@ -1,6 +1,6 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
-const state = {mode: "text", busy: false, pending: null, result: null, hasKey: false};
+const state = {mode: "text", busy: false, pending: null, result: null, hasKey: false, ragReady: false};
 const labels = {HIGH: "Nguy cơ cao", WARNING: "Cần kiểm tra thêm", LOW: "Chưa thấy dấu hiệu rõ ràng", UNKNOWN: "Chưa đủ thông tin"};
 const samples = {
   suspicious: "Tài khoản của bạn sắp bị khóa. Hãy trả lời ngay tin nhắn này với mật khẩu và mã OTP để xác minh. Nếu không hoàn tất trong 10 phút, chúng tôi sẽ ngừng dịch vụ.",
@@ -19,6 +19,7 @@ function keyStatus() {
   $("key-status").textContent = $("api-key").value.trim() ? "Key cho phiên hiện tại" : state.hasKey ? "Đã có key trong .env" : "Chưa nhập API key";
 }
 function updateOptions() {
+  $("use-rag").disabled = !$("use-llm").checked || !state.ragReady || state.mode === "url" || state.busy;
   $("include-ml").disabled = !$("use-llm").checked || state.busy;
   ["endpoint", "llm-model", "api-key", "show-key"].forEach(id => { $(id).disabled = !$("use-llm").checked || state.busy; });
   document.querySelector(".privacy-note").hidden = !$("use-llm").checked;
@@ -57,8 +58,12 @@ async function init() {
     $("llm-model").value = status.llm.model;
     $("llm-name").textContent = status.llm.model;
     state.hasKey = status.llm.has_api_key;
-    $("api-status").textContent = state.hasKey ? "Đã cấu hình key · Chưa dùng RAG" : "Nhập API key để dùng · Chưa dùng RAG";
+    $("api-status").textContent = state.hasKey ? "Đã cấu hình key" : "Nhập API key để dùng";
     $("api-dot").classList.toggle("ready", state.hasKey);
+    state.ragReady = Boolean(status.rag && status.rag.ready);
+    $("use-rag").checked = state.ragReady;
+    $("rag-status").textContent = state.ragReady ? `${status.rag.documents} nguồn tham khảo · Chỉ dùng cho email/tin nhắn · Không xác minh tên miền` : "Kho tham khảo chưa sẵn sàng. Xem hướng dẫn RAG để chuẩn bị tại máy.";
+    updateOptions();
     keyStatus();
     errorBox("connection-error");
   } catch (err) { errorBox("connection-error", err.message); }
@@ -73,7 +78,7 @@ function setMode(mode) {
   $("input-hint").textContent = mode === "url" ? "Phân tích chuỗi URL, không mở trang đích" : "Tối đa 5 URL trong một nội dung";
   $("input-text").placeholder = mode === "url" ? "https://example.org/" : "Dán nội dung tại đây. Có thể chứa hoặc không chứa đường dẫn…";
   $("input-text").value = "";
-  resetResult(); updateCount(); errorBox("form-error");
+  resetResult(); updateCount(); errorBox("form-error"); updateOptions();
 }
 function resetResult() {
   state.result = null;
@@ -99,15 +104,22 @@ function render(data) {
   const target = $("result-content"); target.replaceChildren();
   const banner = node("div", `verdict ${data.final.risk_level}`);
   const meta = node("div", "verdict-eyebrow");
-  meta.append(node("span", "", "KẾT QUẢ TỔNG HỢP"), node("span", "", `${(data.timing.total_ms / 1000).toFixed(2)} giây`));
+  meta.append(node("span", "", data.final.scope === "url" ? "RỦI RO CỦA CHUỖI URL" : "HÀNH VI TRONG NỘI DUNG"), node("span", "", `${(data.timing.total_ms / 1000).toFixed(2)} giây`));
   banner.append(meta, node("h3", "", data.final.label), node("p", "", data.final.basis));
   target.append(banner);
-  if (data.final.conflict) target.append(node("p", "conflict-note", "ML và LLM đưa ra nhận định khác nhau. Ứng dụng giữ cảnh báo cần thiết và hiển thị riêng hai kết quả bên dưới."));
+  const urlAssessment = data.assessments.url;
+  if (data.mode === "text" && urlAssessment.status !== "not_present") {
+    const urlBanner = node("div", `url-assessment ${urlAssessment.risk_level}`);
+    urlBanner.append(node("strong", "", `Rủi ro URL: ${labels[urlAssessment.risk_level]}`),
+      node("p", "", urlAssessment.basis));
+    target.append(urlBanner);
+  }
+  if (data.final.review_reason) target.append(node("p", "conflict-note", data.final.review_reason));
   const parts = node("div", "components");
   const count = data.urls.filter(u => u.status === "ok").length;
-  parts.append(component("MÔ HÌNH ML", count ? `${count} / ${data.urls.length} URL đã phân tích` : data.urls.length ? "Chưa nạp được mô hình" : "Không có URL", count ? `${data.ml.run_id} · ${data.ml.feature_count} đặc trưng` : data.urls.length ? data.ml.message : "Phần ML được bỏ qua cho đầu vào này."));
+  parts.append(component("ĐÁNH GIÁ URL", count ? `${labels[urlAssessment.risk_level]} · ${count} / ${urlAssessment.total} URL` : data.urls.length ? "Chưa nạp được mô hình" : "Không có URL", count ? `${data.ml.run_id} · ${data.ml.feature_count} đặc trưng` : data.urls.length ? data.ml.message : "Phần ML được bỏ qua cho đầu vào này."));
   const llm = data.llm;
-  parts.append(component("MÔ HÌNH LLM", llm.status === "ok" ? labels[llm.verdict.risk_level] : llm.status === "disabled" ? "Chưa bật LLM" : "Chưa có kết quả", llm.status === "ok" ? `${llm.model} · ${llm.included_ml ? "Có" : "Không kèm"} kết quả ML · Không RAG` : llm.message));
+  parts.append(component(data.mode === "text" ? "HÀNH VI TRONG NỘI DUNG" : "NHẬN XÉT TỪ LLM", llm.status === "ok" ? labels[llm.verdict.risk_level] : llm.status === "disabled" ? "Chưa bật LLM" : "Chưa có kết quả", llm.status === "ok" ? `${llm.model} · ${llm.included_ml ? "Có" : "Không kèm"} kết quả ML · ${llm.rag ? "Có RAG" : "Không RAG"}` : llm.message));
   target.append(parts);
   if (data.urls.length) {
     const urls = section("Đường dẫn được phát hiện", data.urls.length);
@@ -130,7 +142,8 @@ function render(data) {
     target.append(invalid);
   }
   if (llm.status === "ok") {
-    const analysis = section("Nhận định từ nội dung"); analysis.append(node("p", "analysis-summary", llm.verdict.summary));
+    const analysis = section(data.mode === "text" ? "Nhận định về hành vi trong nội dung" : "Nhận xét URL từ LLM"); analysis.append(node("p", "analysis-summary", llm.verdict.summary));
+    if (llm.input_modified) analysis.append(node("p", "inline-warning", "Bản gửi LLM đã được bạn sửa. Nhận định này chỉ áp dụng cho bản đã sửa; các URL từ bản gốc vẫn được kiểm tra riêng."));
     llm.warnings.forEach(w => analysis.append(node("p", "inline-warning", w))); target.append(analysis);
     const evidence = section("Dấu hiệu làm căn cứ", llm.verdict.evidence.length);
     if (!llm.verdict.evidence.length) evidence.append(node("p", "result-subtle", "Không có dấu hiệu cụ thể được trích ra từ bản nội dung đã gửi."));
@@ -144,6 +157,34 @@ function render(data) {
     }
     const details = node("details", "payload-details"); details.append(node("summary", "", "Xem bản nội dung đã gửi tới LLM"), node("pre", "", llm.input_used)); target.append(details);
   } else if (llm.status === "error") target.append(node("p", "inline-warning", llm.message));
+  const retrieval = data.retrieval;
+  if (retrieval && retrieval.status !== "disabled") {
+    const sources = section("Tài liệu tham khảo", retrieval.sources.length);
+    sources.append(node("p", "result-subtle", retrieval.reason));
+    const support = llm.status === "ok" ? (llm.verdict.knowledge_support || []) : [];
+    for (const source of retrieval.sources) {
+      const card = node("div", "evidence-item");
+      card.append(node("strong", "", `${source.document_id} · ${source.title}`));
+      card.append(node("p", "result-subtle", `${source.publisher} · ${source.published_at || "Chưa xác minh ngày công bố"}`));
+      card.append(node("p", "", "Tóm lược từ nguồn: " + source.text));
+      const cited = support.find(item => item.document_id === source.document_id);
+      if (cited) {
+        card.append(node("p", "", "Kiến thức LLM sử dụng: " + cited.claim));
+        card.append(node("blockquote", "", "Đoạn trong tóm lược: “" + cited.source_quote + "”"));
+      } else card.append(node("p", "result-subtle", "Tài liệu được tìm thấy; LLM chưa dẫn nguồn này."));
+      try {
+        const url = new URL(source.source_url);
+        if (url.protocol === "https:" && !url.username && !url.password) {
+          const link = node("a", "source-link", "Mở bài gốc tại " + url.hostname);
+          link.href = url.href; link.target = "_blank"; link.rel = "noopener noreferrer";
+          card.append(link);
+        }
+      } catch { /* Never turn malformed metadata into an actionable link. */ }
+      sources.append(card);
+    }
+    if (retrieval.sources.length) sources.append(node("p", "result-subtle", "Nguồn có thật và đoạn dẫn khớp chưa bảo đảm lập luận đúng. Cần đối chiếu nội dung; đây không phải danh sách đen URL."));
+    target.append(sources);
+  }
   const note = node("div", "result-note", data.notice);
   if (llm.status === "ok" && llm.usage.total_tokens) note.append(node("div", "", `${llm.usage.total_tokens.toLocaleString("vi-VN")} token · ${llm.prompt_version} · Không lưu lịch sử nội dung`));
   target.append(note);
@@ -161,7 +202,7 @@ $("analysis-form").addEventListener("submit", async event => {
   event.preventDefault(); if (state.busy) return;
   const text = $("input-text").value.trim(); errorBox("form-error");
   if (!text) { errorBox("form-error", "Bạn chưa nhập nội dung cần kiểm tra."); return; }
-  const payload = {mode: state.mode, text, use_llm: $("use-llm").checked, include_ml: $("include-ml").checked, endpoint: $("endpoint").value.trim(), model: $("llm-model").value.trim(), api_key: $("api-key").value.trim(), consent: false};
+  const payload = {mode: state.mode, text, use_llm: $("use-llm").checked, include_ml: $("include-ml").checked, use_rag: $("use-rag").checked && !$("use-rag").disabled, endpoint: $("endpoint").value.trim(), model: $("llm-model").value.trim(), api_key: $("api-key").value.trim(), consent: false};
   if (!payload.use_llm) { await analyze(payload); return; }
   if (!payload.api_key && !state.hasKey) { document.querySelector(".api-settings").open = true; errorBox("form-error", "Nhập API key trong Kết nối LLM hoặc tắt LLM để chỉ kiểm tra URL."); $("api-key").focus(); return; }
   busy(true);
@@ -170,7 +211,8 @@ $("analysis-form").addEventListener("submit", async event => {
     state.pending = payload;
     $("preview-text").value = preview.text;
     $("masked-fields").textContent = preview.masked_fields.length ? "Đã che theo quy tắc: " + preview.masked_fields.join(" · ") : "Chưa phát hiện trường cần che bằng các quy tắc hiện tại. Bạn vẫn cần kiểm tra bản gửi.";
-    $("preview-ml-note").textContent = payload.include_ml ? "Nếu có URL, kết quả ML và URL đã che cũng được gửi. Bản gốc chỉ dùng để phân loại URL tại máy chạy ứng dụng." : "Chỉ gửi bản nội dung ở trên. Không cung cấp điểm hoặc kết luận ML cho LLM.";
+    $("preview-ml-note").textContent = payload.include_ml ? "Chỉ gửi kết quả ML cho các URL còn trong bản đã xác nhận. Bản gốc vẫn được phân loại tại máy." : "Không cung cấp điểm hoặc kết luận ML cho LLM.";
+    if (payload.use_rag) $("preview-ml-note").textContent += " Khi gửi, ứng dụng truy xuất từ bản đã sửa và bổ sung tối đa 3 tóm lược công khai có nguồn cho LLM.";
     $("consent").checked = false; $("confirm-send").disabled = true; errorBox("preview-error");
     $("privacy-dialog").showModal();
   } catch (err) { errorBox("form-error", err.message); }

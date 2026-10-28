@@ -20,4 +20,7 @@ class Settings:
     )
     timeout_seconds: float = float(os.getenv("LLM_TIMEOUT_SECONDS", "45"))
     max_tokens: int = int(os.getenv("LLM_MAX_TOKENS", "1024"))
+    rag_model_dir: str = os.getenv("RAG_MODEL_DIR", "models/embeddings/multilingual-e5-small")
+    rag_index_dir: str = os.getenv("RAG_INDEX_DIR", "artifacts/rag/e5-small-v1")
+    rag_corpus: str = os.getenv("RAG_CORPUS", "data/knowledge/corpus_v1/documents.jsonl")
 

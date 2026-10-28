@@ -1,0 +1,173 @@
+{
+  "corpus_sha256": "a65c476e01f5d992ac701a42bb01d2a05948283029229d4669d0e107cb18e56f",
+  "documents": [
+    {
+      "document_id": "VN-RAG-101",
+      "candidate_id": "CANDIDATE-001",
+      "reviewed_at": "2026-10-28T03:51:16.259081+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "8bca766fd4f1579bb4c9977b0f374db7956316c212af7c6857718209e84eae16",
+      "scope": "Zalo đăng nhập",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-102",
+      "candidate_id": "CANDIDATE-002",
+      "reviewed_at": "2026-10-28T03:51:16.260262+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "8a96e246b67b7429772b19e16e8554ad3578582e5b38f0820f1a09dcedcde090",
+      "scope": "Microsoft Entra",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-103",
+      "candidate_id": "CANDIDATE-003",
+      "reviewed_at": "2026-10-28T03:51:16.260702+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "9fc34ba950bd24ddfd351524a79c721f3556fe38ac55cda2a5f5afa7c94117ca",
+      "scope": "Microsoft identity platform",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-104",
+      "candidate_id": "CANDIDATE-004",
+      "reviewed_at": "2026-10-28T03:51:16.261120+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "4f0b6071fe420ad327e6f87fb3e4b97fb60bf946ce21c4897012b252c4e4e22e",
+      "scope": "Email doanh nghiệp",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-105",
+      "candidate_id": "CANDIDATE-005",
+      "reviewed_at": "2026-10-28T03:51:16.261427+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "320bed542c8772c5a09b75e2cba8764a354fe9165909d0914cde5b9f81c20eed",
+      "scope": "Đặt vé và phòng",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-106",
+      "candidate_id": "CANDIDATE-006",
+      "reviewed_at": "2026-10-28T03:51:16.261802+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "59af732bedaef716708de0678206dafc169b727aa65338a0eed85a38b2721ddf",
+      "scope": "Vietnam Airlines",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-107",
+      "candidate_id": "CANDIDATE-007",
+      "reviewed_at": "2026-10-28T03:51:16.262084+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "39c4c3fdf869fdfe15327ed7bb17aa86b20eb946c64ee77836e1724a7cf731c5",
+      "scope": "EVN, bối cảnh 2024",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-108",
+      "candidate_id": "CANDIDATE-008",
+      "reviewed_at": "2026-10-28T03:51:16.262426+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "0cf07b32ab26fa6c636950b1df55f6299064e4545a91e069f115e7dc11ac7486",
+      "scope": "EVN, thử nghiệm 2026",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-109",
+      "candidate_id": "CANDIDATE-009",
+      "reviewed_at": "2026-10-28T03:51:16.262922+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "49e7fe1151a1395821f59c404678c0d475444ed35c6aab696e68ac530d9fd140",
+      "scope": "EVNSPC",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-110",
+      "candidate_id": "CANDIDATE-010",
+      "reviewed_at": "2026-10-28T03:51:16.263310+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "a9fb0be39fc647c7412c9922cb1b1c2226bc860f2929fd056edef5a5d9ee3f01",
+      "scope": "Việt Nam, sinh viên và gia đình",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-111",
+      "candidate_id": "CANDIDATE-011",
+      "reviewed_at": "2026-10-28T03:51:16.263522+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "0fc7ea7ab482218147f4619e2362ee1ad0da4787007cbd7511c6965fcfaaa72a",
+      "scope": "Việt Nam, tống tiền bằng hình ảnh",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    },
+    {
+      "document_id": "VN-RAG-112",
+      "candidate_id": "CANDIDATE-012",
+      "reviewed_at": "2026-10-28T03:51:16.263700+00:00",
+      "reviewer_type": "assistant_not_independent_human",
+      "source_text_sha256": "fb489c2b7b2177565f9148cccc3326f517c02b09333d29c7c2b47719455e622d",
+      "scope": "Việt Nam, hỗ trợ giao dịch",
+      "checks": [
+        "Extracted source inspected against short editorial summary",
+        "Publication date retained only with visible or explicit metadata support",
+        "Editorial limitations distinguish service workflow from individual identity/URL verification"
+      ],
+      "limitations": "Topic anchors and hashes are technical checks; fidelity review is assistant judgement, not independent expert approval."
+    }
+  ]
+}

@@ -1,0 +1,744 @@
+{
+  "version": "corpus_v2",
+  "language": "vi",
+  "require_all_sources": true,
+  "sources": [
+    {
+      "id": "VN-RAG-001",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "impersonation",
+        "otp",
+        "investment",
+        "malware"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/nang-cao-canh-giac-truoc-25-kich-ban-lua-dao-tren-khong-gian-mang-nam-2026-1788865614",
+      "date_hint": "08/09/2026",
+      "published_at": "2026-09-08",
+      "anchors": [
+        "25",
+        "OTP"
+      ],
+      "summary": "Bài cảnh báo nhóm các kịch bản giả danh cơ quan và doanh nghiệp, giả giọng hoặc hình ảnh, đầu tư và tuyển dụng, giao dịch trực tuyến, cùng việc chiếm thiết bị. Người tiếp cận có thể bị thúc ép tiết lộ thông tin hoặc chuyển tài sản. Hướng phòng tránh gồm xác minh bên liên hệ qua kênh độc lập, giữ kín thông tin xác thực, thận trọng với đường dẫn và ứng dụng do người lạ gửi. Khi nghi ngờ cần bảo toàn chứng cứ và tìm hỗ trợ từ đơn vị có thẩm quyền.",
+      "context_note": "Kiến thức tổng quát về hành vi; không dùng bài này để kết luận một tên miền cụ thể đang lừa đảo."
+    },
+    {
+      "id": "VN-RAG-002",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "government",
+        "traffic_fine",
+        "phishing_link"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/canh-bao-thu-doan-gia-danh-co-quan-cong-an-gui-tin-nhan-phat-nguoi-kem-duong-link-gia-mao-de-lua-dao-chiem-doat-tai-san-1788945012",
+      "date_hint": "09/09/2026",
+      "published_at": "2026-09-09",
+      "anchors": [
+        "phạt nguội",
+        "OTP"
+      ],
+      "summary": "Cảnh báo mô tả tin nhắn giả lực lượng Công an, lấy lý do vi phạm giao thông và dẫn người nhận tới trang giả giống dịch vụ công. Đối tượng hướng người dùng cung cấp dữ liệu hoặc thanh toán qua đường dẫn gửi đến. Người nhận cần kiểm tra thông báo bằng kênh chính thức, thay vì thực hiện ngay vì áp lực nộp phạt. Nếu đã làm lộ thông tin hoặc chuyển tiền, cần liên hệ ngân hàng và cơ quan Công an để được xử lý.",
+      "context_note": "Phân biệt thông báo xử phạt đã được xác minh với yêu cầu cung cấp mật khẩu hoặc OTP qua tin nhắn không rõ nguồn."
+    },
+    {
+      "id": "VN-RAG-003",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "shopping",
+        "refund",
+        "delivery",
+        "remote_control"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/xuat-hien-thu-doan-lua-dao-moi-khi-mua-hang-online-1790562304",
+      "date_hint": "28/09/2026",
+      "published_at": "2026-09-28",
+      "anchors": [
+        "hoàn tiền",
+        "OTP"
+      ],
+      "summary": "Đối tượng tự nhận là nhân viên bán hàng hoặc giao vận, viện cớ sản phẩm có vấn đề để đề nghị thu hồi và hoàn tiền. Sau đó cuộc trao đổi được chuyển sang ứng dụng nhắn tin, kèm yêu cầu xác minh, thao tác theo hướng dẫn hoặc trả thêm tiền. Bài khuyến cáo đối chiếu với đơn hàng và bên bán qua kênh đã biết, giữ kín dữ liệu xác thực và không cài phần mềm từ người gọi. Nếu phát sinh thiệt hại, giữ lại giao dịch và tin nhắn làm chứng cứ.",
+      "context_note": "Yêu cầu trả hàng thông thường chưa tự là lừa đảo; cần xem hành vi tiếp theo và cách xác minh người liên hệ."
+    },
+    {
+      "id": "VN-RAG-004",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "recruitment",
+        "bank_account",
+        "otp",
+        "identity"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/canh-giac-voi-chieu-tro-tuyen-dung-viec-nhe-luong-cao-de-thue-muon-tai-khoan-ngan-hang-1792292719",
+      "anchors": [
+        "tài khoản",
+        "tuyển dụng"
+      ],
+      "summary": "Bài viết cảnh báo lời mời kiếm tiền đơn giản nhưng yêu cầu mở hoặc cho sử dụng tài khoản ngân hàng. Người tham gia có thể bị yêu cầu bàn giao thông tin đăng nhập, xác thực hoặc thực hiện thao tác nhận diện để bên khác kiểm soát giao dịch. Tài khoản sau đó có thể được dùng luân chuyển tiền từ hoạt động bất hợp pháp. Cần xác minh công việc và tránh bàn giao phương tiện truy cập tài khoản chỉ vì được trả công.",
+      "context_note": "Dùng nhận diện yêu cầu kiểm soát tài khoản; không suy đoán trách nhiệm pháp lý cụ thể của người dùng từ một tin nhắn."
+    },
+    {
+      "id": "VN-RAG-005",
+      "publisher": "Công an tỉnh Tuyên Quang",
+      "kind": "scam_warning",
+      "topics": [
+        "recruitment",
+        "advance_fee",
+        "task_scam"
+      ],
+      "url": "https://congan.tuyenquang.gov.vn/vi/tin-bai/canh-bao-tinh-trang-lua-dao-tuyen-cong-tac-vien-online-gia-tang?id=198292&type=NEWS",
+      "anchors": [
+        "cộng tác viên",
+        "phí"
+      ],
+      "summary": "Cảnh báo mô tả lời mời cộng tác trực tuyến với thu nhập hấp dẫn, thông tin tuyển dụng thiếu rõ ràng và yêu cầu đóng tiền để được bắt đầu. Các khoản kích hoạt hoặc nhận nhiệm vụ là dấu hiệu cần kiểm tra cùng danh tính doanh nghiệp, hợp đồng và địa chỉ liên hệ. Người tìm việc nên xác minh bên tuyển dụng trước khi chuyển tiền hay giao dữ liệu cá nhân. Mức thu nhập được quảng cáo và lời hứa làm việc ít cần được đối chiếu với công việc thực tế.",
+      "context_note": "Đánh giá tổ hợp hành vi và điều kiện công việc; không coi mọi quảng cáo tuyển cộng tác viên là gian lận."
+    },
+    {
+      "id": "VN-RAG-006",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "government",
+        "vneid",
+        "malware",
+        "accessibility"
+      ],
+      "url": "https://bocongan.gov.vn/bai-viet/canh-bao-thu-doan-lua-dao-cai-ung-dung-vneid-gia-mao-d22-t45880",
+      "anchors": [
+        "VNeID",
+        "ứng dụng"
+      ],
+      "summary": "Đối tượng giả cán bộ địa phương hoặc hỗ trợ hộ tịch, yêu cầu cập nhật dữ liệu rồi dẫn người dân tới ứng dụng định danh giả. Phần mềm độc hại có thể kiểm soát điện thoại, thu mã xác thực và phục vụ chiếm tài sản. Bài viết hướng người dùng tìm ứng dụng chính thức từ kho phân phối phù hợp hoặc liên hệ cơ quan Công an để được hỗ trợ. Cần thận trọng với cài đặt từ liên kết được một người gọi điện gửi tới.",
+      "context_note": "Yêu cầu sử dụng định danh điện tử có thể hợp lệ; cần phân biệt nguồn cài đặt và quyền mà ứng dụng yêu cầu."
+    },
+    {
+      "id": "VN-RAG-007",
+      "publisher": "Bộ Công an",
+      "kind": "incident_response",
+      "topics": [
+        "mistaken_transfer",
+        "banking",
+        "qr",
+        "otp"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/canh-giac-thu-doan-lua-dao-va-quy-trinh-xu-ly-an-toan-khi-chuyen-nham-tien-qua-tai-khoan-1770361075",
+      "anchors": [
+        "chuyển nhầm",
+        "ngân hàng"
+      ],
+      "summary": "Bài viết nêu việc kẻ gian gửi một khoản tiền rồi ép người nhận hoàn trả vào tài khoản khác, hoặc đóng vai nhân viên hỗ trợ thu hồi tiền. Yêu cầu quét mã, mở liên kết và cung cấp xác thực có thể được lồng vào quá trình này. Khi phát sinh chuyển nhầm cần làm việc qua ngân hàng, xác minh người liên quan và giữ lịch sử giao dịch. Không nên chuyển trả theo sự thúc ép của người liên hệ khi chưa kiểm tra.",
+      "context_note": "Dùng làm hướng dẫn xử lý tình huống, không xác nhận quyền sở hữu tiền hay thay thế quy trình của ngân hàng."
+    },
+    {
+      "id": "VN-RAG-008",
+      "publisher": "Chống Lừa Đảo",
+      "kind": "scam_warning",
+      "topics": [
+        "recovery_scam",
+        "advance_fee",
+        "incident_response"
+      ],
+      "url": "https://chongluadao.vn/blog/2023/07/chieu-tro-ho-tro-lay-lai-tien-lua-dao-chong-lua-dao/",
+      "anchors": [
+        "lấy lại tiền",
+        "lừa đảo"
+      ],
+      "summary": "Bài viết giải thích cách nạn nhân bị tiếp cận lần nữa bằng lời hứa lấy lại khoản đã mất. Người liên hệ có thể dựng uy tín chuyên gia, tổ chức hay quan hệ để tạo niềm tin, rồi đòi phí hoặc thông tin nhạy cảm. Cần kiểm chứng danh tính và mục đích giao dịch qua nguồn độc lập, tránh tiếp tục trả tiền chỉ dựa vào lời cam kết. Khi nghi ngờ nên cung cấp chứng cứ cho ngân hàng hoặc cơ quan chức năng.",
+      "context_note": "Lời hứa thu hồi tài sản là ngữ cảnh cảnh báo; không sử dụng ghi chú như danh sách tổ chức bị kết luận gian lận."
+    },
+    {
+      "id": "VN-RAG-009",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "investment",
+        "social_engineering",
+        "advance_fee"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/canh-bao-thu-doan-du-do-tham-gia-dau-tu-tai-chinh-san-chung-khoan-tien-ao-tren-khong-gian-mang-d22-t44828",
+      "anchors": [
+        "đầu tư",
+        "tiền ảo"
+      ],
+      "summary": "Bài cảnh báo mô tả quá trình kết bạn và xây dựng quan hệ trước khi mời tham gia nền tảng đầu tư do đối tượng tổ chức. Những câu chuyện cá nhân hoặc hình ảnh thành công có thể được dùng để dẫn người dân chuyển tiền. Cần kiểm chứng đơn vị và hoạt động đầu tư bằng thông tin độc lập, thay vì chỉ tin người tư vấn quen trên mạng. Khi nghi bị chiếm tiền cần lưu chứng cứ, báo ngân hàng và cơ quan chức năng.",
+      "context_note": "Ghi chú phục vụ nhận diện dẫn dụ trong thông điệp, không đánh giá lợi suất hoặc khuyến nghị một sản phẩm đầu tư."
+    },
+    {
+      "id": "VN-RAG-010",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": [
+        "government",
+        "social_insurance",
+        "qr",
+        "otp"
+      ],
+      "url": "https://bocongan.gov.vn/bai-viet/bac-ninh-canh-bao-thu-doan-lua-dao-moi-nham-vao-nguoi-huong-che-do-huu-tri-bao-hiem-xa-hoi-1759801015",
+      "anchors": [
+        "bảo hiểm",
+        "OTP"
+      ],
+      "summary": "Cảnh báo nhắm tới người hưởng lương hưu hoặc bảo hiểm, khi đối tượng mạo danh bên chi trả để tiếp cận và lấy dữ liệu. Tin nhắn, liên kết, mã QR hoặc ứng dụng gửi từ người lạ có thể được dùng trong quá trình lừa. Người nhận cần giữ kín thông tin xác thực và kiểm tra trực tiếp với cơ quan có trách nhiệm trước khi thao tác. Dấu hiệu đáng chú ý là yêu cầu dữ liệu tài khoản hoặc quyền truy cập không phù hợp với mục đích thông báo.",
+      "context_note": "Thông báo chế độ bảo hiểm tự nó chưa là bằng chứng gian lận; cần xét nguồn liên hệ và hành động được yêu cầu."
+    },
+    {
+      "id": "VN-RAG-011",
+      "publisher": "Công an tỉnh Tuyên Quang",
+      "kind": "scam_warning",
+      "topics": [
+        "deepfake",
+        "impersonation",
+        "urgent_transfer"
+      ],
+      "url": "https://congan.tuyenquang.gov.vn/vi/tin-bai/canh-bao-deepfake-quay-tro-lai-chiem-doat-tien-trong-tai-khoan-ngan-hang?id=215975&type=NEWS",
+      "anchors": [
+        "Deepfake",
+        "ngân hàng"
+      ],
+      "summary": "Bài viết cảnh báo việc giả khuôn mặt hoặc giọng nói để làm người nhận tin rằng đang trao đổi với người quen. Hình ảnh trong cuộc gọi không đủ tự chứng minh danh tính khi đi kèm yêu cầu tiền hoặc thông tin tài khoản. Cần kiểm chứng qua kênh liên hệ độc lập trước khi thực hiện hành động nhạy cảm. Nội dung này hữu ích với tình huống có áp lực chuyển tiền hoặc lời nhắn viện dẫn cuộc gọi video để tạo sự tin tưởng.",
+      "context_note": "Ứng dụng chỉ đọc văn bản không thể xác định một video có phải deepfake; ghi chú chỉ hỗ trợ đề xuất bước xác minh."
+    },
+    {
+      "id": "VN-RAG-012",
+      "publisher": "VNU CyberSafe - Đại học Quốc gia Hà Nội",
+      "kind": "scam_warning",
+      "topics": [
+        "email",
+        "account_takeover",
+        "university",
+        "urgency"
+      ],
+      "url": "https://cybersafe.vnu.edu.vn/news/canh-bao-khan-cap-cac-thu-doan-lua-dao-qua-email-dang-tan-cong-he-thong-vnu-cap-nhat-cac-truong-hop-co-that",
+      "anchors": [
+        "email",
+        "tài khoản"
+      ],
+      "summary": "Cảnh báo mô tả email gây lo sợ về tài khoản hoặc dữ liệu nhằm thúc người nhận mở liên kết và thực hiện thao tác. Một tài khoản nội bộ đã bị chiếm cũng có thể trở thành nguồn gửi thư, nên địa chỉ quen thuộc chưa đủ bảo đảm nội dung. Cần xem yêu cầu thực tế, kiểm tra kênh hỗ trợ và tránh hành động gấp chỉ vì lời đe dọa trong email. Nguồn phù hợp cho tình huống tài khoản trường học và thông báo giả từ bộ phận hỗ trợ.",
+      "context_note": "Bản tóm lược bỏ địa chỉ cá nhân và các mẫu email cụ thể; không tái sử dụng chúng làm dữ liệu test độc lập."
+    },
+    {
+      "id": "VN-RAG-013",
+      "publisher": "Trường Đại học Công nghệ - ĐHQGHN",
+      "kind": "scam_warning",
+      "topics": [
+        "university",
+        "family_emergency",
+        "urgent_transfer"
+      ],
+      "url": "https://uet.vnu.edu.vn/canh-bao-ve-cac-hinh-thuc-thu-doan-lua-dao-phu-huynh-sinh-vien/",
+      "anchors": [
+        "phụ huynh",
+        "chuyển tiền"
+      ],
+      "summary": "Thông báo của nhà trường cảnh báo việc giả giáo viên hoặc nhân viên y tế để báo người học gặp tai nạn và yêu cầu gia đình chuyển tiền gấp. Sự hoảng loạn có thể làm người nhận bỏ qua việc xác minh thông tin. Người học và phụ huynh cần cảnh giác, kiểm tra qua nhà trường hoặc người thân bằng kênh đã biết. Tài liệu cũng lưu ý các hình thức dẫn dụ khác qua điện thoại và mạng xã hội.",
+      "context_note": "Dùng cho dấu hiệu tạo tình huống khẩn cấp; không suy đoán tình trạng sức khỏe hay phủ nhận sự cố thật từ một tin nhắn."
+    },
+    {
+      "id": "VN-RAG-014",
+      "publisher": "Trường Đại học Ngoại ngữ - ĐHQGHN",
+      "kind": "scam_warning",
+      "topics": [
+        "scholarship",
+        "university",
+        "forged_document"
+      ],
+      "url": "https://student.ulis.vnu.edu.vn/bo-giao-duc-va-dao-tao-canh-bao-thong-tin-gia-ve-hoc-bong-tai-tro-du-hoc/",
+      "anchors": [
+        "học bổng",
+        "giả"
+      ],
+      "summary": "Nguồn đăng lại cảnh báo của cơ quan quản lý giáo dục về thông tin học bổng và tài trợ du học giả, có thể kèm chữ ký hoặc con dấu làm giả. Hình thức văn bản trang trọng chưa đủ để xác nhận một chương trình. Người tiếp nhận cần đối chiếu thông báo với kênh chính thống của cơ quan hoặc nhà trường liên quan. Tài liệu hỗ trợ nhận diện việc lợi dụng nhu cầu học tập để yêu cầu cung cấp dữ liệu hoặc thực hiện giao dịch.",
+      "context_note": "Đây là nguồn đăng lại có đơn vị chủ quản rõ ràng; cần ghi nhận provenance, không coi là một sự kiện độc lập thứ hai."
+    },
+    {
+      "id": "VN-RAG-015",
+      "publisher": "Bưu điện Việt Nam - Vietnam Post",
+      "kind": "scam_warning",
+      "topics": [
+        "delivery",
+        "impersonation",
+        "advance_fee"
+      ],
+      "url": "https://vnpost.vn/vi/hoat-dong-nganh/canh-bao-hanh-vi-mao-danh-vietnam-post-lua-dao-khach-hang-duoi-nhieu-hinh-thuc",
+      "anchors": [
+        "giả mạo",
+        "khách hàng"
+      ],
+      "summary": "Vietnam Post cảnh báo các cuộc liên hệ giả danh bưu điện để yêu cầu khách hàng làm theo hướng dẫn hoặc trả phí. Người nhận nên kiểm tra thông tin đơn hàng và xác minh với đơn vị cung cấp dịch vụ, tránh mở liên kết không rõ nguồn hoặc thanh toán theo cuộc gọi đáng ngờ. Tài liệu mô tả một số hoạt động bưu chính và thu hộ có quy trình, giúp đối chiếu với yêu cầu tùy tiện của đối tượng mạo danh.",
+      "context_note": "Thông tin quy trình có thể thay đổi; không dùng thông báo cũ làm bảng phí, hotline hoặc danh sách tên miền hiện hành."
+    },
+    {
+      "id": "VN-RAG-016",
+      "publisher": "Vietcombank",
+      "kind": "scam_warning",
+      "topics": [
+        "banking",
+        "forged_document",
+        "otp",
+        "personal_data"
+      ],
+      "url": "https://vietcombank.com.vn/vi-VN/Trang-thong-tin-dien-tu/Articles/2026/03/31/20260330_CBRR-gia-mao-chuong-trinh-lai-suat-cua-VCB",
+      "anchors": [
+        "giả mạo",
+        "OTP"
+      ],
+      "date_hint": "31/03/2026",
+      "published_at": "2026-03-31",
+      "summary": "Ngân hàng cảnh báo ấn phẩm giả mang hình thức chương trình của Vietcombank để tiếp cận và thu thông tin cá nhân. Khách hàng cần xác minh nội dung với kênh ngân hàng và bảo vệ thông tin thẻ, thông tin đăng nhập cùng mã xác thực. Việc có logo hoặc danh nghĩa ngân hàng không thay thế được kiểm tra nguồn phát hành. Tài liệu phù hợp cho tin nhắn quảng bá ưu đãi hoặc lãi suất dẫn người nhận sang biểu mẫu thu dữ liệu.",
+      "context_note": "Phân biệt cung cấp mã cho người liên hệ với việc người dùng tự xác thực giao dịch trong ứng dụng ngân hàng chính thức."
+    },
+    {
+      "id": "VN-RAG-017",
+      "publisher": "BIDV",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "otp",
+        "authentication",
+        "banking"
+      ],
+      "url": "https://bidv.com.vn/bidv/ca-nhan/thong-bao/ngan-hang-so/thong-bao-ap-dung-phuong-thuc-xac-thuc-giao-dich-bang-ma-smart-otp",
+      "date_hint": "09/10/2024",
+      "published_at": "2024-10-09",
+      "anchors": [
+        "Smart OTP",
+        "SMS OTP"
+      ],
+      "summary": "Thông báo chính thức giải thích việc BIDV sử dụng Smart OTP tích hợp trong ứng dụng để xác thực giao dịch. Một số thao tác như kích hoạt, đăng nhập hoặc khôi phục vẫn có thể dùng SMS OTP theo quy trình của ngân hàng. Do đó, xuất hiện mã OTP trong một luồng người dùng chủ động thực hiện chưa đủ để gán nhãn lừa đảo. Cần kiểm tra ai yêu cầu mã, nơi nhập mã và hành động giao dịch trước khi kết luận.",
+      "context_note": "Lưu như ví dụ quy trình hợp lệ tại thời điểm công bố; không dùng để khẳng định toàn bộ chính sách xác thực hiện tại."
+    },
+    {
+      "id": "VN-RAG-018",
+      "publisher": "BIDV",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "otp",
+        "banking",
+        "account_security"
+      ],
+      "url": "https://bidv.com.vn/smartbanking/faq/",
+      "anchors": [
+        "OTP",
+        "SmartBanking"
+      ],
+      "summary": "Phần hỏi đáp của BIDV mô tả các phương thức xác thực như SMS OTP và Smart OTP, cùng thao tác quản lý dịch vụ trên ứng dụng. Mã có vai trò xác minh trong một giao dịch do khách hàng thực hiện. Tài liệu cung cấp ngữ cảnh đối chiếu cho hệ thống: yêu cầu nhập mã tại giao diện dịch vụ cần được phân biệt với lời nhắn xin gửi mã cho người khác. Nội dung trang hỏi đáp có thể được cập nhật theo phiên bản sản phẩm.",
+      "context_note": "Không đưa số lần giao dịch kích hoạt, hạn mức hoặc menu cụ thể vào quy tắc vì các mục trên trang có thể thuộc các phiên bản khác nhau."
+    },
+    {
+      "id": "VN-RAG-019",
+      "publisher": "Google",
+      "kind": "mixed_guidance",
+      "topics": [
+        "email",
+        "phishing",
+        "incident_response"
+      ],
+      "url": "https://support.google.com/mail/answer/8253?hl=vi",
+      "anchors": [
+        "lừa đảo",
+        "Gmail"
+      ],
+      "summary": "Trợ giúp Gmail hướng dẫn nhận biết và xử lý thư có mục đích lừa lấy thông tin. Cần cân nhắc danh tính người gửi, liên kết trong thư và yêu cầu dữ liệu cá nhân; không chỉ dựa vào cách trình bày hoặc tên hiển thị. Khi gặp thư nghi vấn, người dùng có thể sử dụng chức năng báo cáo của Gmail. Tài liệu hỗ trợ giải thích vì sao cần kiểm tra một yêu cầu cung cấp thông tin trước khi phản hồi.",
+      "context_note": "Dùng cho nhận diện và báo cáo email; một địa chỉ hoặc logo xuất hiện trong thư chưa đủ chứng minh danh tính người gửi."
+    },
+    {
+      "id": "VN-RAG-020",
+      "publisher": "Google",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "mfa",
+        "authentication",
+        "account_security"
+      ],
+      "url": "https://support.google.com/accounts/answer/185839?hl=vi",
+      "anchors": [
+        "Xác minh 2 bước",
+        "Google"
+      ],
+      "summary": "Google mô tả việc bổ sung bước xác minh khi đăng nhập tài khoản, bên cạnh mật khẩu. Người dùng chủ động bật tính năng trong phần bảo mật và có thể được yêu cầu chứng minh quyền sở hữu qua phương thức đã thiết lập. Đây là ngữ cảnh hợp lệ của mã xác thực hoặc thông báo trên thiết bị. Khi phân tích tin nhắn, cần phân biệt thao tác đăng nhập do chủ tài khoản khởi tạo với yêu cầu chuyển mã cho một bên liên hệ khác.",
+      "context_note": "Trang trợ giúp không xác nhận tính hợp lệ của một tin nhắn cụ thể; cần đối chiếu kênh và thao tác mà người dùng đang thực hiện."
+    },
+    {
+      "id": "VN-RAG-021",
+      "publisher": "Google",
+      "kind": "incident_response",
+      "topics": [
+        "account_takeover",
+        "recovery",
+        "email"
+      ],
+      "url": "https://support.google.com/accounts/answer/6294825?hl=vi",
+      "anchors": [
+        "tài khoản",
+        "bảo mật"
+      ],
+      "summary": "Google hướng dẫn xử lý khi có dấu hiệu người khác sử dụng tài khoản: tìm cách khôi phục quyền truy cập, rà soát hoạt động bảo mật và kiểm tra các thay đổi không do chủ tài khoản thực hiện. Các bước củng cố thông tin đăng nhập và phương thức bảo vệ giúp giảm khả năng tiếp tục bị chiếm tài khoản. Tài liệu phù hợp để tạo hướng dẫn sau khi người dùng đã làm lộ dữ liệu hoặc nhận thấy hoạt động bất thường.",
+      "context_note": "Hướng người dùng tự mở trợ giúp chính thức; không yêu cầu gửi mật khẩu, mã dự phòng hoặc dữ liệu khôi phục vào ứng dụng phân tích."
+    },
+    {
+      "id": "VN-RAG-022",
+      "publisher": "Microsoft",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "security_notification",
+        "account_activity",
+        "email"
+      ],
+      "url": "https://support.microsoft.com/vi-vn/accounts-billing/security/what-is-the-recent-activity-page",
+      "anchors": [
+        "hoạt động",
+        "Microsoft"
+      ],
+      "summary": "Microsoft giải thích trang hoạt động gần đây để chủ tài khoản xem và kiểm tra các sự kiện liên quan đến đăng nhập, bảo mật. Khi nhận email cảnh báo nhưng chưa chắc nguồn gửi, người dùng có thể tự vào tài khoản để đối chiếu thay vì sử dụng liên kết trong thư. Nội dung giúp nhận ra rằng thông báo bảo mật có thể là hợp lệ, đồng thời vẫn cần xác minh bằng phiên đăng nhập và kênh do người dùng chủ động mở.",
+      "context_note": "Không suy ra mọi email báo hoạt động lạ là lừa đảo hoặc mọi email mang tên Microsoft là xác thực."
+    },
+    {
+      "id": "VN-RAG-023",
+      "publisher": "Microsoft",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "mfa",
+        "authentication",
+        "qr"
+      ],
+      "url": "https://support.microsoft.com/vi-vn/accounts-billing/security/how-to-use-two-step-verification-with-your-microsoft-account",
+      "anchors": [
+        "xác minh hai bước",
+        "Microsoft"
+      ],
+      "summary": "Microsoft hướng dẫn cấu hình xác minh hai bước trong phần bảo mật tài khoản và sử dụng phương thức xác thực đã đăng ký. Trong quá trình thiết lập chủ động, mã bảo mật hoặc mã QR có thể là một phần của quy trình hợp lệ. Điều cần kiểm tra là tài khoản, giao diện và hành động do người dùng khởi tạo, không chỉ sự xuất hiện của từ khóa xác thực. Thông tin dự phòng cũng cần được quản lý để tránh mất khả năng truy cập.",
+      "context_note": "Tài liệu mô tả thao tác tài khoản; không cho phép chia sẻ mã cho người tự xưng là nhân viên hỗ trợ."
+    },
+    {
+      "id": "VN-RAG-024",
+      "publisher": "Vietcombank",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "biometrics",
+        "banking",
+        "official_channel"
+      ],
+      "url": "https://vietcombank.com.vn/vi-VN/KHCN/Truy-cap-nhanh/Tin-noi-bat/Articles/2024/10/24/STH-update-new",
+      "anchors": [
+        "sinh trắc học",
+        "Digibank"
+      ],
+      "date_hint": "24/10/2024",
+      "published_at": "2024-10-24",
+      "summary": "Thông báo của Vietcombank trình bày việc cập nhật sinh trắc học và giấy tờ tùy thân để duy trì giao dịch. Các kênh cập nhật được nêu gồm ứng dụng VCB Digibank và điểm giao dịch của ngân hàng. Một số đối tượng khách hàng cần đến quầy với giấy tờ phù hợp. Nguồn cung cấp ví dụ về quy trình cập nhật thông tin do ngân hàng công bố, có thời điểm áp dụng cụ thể.",
+      "context_note": "Dùng để đối chiếu kênh và thao tác hợp lệ; không áp dụng lại hạn mức, thời hạn hoặc điều kiện trong thông báo năm 2024 mà chưa kiểm tra hiện hành."
+    },
+    {
+      "id": "VN-RAG-025",
+      "publisher": "Trường Đại học Công nghệ - ĐHQGHN",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "scholarship",
+        "university",
+        "official_notice"
+      ],
+      "url": "https://uet.vnu.edu.vn/chuong-trinh-hoc-bong-goertek-nam-2027/",
+      "anchors": [
+        "Goertek",
+        "2027"
+      ],
+      "summary": "Thông báo trên website của Trường Đại học Công nghệ giới thiệu chương trình học bổng Goertek năm 2027 và dẫn chiếu công văn của Đại học Quốc gia Hà Nội. Nguồn là ví dụ về thông báo học bổng có cơ quan phát hành và kênh công bố để đối chiếu. Khi phân tích một lời mời nhận học bổng, cần kiểm tra nguồn, chương trình, quy trình hồ sơ và các yêu cầu đi kèm, thay vì gán nhãn chỉ vì có từ học bổng hoặc đường dẫn.",
+      "context_note": "Chỉ dùng làm ví dụ thông báo chính thức; cần xem lại thời hạn và văn bản gốc trước khi tư vấn đăng ký."
+    },
+    {
+      "id": "VN-RAG-101",
+      "publisher": "Zalo",
+      "kind": "mixed_guidance",
+      "topics": [
+        "zalo_qr"
+      ],
+      "url": "https://help.zalo.me/huong-dan/chuyen-muc/bao-mat-va-rieng-tu/an-toan-hon-khi-quet-ma-qr-dang-nhap-tren-zalo/",
+      "anchors": [
+        "mã QR",
+        "thiết bị lạ"
+      ],
+      "summary": "Zalo hỗ trợ quét mã QR để đăng nhập máy tính. Kẻ gian có thể mời bình chọn hoặc nhận thưởng, nhưng thao tác thực tế lại cho phép thiết bị khác đăng nhập tài khoản. Cần đọc cảnh báo về thiết bị trước khi đồng ý; nếu thông tin không quen thuộc hoặc không chắc chắn thì từ chối. Zalo có chức năng quản lý thiết bị đăng nhập để kiểm tra truy cập. Quét QR tự nó không chứng minh lừa đảo: cần phân biệt mục đích được hứa với quyền đăng nhập được cấp.",
+      "context_note": "Phân biệt QR đăng nhập và các loại QR khác; tài liệu không xác minh người gửi hay nội dung mã QR cụ thể.",
+      "scenario": "zalo_qr",
+      "entity": "Zalo",
+      "document_role": "mixed_guidance",
+      "scope": "Zalo đăng nhập",
+      "valid_from": null,
+      "temporal_note": "Phân biệt QR đăng nhập và các loại QR khác; tài liệu không xác minh người gửi hay nội dung mã QR cụ thể.",
+      "candidate_id": "CANDIDATE-001",
+      "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-102",
+      "publisher": "Microsoft",
+      "kind": "scam_warning",
+      "topics": [
+        "device_code"
+      ],
+      "url": "https://www.microsoft.com/en-us/security/blog/2026/04/06/ai-enabled-device-code-phishing-campaign-april-2026/",
+      "anchors": [
+        "device code",
+        "phishing"
+      ],
+      "summary": "Microsoft mô tả chiến dịch lạm dụng luồng xác thực device code để chiếm tài khoản tổ chức. Thư mời và nội dung liên quan công việc có thể dẫn người nhận vào quy trình xác thực cho yêu cầu do kẻ gian khởi tạo. Trang đăng nhập hợp lệ không bảo đảm mục đích đăng nhập an toàn. Cần xem xét ai khởi tạo yêu cầu, ứng dụng xin quyền và thiết bị sẽ được cấp truy cập. Tài liệu này cung cấp bối cảnh phòng vệ, không xác nhận mọi yêu cầu nhập mã thiết bị là lừa đảo.",
+      "context_note": "Áp dụng cho luồng device code Microsoft; không suy diễn rằng tên miền Microsoft là độc hại.",
+      "scenario": "device_code",
+      "entity": "Microsoft",
+      "document_role": "scam_warning",
+      "scope": "Microsoft Entra",
+      "valid_from": null,
+      "temporal_note": "Áp dụng cho luồng device code Microsoft; không suy diễn rằng tên miền Microsoft là độc hại.",
+      "candidate_id": "CANDIDATE-002",
+      "source_language": "en"
+    },
+    {
+      "id": "VN-RAG-103",
+      "publisher": "Microsoft Learn",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "device_code"
+      ],
+      "url": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-device-code",
+      "anchors": [
+        "device authorization",
+        "user code"
+      ],
+      "summary": "Luồng device authorization của Microsoft cho phép đăng nhập thiết bị khó nhập liệu như TV, máy in hoặc thiết bị IoT. Người dùng mở trang xác minh bằng trình duyệt trên thiết bị khác, nhập mã người dùng và đăng nhập để cấp quyền cho thiết bị khởi tạo. Yêu cầu chỉ nên bắt đầu khi người dùng sẵn sàng đăng nhập. Luồng này có ứng dụng hợp lệ; tính hợp lệ của giao thức không chứng minh một lời mời từ người khác đáng tin. Cần đối chiếu thiết bị và thao tác mình chủ động thực hiện.",
+      "context_note": "Tài liệu kỹ thuật mô tả giao thức, không phải danh sách cho phép mọi lời mời đăng nhập.",
+      "scenario": "device_code",
+      "entity": "Microsoft Learn",
+      "document_role": "legitimate_workflow",
+      "scope": "Microsoft identity platform",
+      "valid_from": null,
+      "temporal_note": "Tài liệu kỹ thuật mô tả giao thức, không phải danh sách cho phép mọi lời mời đăng nhập.",
+      "candidate_id": "CANDIDATE-003",
+      "source_language": "en"
+    },
+    {
+      "id": "VN-RAG-104",
+      "publisher": "Techcombank",
+      "kind": "scam_warning",
+      "topics": [
+        "business_email_compromise"
+      ],
+      "url": "https://techcombank.com/thong-tin/thong-bao/canh-giac-truoc-nhung-hanh-vi-lua-dao-qua-email-doanh-nghiep",
+      "anchors": [
+        "email",
+        "tài khoản"
+      ],
+      "summary": "Cảnh báo của Techcombank về email doanh nghiệp nêu rủi ro thư bị giả mạo hoặc tài khoản thư bị chiếm quyền. Kẻ gian có thể xen vào giao dịch, thay thông tin thanh toán hoặc tài khoản thụ hưởng khiến doanh nghiệp chuyển tiền sai nơi. Cần kiểm tra kỹ địa chỉ thư và xác minh thông tin giao dịch bằng kênh liên lạc độc lập với thư đang bị nghi ngờ. Nội dung giống đối tác quen biết chưa đủ bảo đảm. Việc thay tài khoản cần được xác minh, không tự động đồng nghĩa với gian lận.",
+      "context_note": "Kiến thức về rủi ro BEC, không xác nhận một hóa đơn hay tài khoản ngân hàng cụ thể.",
+      "scenario": "business_email_compromise",
+      "entity": "Techcombank",
+      "document_role": "scam_warning",
+      "scope": "Email doanh nghiệp",
+      "valid_from": null,
+      "temporal_note": "Kiến thức về rủi ro BEC, không xác nhận một hóa đơn hay tài khoản ngân hàng cụ thể.",
+      "candidate_id": "CANDIDATE-004",
+      "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-105",
+      "publisher": "Cục Hàng không Việt Nam",
+      "kind": "scam_warning",
+      "topics": [
+        "travel_booking"
+      ],
+      "url": "https://caa.gov.vn/hoat-dong-nganh/canh-bao-hinh-thuc-lua-mua-ve-may-bay-gia-re-de-chiem-doat-tai-san-20240820085544856.htm",
+      "anchors": [
+        "mã",
+        "thanh toán"
+      ],
+      "summary": "Cục Hàng không cảnh báo người bán giả danh công ty du lịch, quảng cáo vé máy bay hoặc đặt phòng giá rẻ để nhận tiền rồi chiếm đoạt. Kẻ gian có thể gửi mã đặt chỗ dù chưa thanh toán trên hệ thống; mã giữ chỗ chưa chứng minh vé đã được xuất. Cần xác minh công ty và giao dịch trước khi chuyển tiền. Quy trình giữ chỗ trả sau cũng có thể hợp lệ, nên phải kiểm tra tình trạng thanh toán và xuất vé với đơn vị cung cấp thay vì chỉ nhìn mã.",
+      "context_note": "Bài cảnh báo năm 2024; không dùng khoảng giữ chỗ được nêu làm quy định hiện hành cho mọi hãng.",
+      "scenario": "travel_booking",
+      "entity": "Cục Hàng không Việt Nam",
+      "document_role": "scam_warning",
+      "scope": "Đặt vé và phòng",
+      "valid_from": null,
+      "temporal_note": "Bài cảnh báo năm 2024; không dùng khoảng giữ chỗ được nêu làm quy định hiện hành cho mọi hãng.",
+      "candidate_id": "CANDIDATE-005",
+      "published_at": "2024-08-20",
+      "date_hint": "20/08/2024",
+      "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-106",
+      "publisher": "Vietnam Airlines",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "travel_booking"
+      ],
+      "url": "https://www.vietnamairlines.com/vn/vi/help-desk/common-topics/purchase-tickets-payment-VAT-invoice/online-payment-methods",
+      "anchors": [
+        "thanh toán",
+        "trả sau"
+      ],
+      "summary": "Vietnam Airlines công bố các phương thức thanh toán khi mua vé trực tuyến, gồm thanh toán ngay và lựa chọn trả sau theo điều kiện áp dụng. Việc giữ chỗ và thanh toán không nhất thiết cùng thời điểm. Khách hàng cần làm theo thông tin thanh toán và thời hạn của chính đặt chỗ trên kênh hãng. Một yêu cầu thanh toán trả sau chưa đủ để kết luận lừa đảo; tài liệu này cũng không xác thực đại lý, người gửi tin hay tài khoản nhận tiền bất kỳ.",
+      "context_note": "Chỉ mô tả dịch vụ Vietnam Airlines tại thời điểm tải; không áp dụng thời hạn của hãng cho hãng khác.",
+      "scenario": "travel_booking",
+      "entity": "Vietnam Airlines",
+      "document_role": "legitimate_workflow",
+      "scope": "Vietnam Airlines",
+      "valid_from": null,
+      "temporal_note": "Chỉ mô tả dịch vụ Vietnam Airlines tại thời điểm tải; không áp dụng thời hạn của hãng cho hãng khác.",
+      "candidate_id": "CANDIDATE-006",
+      "content_selector": ".cmp_custom-faq-accordion__item",
+      "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-107",
+      "publisher": "EVN",
+      "kind": "scam_warning",
+      "topics": [
+        "electricity_service"
+      ],
+      "url": "https://evn.com.vn/d/vi-VN/news/Khuyen-cao-nguoi-dan-canh-giac-truoc-chieu-tro-lua-dao-cai-dat-ung-dung-dien-luc-moi-60-134-500858",
+      "anchors": [
+        "cài đặt",
+        "cắt điện"
+      ],
+      "summary": "EVN cảnh báo ngày 31/12/2024 về người gọi giả nhân viên điện lực, yêu cầu cài ứng dụng giả để thanh toán và dọa cắt điện hoặc phạt nếu từ chối. Bài nêu EVN vẫn hợp tác với ngân hàng và trung gian thanh toán. Nhận định không ra mắt ứng dụng mới trong bài gắn với năm 2024. Khi gặp yêu cầu cài app từ người gọi, cần đối chiếu với kênh chính thức; không kéo dài nhận định năm 2024 thành quy tắc cấm mọi ứng dụng mới về sau.",
+      "context_note": "Cảnh báo lịch sử năm 2024; đối chiếu thông báo triển khai ứng dụng năm 2026 trước khi giải thích.",
+      "scenario": "electricity_service",
+      "entity": "EVN",
+      "document_role": "scam_warning",
+      "scope": "EVN, bối cảnh 2024",
+      "valid_from": null,
+      "temporal_note": "Cảnh báo lịch sử năm 2024; đối chiếu thông báo triển khai ứng dụng năm 2026 trước khi giải thích.",
+      "candidate_id": "CANDIDATE-007",
+      "published_at": "2024-12-31",
+      "date_hint": "31/12/2024",
+      "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-108",
+      "publisher": "EVNSPC",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "electricity_service"
+      ],
+      "url": "https://cskh.evnspc.vn/TinTuc/TinTucChiTiet?LoaiTinBai=ALL&MaTinBai=2919",
+      "anchors": [
+        "15/6/2026",
+        "thử nghiệm"
+      ],
+      "summary": "Thông báo EVNSPC ngày 18/06/2026 nêu EVN vận hành thử nghiệm ứng dụng EVN CSKH dùng chung toàn quốc từ 15/06/2026. Trong giai đoạn này, khách hàng vẫn có thể sử dụng song song ứng dụng của tổng công ty điện lực. Vì vậy, thông tin về một ứng dụng điện lực mới có thể có cơ sở chính thức. Cần đối chiếu nguồn phát hành và phạm vi thông báo; tài liệu không xác thực một đường dẫn cài đặt do người lạ gửi và không chứng minh tiến độ triển khai sau giai đoạn thử nghiệm.",
+      "context_note": "Thông báo về giai đoạn thử nghiệm từ 15/06/2026, không phải xác nhận trạng thái triển khai cuối cùng.",
+      "scenario": "electricity_service",
+      "entity": "EVNSPC",
+      "document_role": "legitimate_workflow",
+      "scope": "EVN, thử nghiệm 2026",
+      "valid_from": "2026-06-15",
+      "temporal_note": "Thông báo về giai đoạn thử nghiệm từ 15/06/2026, không phải xác nhận trạng thái triển khai cuối cùng.",
+      "candidate_id": "CANDIDATE-008",
+      "published_at": "2026-06-18",
+      "date_hint": "18/06/2026",
+      "title_selector": "h3.post-ttl",
+      "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-109",
+      "publisher": "EVNSPC",
+      "kind": "legitimate_workflow",
+      "topics": [
+        "electricity_service"
+      ],
+      "url": "https://cskh.evnspc.vn/ThanhToanTienDien/HuongDanThanhToan",
+      "anchors": [
+        "thanh toán",
+        "mã khách hàng"
+      ],
+      "summary": "Hướng dẫn EVNSPC trình bày nhiều kênh thanh toán tiền điện, gồm ngân hàng và đối tác thu hộ; mã khách hàng được dùng để tra cứu hóa đơn. Người dùng có thể chủ động chọn kênh phù hợp và kiểm tra thông tin hóa đơn trước khi trả tiền. Việc đề cập mã khách hàng hoặc thanh toán tiền điện không tự nó là dấu hiệu lừa đảo. Hướng dẫn không xác minh lời xưng danh nhân viên, số tài khoản hay đường dẫn cụ thể trong tin nhắn.",
+      "context_note": "Phạm vi hướng dẫn EVNSPC; trang có thể chứa thông tin dịch vụ cũ, không dùng làm quy định toàn quốc hoặc xác nhận hạn cắt điện.",
+      "scenario": "electricity_service",
+      "entity": "EVNSPC",
+      "document_role": "legitimate_workflow",
+      "scope": "EVNSPC",
+      "valid_from": null,
+      "temporal_note": "Phạm vi hướng dẫn EVNSPC; trang có thể chứa thông tin dịch vụ cũ, không dùng làm quy định toàn quốc hoặc xác nhận hạn cắt điện.",
+      "candidate_id": "CANDIDATE-009",
+      "title_selector": "title",
+      "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-110",
+      "publisher": "Bộ Công an",
+      "kind": "mixed_guidance",
+      "topics": [
+        "online_coercion"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/canh-giac-thu-doan-bat-coc-online-gia-danh-cong-an-co-lap-sinh-vien-de-chiem-doat-tien-1791168262",
+      "anchors": [
+        "cô lập",
+        "chuyển"
+      ],
+      "summary": "Bộ Công an cảnh báo thủ đoạn giả danh công an, gây sức ép tâm lý để sinh viên tự cô lập, khiến gia đình không liên lạc được rồi đòi tiền chuộc. Cần chú ý tổ hợp mạo danh, buộc giữ bí mật hoặc cắt liên lạc và yêu cầu tiền. Khi nhận thông tin bất thường, gia đình cần chủ động xác minh và trình báo cơ quan chức năng. Bài cung cấp dấu hiệu và hướng xử lý sự cố, không xác thực nội dung cuộc gọi hoặc vị trí một người cụ thể.",
+      "context_note": "Phân biệt lời đe dọa với lời người bị hại đang kể lại để xin hỗ trợ; không dự đoán bước lừa đảo chưa xuất hiện.",
+      "scenario": "online_coercion",
+      "entity": "Bộ Công an",
+      "document_role": "mixed_guidance",
+      "scope": "Việt Nam, sinh viên và gia đình",
+      "valid_from": null,
+      "temporal_note": "Phân biệt lời đe dọa với lời người bị hại đang kể lại để xin hỗ trợ; không dự đoán bước lừa đảo chưa xuất hiện.",
+      "candidate_id": "CANDIDATE-010",
+      "published_at": "2026-10-05",
+      "date_hint": "05/10/2026",
+      "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-111",
+      "publisher": "Bộ Công an",
+      "kind": "mixed_guidance",
+      "topics": [
+        "image_based_extortion"
+      ],
+      "url": "https://www.bocongan.gov.vn/bai-viet/canh-giac-voi-thu-doan-ghep-anh-tong-tien-tren-khong-gian-mang-1791190146",
+      "anchors": [
+        "hình ảnh",
+        "tống tiền"
+      ],
+      "summary": "Bộ Công an cảnh báo kẻ gian thu thập ảnh cá nhân rồi cắt ghép hình ảnh hoặc video nhạy cảm, đe dọa phát tán để ép chuyển tiền. Nội dung đe dọa có thể gây hoang mang dù hình ảnh không thật. Người bị hại nên lưu bằng chứng, không vội chuyển tiền và báo cơ quan công an để được hỗ trợ. Mối đe dọa và yêu cầu tiền là thông tin cần đánh giá; tài liệu không cho phép kết luận ảnh hoặc video cụ thể là thật hay giả.",
+      "context_note": "Chỉ hỗ trợ phân tích văn bản về tống tiền; ứng dụng không có chức năng giám định ảnh ghép hoặc deepfake.",
+      "scenario": "image_based_extortion",
+      "entity": "Bộ Công an",
+      "document_role": "mixed_guidance",
+      "scope": "Việt Nam, tống tiền bằng hình ảnh",
+      "valid_from": null,
+      "temporal_note": "Chỉ hỗ trợ phân tích văn bản về tống tiền; ứng dụng không có chức năng giám định ảnh ghép hoặc deepfake.",
+      "candidate_id": "CANDIDATE-011",
+      "published_at": "2026-10-05",
+      "date_hint": "05/10/2026",
+      "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-112",
+      "publisher": "Công an tỉnh Khánh Hòa",
+      "kind": "scam_warning",
+      "topics": [
+        "recovery_refund_scam"
+      ],
+      "url": "https://congan.khanhhoa.gov.vn/vi/canh-bao-thu-doan-lua-dao-gia-danh-ho-tro-lay-lai-tien-bi-treo-hoan-tien-bi-loi",
+      "anchors": [
+        "hoàn tiền",
+        "xác minh"
+      ],
+      "summary": "Công an Khánh Hòa cảnh báo người giả nhân viên hỗ trợ ngân hàng, ví điện tử hoặc sàn mua sắm để tiếp cận người đang gặp giao dịch lỗi. Họ hứa hoàn tiền hay mở khóa tiền treo, rồi yêu cầu cung cấp thông tin xác thực hoặc nộp thêm khoản tiền để xử lý. Cần liên hệ dịch vụ qua kênh chính thức và tránh làm theo người tự xưng hỗ trợ. Một giao dịch chưa hoàn tiền không tự nó chứng minh gian lận; cần xét yêu cầu hành động cụ thể.",
+      "context_note": "Nhắm vào giả hỗ trợ hoàn tiền; không xác nhận thời hạn hoàn tiền hay kết quả giao dịch riêng lẻ.",
+      "scenario": "recovery_refund_scam",
+      "entity": "Công an tỉnh Khánh Hòa",
+      "document_role": "scam_warning",
+      "scope": "Việt Nam, hỗ trợ giao dịch",
+      "valid_from": null,
+      "temporal_note": "Nhắm vào giả hỗ trợ hoàn tiền; không xác nhận thời hạn hoàn tiền hay kết quả giao dịch riêng lẻ.",
+      "candidate_id": "CANDIDATE-012",
+      "published_at": "2025-05-23",
+      "date_hint": "23/05/2025",
+      "title_selector": "h1.mainTitle",
+      "source_language": "vi"
+    }
+  ]
+}

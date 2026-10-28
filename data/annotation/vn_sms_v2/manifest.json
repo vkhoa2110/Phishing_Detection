@@ -1,0 +1,47 @@
+{
+  "version": "vn-sms-review-2.0",
+  "created_at": "2026-10-28T02:48:06.397257+00:00",
+  "status": "awaiting_two_independent_raters",
+  "source_url": "https://huggingface.co/datasets/trannguyenthaituan/vietnamese_sms_dataset",
+  "source_revision": "a90e2bd7e8df2376939658075ba8094dcee488ad",
+  "source_license": "CC-BY-4.0",
+  "upstream_files": {
+    "README.md": {
+      "url": "https://huggingface.co/datasets/trannguyenthaituan/vietnamese_sms_dataset/resolve/a90e2bd7e8df2376939658075ba8094dcee488ad/README.md",
+      "sha256": "55b9f147c83e4222ea6f6165e5e9676ad771cab4216821c6d871c245e21392cd",
+      "bytes": 12794
+    },
+    "QUICKSTART_GUIDE.md": {
+      "url": "https://huggingface.co/datasets/trannguyenthaituan/vietnamese_sms_dataset/resolve/a90e2bd7e8df2376939658075ba8094dcee488ad/QUICKSTART_GUIDE.md",
+      "sha256": "6823cb60501118f0b3affbba728cc70e062df2a566f5718c1d500c31d1f21816",
+      "bytes": 8067
+    },
+    "full_dataset.csv": {
+      "url": "https://huggingface.co/datasets/trannguyenthaituan/vietnamese_sms_dataset/resolve/a90e2bd7e8df2376939658075ba8094dcee488ad/full_dataset.csv",
+      "sha256": "8a29d50a6335c8938b8beef0a3daf57d276e880244394da453bc656f5a4c7847",
+      "bytes": 777582
+    },
+    "train.csv": {
+      "url": "https://huggingface.co/datasets/trannguyenthaituan/vietnamese_sms_dataset/resolve/a90e2bd7e8df2376939658075ba8094dcee488ad/train.csv",
+      "sha256": "bf5c34567685fcb9d73e5087289fbc64a196d39fd63d43d027bb68737786da32",
+      "bytes": 602414
+    },
+    "test.csv": {
+      "url": "https://huggingface.co/datasets/trannguyenthaituan/vietnamese_sms_dataset/resolve/a90e2bd7e8df2376939658075ba8094dcee488ad/test.csv",
+      "sha256": "166c27e44e90c6648df07c1bf03b7106a909d62d2b5122a727405a3ba8c68391",
+      "bytes": 119257
+    }
+  },
+  "seed": 20261028,
+  "selection": "200 total; dev 80/test 120; balanced by UPSTREAM labels only; max two per component per source-label stratum",
+  "grouping": "connected components: identical template, token-set Jaccard >=0.85, or shared registrable domain; bundled PSL, no network",
+  "near_duplicate_threshold": 0.85,
+  "date_policy": "retain author-provided dates; no claim of a chronological split or verified event timestamps",
+  "transformations": "whitespace/NFC normalization, rule redaction plus digit runs >=4, exact dedup after redaction, conservative grouping, sampling; no generated message text or model-assigned labels",
+  "source_labels_are_gold": false,
+  "files": {
+    "items.jsonl": "b2c4d77269daf201e5d6ea6ab52146d1a352b20614f4cb2a099ac12f1caf65f1",
+    "source_labels.jsonl": "4623414a9f18dd8943d156392fb61a1ac92639da712d1b542097c204612f532f",
+    "audit.json": "740726b072afc393a1f28499a1e06bad248ccfdcd7e5df8baa00b28804a74ad2"
+  }
+}

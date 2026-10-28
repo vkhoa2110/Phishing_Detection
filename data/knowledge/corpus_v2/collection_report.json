@@ -1,0 +1,26 @@
+{
+  "snapshot": "corpus_v2",
+  "documents": 37,
+  "parents": [
+    {
+      "snapshot": "data/knowledge/corpus_v1",
+      "manifest_sha256": "69e6ae96b54b3ebef8dc15c3019e932bee13fd9ced2c238bcbb6809a50dc166a",
+      "documents_sha256": "6741d6496d019afae14c263fba44ff8b5a7b39828305a85e0f2b299572b6dc83"
+    },
+    {
+      "snapshot": "data/knowledge/collections/v2_additions_20261028",
+      "manifest_sha256": "033b431cb79f7dddb59e4fc4ab02e13186c5020b156196fa4c52a7f4775873b5",
+      "documents_sha256": "f2f2529f411446091b51a465e899f2c0a17eaa050aa6bda82e3dedf35b276595"
+    }
+  ],
+  "inherited_without_refresh": 25,
+  "by_kind": {
+    "scam_warning": 20,
+    "incident_response": 2,
+    "legitimate_workflow": 11,
+    "mixed_guidance": 4
+  },
+  "publishers": 19,
+  "review_status": "assistant_curated_not_independent_expert_review",
+  "full_source_articles_redistributed": false
+}

@@ -30,6 +30,9 @@ TRUSTED_HOSTS = {
     "student.ulis.vnu.edu.vn", "vnpost.vn", "www.vnpost.vn", "vietcombank.com.vn",
     "www.vietcombank.com.vn", "bidv.com.vn", "www.bidv.com.vn",
     "support.google.com", "support.microsoft.com",
+    "help.zalo.me", "www.microsoft.com", "learn.microsoft.com", "techcombank.com",
+    "caa.gov.vn", "www.vietnamairlines.com", "evn.com.vn", "www.evn.com.vn",
+    "cskh.evnspc.vn", "www.cskh.evnspc.vn", "congan.khanhhoa.gov.vn",
 }
 
 
@@ -97,14 +100,23 @@ def parse_source(data, resolved_url, source):
     html = str(soup)
     body = trafilatura.extract(html, url=resolved_url, include_comments=False, include_tables=True,
                                include_links=False, favor_precision=True) or ""
+    if source.get("content_selector"):
+        nodes = soup.select(source["content_selector"])
+        if not nodes:
+            raise ValueError("Reviewed article selector no longer matches.")
+        body = "\n".join(node.get_text(" ", strip=True) for node in nodes)
     if len(body) < 250:
         raise ValueError("Missing or too little article text; needs manual review.")
     folded = normal(body).casefold()
     if not all(normal(a).casefold() in folded for a in source["anchors"]):
         raise ValueError("Expected topic anchors absent from extracted source text.")
-    h1 = soup.find("h1")
-    metadata = trafilatura.extract_metadata(html, default_url=resolved_url, extensive=False)
-    title = normal(h1.get_text(" ", strip=True) if h1 else metadata.title or "")
+    h1 = soup.select_one(source["title_selector"]) if source.get("title_selector") else soup.find("h1")
+    try:
+        metadata = trafilatura.extract_metadata(html, default_url=resolved_url, extensive=False)
+    except (ValueError, OverflowError):
+        metadata = None  # Some publishers expose malformed time zones; never infer a date from them.
+    heading = h1.get_text(" ", strip=True) if h1 else ""
+    title = normal(heading or (metadata.title if metadata else None) or (soup.title.get_text() if soup.title else ""))
     if not title or any(x in title.casefold() for x in ("access denied", "just a moment", "page not found", "404 not found")):
         raise ValueError("Source title indicates an error/interstitial.")
     published, date_status = None, "not_available"
@@ -181,6 +193,9 @@ async def collect(args):
                         "retrieved_at": datetime.now(timezone.utc).isoformat(), "robots_status": robot_status,
                         "http_status": code, "html_sha256": sha(data), "summary_sha256": sha(source["summary"]),
                         "source_rights": "Original publisher retains source rights; no full article redistributed.", **parsed}
+                    for key in ("scenario", "entity", "document_role", "scope", "valid_from", "temporal_note", "candidate_id", "source_language"):
+                        if key in source:
+                            document[key] = source[key]
                     accepted.append(document)
                     if args.review_dir:
                         p = args.review_dir / (source["id"] + ".txt")

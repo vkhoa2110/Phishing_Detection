@@ -1,5 +1,6 @@
 # Preserve snapshot bytes used by manifests; CSV writers intentionally use CRLF.
-data/knowledge/corpus_v1/*.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol
+data/knowledge/**/*.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol
+data/annotation/**/*.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol
 artifacts/evaluations/**/*.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol
 
 # Matplotlib writes trailing spaces in generated SVG path coordinates.

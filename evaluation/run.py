@@ -15,7 +15,7 @@ import time
 
 import httpx
 
-from app.fusion import fuse
+from app.fusion import fuse_legacy as fuse
 from app.llm_service import LLMFailure, LLMService, PROMPT_VERSION
 from app.ml_service import ModelService
 from app.privacy import redact

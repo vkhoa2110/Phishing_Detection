@@ -20,7 +20,8 @@ class InputData(BaseModel):
 
 class AnalyzeInput(InputData):
     use_llm: bool = True
-    include_ml: bool = True
+    include_ml: bool = False
+    use_rag: bool = False
     consent: bool = False
     llm_text: str | None = Field(default=None, max_length=8000)
     endpoint: str = Field(default="", max_length=500)
@@ -54,4 +55,23 @@ class LLMVerdict(BaseModel):
         if any(not item.strip() or len(item) > 500 for item in items):
             raise ValueError("Hướng dẫn không hợp lệ.")
         return items
+
+
+class KnowledgeSupport(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    document_id: str = Field(pattern=r"^VN-RAG-\d{3}$")
+    source_quote: str = Field(min_length=10, max_length=600)
+    claim: str = Field(min_length=1, max_length=600)
+
+
+class RAGVerdict(LLMVerdict):
+    knowledge_support: list[KnowledgeSupport] = Field(default_factory=list, max_length=3)
+
+
+class MessageVerdict(LLMVerdict):
+    context_kind: Literal["scam_request", "legitimate_workflow", "quoted_example", "routine", "insufficient", "unclassified"] = "unclassified"
+
+
+class MessageRAGVerdict(MessageVerdict):
+    knowledge_support: list[KnowledgeSupport] = Field(default_factory=list, max_length=3)
 

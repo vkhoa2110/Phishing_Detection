@@ -1,0 +1,18 @@
+{
+  "snapshot": "vi-phishing-knowledge-v2-additions-20261028",
+  "catalog_sha256": "2a39c60a066dc50f302ea7079484f09c340eb24cb15875072e1c4a357c6d72b7",
+  "expanded_catalog_sha256": "78eb111b434259a5b307d3619db7a23ea4add932e59e6eb59d4c31fa32bbc214",
+  "collector_sha256": "7967a6030088093530906db75edcaeb0314469660170bd4b91f6c62ff8b8bd0d",
+  "collected_at": "2026-10-28T03:46:02.159464+00:00",
+  "files": {
+    "documents.jsonl": "f2f2529f411446091b51a465e899f2c0a17eaa050aa6bda82e3dedf35b276595",
+    "sources.csv": "29cce2b174e5e2327a9ddb3e253eeff5a081ff95a5b0107bf96b108007039cf0",
+    "collection_report.json": "54d15451964fac4b9798316528abc8f33b72d15db3ff9b90dea2172c6d325014",
+    "deferred_sources.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "packages": {
+    "httpx": "0.28.1",
+    "beautifulsoup4": "4.15.0",
+    "trafilatura": "2.3.1"
+  }
+}

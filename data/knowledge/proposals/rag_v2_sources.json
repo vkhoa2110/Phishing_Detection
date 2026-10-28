@@ -1,0 +1,140 @@
+{
+  "version": "rag-v2-proposal-20261028",
+  "discovered_on": "2026-10-28",
+  "status": "proposal_only",
+  "limitations": "Web-discovered primary sources, not yet fetched with the corpus collector, hashed, editorially validated, licensed for reproduction, or added to the live index. Null publication dates do not assert an article is undated.",
+  "sources": [
+    {
+      "candidate_id": "CANDIDATE-001",
+      "scenario": "zalo_qr",
+      "publisher": "Zalo",
+      "title": "An toàn hơn khi quét mã QR đăng nhập trên Zalo",
+      "source_url": "https://help.zalo.me/huong-dan/chuyen-muc/bao-mat-va-rieng-tu/an-toan-hon-khi-quet-ma-qr-dang-nhap-tren-zalo/",
+      "proposed_role": "mixed_warning_workflow",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-002",
+      "scenario": "device_code",
+      "publisher": "Microsoft",
+      "title": "Inside an AI-enabled device code phishing campaign",
+      "source_url": "https://www.microsoft.com/en-us/security/blog/2026/04/06/ai-enabled-device-code-phishing-campaign-april-2026/",
+      "proposed_role": "scam_warning",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-003",
+      "scenario": "device_code",
+      "publisher": "Microsoft Learn",
+      "title": "OAuth 2.0 device authorization grant",
+      "source_url": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-device-code",
+      "proposed_role": "legitimate_workflow",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-004",
+      "scenario": "business_email_compromise",
+      "publisher": "Techcombank",
+      "title": "Cảnh giác trước những hành vi lừa đảo qua email doanh nghiệp",
+      "source_url": "https://techcombank.com/thong-tin/thong-bao/canh-giac-truoc-nhung-hanh-vi-lua-dao-qua-email-doanh-nghiep",
+      "proposed_role": "scam_warning",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-005",
+      "scenario": "travel_booking",
+      "publisher": "Cục Hàng không Việt Nam",
+      "title": "Cảnh báo hình thức lừa mua vé máy bay giá rẻ để chiếm đoạt tài sản",
+      "source_url": "https://caa.gov.vn/hoat-dong-nganh/canh-bao-hinh-thuc-lua-mua-ve-may-bay-gia-re-de-chiem-doat-tai-san-20240820085544856.htm",
+      "proposed_role": "scam_warning",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-006",
+      "scenario": "travel_booking",
+      "publisher": "Vietnam Airlines",
+      "title": "Các hình thức thanh toán trực tuyến",
+      "source_url": "https://www.vietnamairlines.com/vn/vi/help-desk/common-topics/purchase-tickets-payment-VAT-invoice/online-payment-methods",
+      "proposed_role": "legitimate_workflow",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-007",
+      "scenario": "electricity_service",
+      "publisher": "EVN",
+      "title": "Khuyến cáo người dân cảnh giác trước chiêu trò lừa đảo cài đặt ứng dụng điện lực mới",
+      "source_url": "https://evn.com.vn/d/vi-VN/news/Khuyen-cao-nguoi-dan-canh-giac-truoc-chieu-tro-lua-dao-cai-dat-ung-dung-dien-luc-moi-60-134-500858",
+      "proposed_role": "scam_warning",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-008",
+      "scenario": "electricity_service",
+      "publisher": "EVNSPC",
+      "title": "Nâng cao trải nghiệm số cho khách hàng: EVN triển khai ứng dụng EVN CSKH dùng chung trên toàn quốc",
+      "source_url": "https://cskh.evnspc.vn/TinTuc/TinTucChiTiet?LoaiTinBai=ALL&MaTinBai=2919",
+      "proposed_role": "legitimate_workflow",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-009",
+      "scenario": "electricity_service",
+      "publisher": "EVNSPC",
+      "title": "Hướng dẫn thanh toán tiền điện",
+      "source_url": "https://cskh.evnspc.vn/ThanhToanTienDien/HuongDanThanhToan",
+      "proposed_role": "legitimate_workflow",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-010",
+      "scenario": "online_coercion",
+      "publisher": "Bộ Công an",
+      "title": "Cảnh giác trước thủ đoạn bắt cóc online",
+      "source_url": "https://www.bocongan.gov.vn/bai-viet/canh-giac-thu-doan-bat-coc-online-gia-danh-cong-an-co-lap-sinh-vien-de-chiem-doat-tien-1791168262",
+      "proposed_role": "mixed_warning_response",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-011",
+      "scenario": "image_based_extortion",
+      "publisher": "Bộ Công an",
+      "title": "Cảnh giác với thủ đoạn ghép ảnh tống tiền trên không gian mạng",
+      "source_url": "https://www.bocongan.gov.vn/bai-viet/canh-giac-voi-thu-doan-ghep-anh-tong-tien-tren-khong-gian-mang-1791190146",
+      "proposed_role": "mixed_warning_response",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    },
+    {
+      "candidate_id": "CANDIDATE-012",
+      "scenario": "recovery_refund_scam",
+      "publisher": "Công an tỉnh Khánh Hòa",
+      "title": "Cảnh báo thủ đoạn lừa đảo giả danh hỗ trợ lấy lại tiền bị treo, hoàn tiền bị lỗi",
+      "source_url": "https://congan.khanhhoa.gov.vn/vi/canh-bao-thu-doan-lua-dao-gia-danh-ho-tro-lay-lai-tien-bi-treo-hoan-tien-bi-loi",
+      "proposed_role": "scam_warning",
+      "status": "web_discovered_candidate_not_ingested",
+      "published_at": null,
+      "publication_date_status": "not_normalized_in_proposal"
+    }
+  ]
+}

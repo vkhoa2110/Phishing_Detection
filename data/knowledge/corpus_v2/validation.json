@@ -1,0 +1,34 @@
+{
+  "documents": 37,
+  "by_kind": {
+    "scam_warning": 20,
+    "incident_response": 2,
+    "legitimate_workflow": 11,
+    "mixed_guidance": 4
+  },
+  "publishers": 19,
+  "known_publication_dates": 22,
+  "unknown_publication_dates": [
+    "VN-RAG-005",
+    "VN-RAG-011",
+    "VN-RAG-012",
+    "VN-RAG-014",
+    "VN-RAG-015",
+    "VN-RAG-018",
+    "VN-RAG-019",
+    "VN-RAG-020",
+    "VN-RAG-021",
+    "VN-RAG-022",
+    "VN-RAG-023",
+    "VN-RAG-103",
+    "VN-RAG-104",
+    "VN-RAG-106",
+    "VN-RAG-109"
+  ],
+  "all_source_ids_unique": true,
+  "all_source_text_hashes_unique": true,
+  "catalog_notes_consistent": true,
+  "snapshot_files_hash_verified": true,
+  "content_kind": "editorial_summary_not_verbatim",
+  "indexed": false
+}

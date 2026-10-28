@@ -1,0 +1,6 @@
+-r base.txt
+# Install the CPU-only torch wheel separately using the command in docs/guides/RAG.md.
+torch==2.9.1
+transformers==4.57.6
+huggingface-hub==0.36.2
+safetensors==0.7.0

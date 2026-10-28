@@ -22,7 +22,7 @@ from sklearn.metrics import (accuracy_score, average_precision_score, confusion_
                              f1_score, precision_score, recall_score, roc_auc_score)
 import tldextract
 
-from app.fusion import fuse
+from app.fusion import fuse_legacy as fuse
 from app.llm_service import LLMFailure, LLMService
 from app.ml_service import ModelService
 from app.privacy import redact

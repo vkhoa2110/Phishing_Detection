@@ -1,0 +1,27 @@
+{
+  "raw_records": 2991,
+  "unique_raw_texts": 2630,
+  "upstream_exact_train_test_overlap": 27,
+  "deduplicated_usable": 2435,
+  "excluded": {
+    "invalid_or_overlength": 4,
+    "conflicting_after_redaction": 1
+  },
+  "source_labels": {
+    "0": 1733,
+    "1": 702
+  },
+  "upstream_claim": "Authors describe real, contributor-consented, anonymized SMS; not independently verified here.",
+  "source_label_semantics": "0=legitimate; 1=spam/scam combined, NOT a phishing gold label",
+  "grouping": {
+    "groups": 1322,
+    "largest_group": 448,
+    "method": "connected components: identical template, token-set Jaccard >=0.85, or shared registrable domain; bundled PSL, no network"
+  },
+  "selected": 200,
+  "dev": 80,
+  "test": 120,
+  "selected_with_url": 103,
+  "selected_groups": 182,
+  "cross_split_domains": 0
+}

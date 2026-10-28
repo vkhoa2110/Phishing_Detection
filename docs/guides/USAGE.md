@@ -1,6 +1,6 @@
 # PhishLens — Phishing Detection & Analysis
 
-Bản cơ bản cho dự án của **Lê Văn Khoa**: giao diện tiếng Việt kiểm tra URL, email và tin nhắn, kết hợp mô hình ML đã huấn luyện với DeepSeek-V4-Flash qua API FPT. **Chưa sử dụng RAG.**
+Bản cơ bản cho dự án của **Lê Văn Khoa**: giao diện tiếng Việt kiểm tra URL, email và tin nhắn, kết hợp mô hình ML đã huấn luyện với DeepSeek-V4-Flash qua API FPT. Có thể bật **Tham khảo tài liệu có nguồn (RAG)** sau khi [chuẩn bị chỉ mục cục bộ](RAG.md).
 
 Ứng dụng gồm FastAPI và giao diện HTML/CSS/JavaScript, chạy cùng một địa chỉ. Không cần Node.js, npm, GPU hoặc cơ sở dữ liệu. Các tệp giao diện và biểu tượng nằm sẵn trong dự án, không dùng CDN.
 
@@ -78,7 +78,7 @@ Tài liệu đối chiếu:
 4. Bấm **Phân tích nội dung**. Khi dùng LLM, ứng dụng mở bản xem trước đã che một số thông tin. Kiểm tra, sửa thêm nếu cần, đánh dấu đồng ý rồi gửi.
 5. Xem cảnh báo tổng hợp, kết quả từng URL, nhận định LLM, bằng chứng và hướng dẫn. Có thể tải kết quả JSON về máy.
 
-Việc che dữ liệu dùng quy tắc cho email, số điện thoại, mã xác thực/thông tin truy cập, dãy số dài, giá trị query, fragment và tài khoản trong URL. Quy tắc có thể bỏ sót hoặc che thừa; bản xem trước để bạn kiểm tra. Không có bước bảo đảm tự động che hết tên, địa chỉ hoặc mọi thông tin cá nhân. Khi bạn sửa bản gửi, LLM phân tích **bản đã sửa**; ML vẫn phân loại các URL trong bản gốc tại máy chạy ứng dụng.
+Việc che dữ liệu dùng quy tắc cho email, số điện thoại, mã xác thực/thông tin truy cập, dãy số dài, giá trị query, fragment và tài khoản trong URL. Quy tắc có thể bỏ sót hoặc che thừa; bản xem trước để bạn kiểm tra. Không có bước bảo đảm tự động che hết tên, địa chỉ hoặc mọi thông tin cá nhân. Khi bạn sửa bản gửi, LLM phân tích **bản đã sửa**; metadata ML chỉ kèm URL còn xuất hiện trong bản đó. ML vẫn phân loại các URL trong bản gốc tại máy chạy ứng dụng. RAG truy xuất từ bản đã sửa, đã che và không dùng score ML; tối đa ba tóm lược công khai được gửi cùng nội dung khi bạn bật tùy chọn này.
 
 Ứng dụng không lưu lịch sử nội dung vào cơ sở dữ liệu hoặc tệp log. Dữ liệu tồn tại tạm thời trong bộ nhớ để xử lý và trên giao diện cho đến khi bạn xóa/đóng trang. File JSON bạn chủ động tải có thể chứa URL gốc của lượt kiểm tra. Chính sách lưu dữ liệu tại FPT phụ thuộc dịch vụ và tài khoản của bạn.
 
@@ -87,21 +87,23 @@ Việc che dữ liệu dùng quy tắc cho email, số điện thoại, mã xác
 - Trích xuất URL → sinh feature bằng đúng mã trong gói → mô hình ML → điểm và ngưỡng từ `config.json`.
 - Che dữ liệu → người dùng xác nhận → LLM đọc văn bản và, nếu được bật, kết quả ML. Không gửi nguyên tham số nhạy cảm trong URL qua phần metadata ML.
 - Kiểm tra JSON, giá trị cảnh báo, trích đoạn bằng chứng. Quote không xuất hiện trong bản đã gửi bị loại. Nhận định HIGH/WARNING thiếu bằng chứng hợp lệ chuyển thành UNKNOWN.
-- Tổng hợp cảnh báo theo quy tắc trong `app/fusion.py`, hiển thị riêng ML/LLM khi hai bên khác nhau.
+- Đối chiếu theo `separate-assessments-2.0`: hành vi trong tin nhắn và rủi ro URL là hai kết quả riêng. Mặc định không gửi điểm ML cho LLM; ML vẫn kiểm tra URL tại máy.
 
-Prompt và dữ liệu được tách thành system/user message. LLM không có công cụ mở URL, tra WHOIS, thực thi lệnh hay tải tệp. Prompt injection được giảm thiểu bằng chỉ dẫn và kiểm tra đầu ra, chưa thể xem là đã giải quyết hoàn toàn. Bản này chưa có RAG, nguồn dẫn, blacklist thời gian thực, phân tích HTML hay xác minh tên miền ngân hàng.
+Prompt và dữ liệu được tách thành system/user message. LLM không có công cụ mở URL, tra WHOIS, thực thi lệnh hay tải tệp. Prompt injection được giảm thiểu bằng chỉ dẫn và kiểm tra đầu ra, chưa thể xem là đã giải quyết hoàn toàn. RAG tùy chọn bổ sung tóm lược và URL nguồn đã duyệt. Ứng dụng vẫn chưa tra blacklist thời gian thực, phân tích HTML hay xác minh tên miền ngân hàng.
 
-| Tình huống | Kết quả tổng hợp |
+| Tình huống | Hành vi trong tin nhắn / rủi ro URL |
 |---|---|
-| ML có URL HIGH | HIGH, kể cả khi LLM nhận định LOW hoặc API lỗi |
-| LLM HIGH có bằng chứng hợp lệ | HIGH, kể cả khi URL có điểm thấp |
-| ML WARNING hoặc LLM WARNING hợp lệ | Ít nhất WARNING |
-| Có URL chưa đánh giá được, chưa có cảnh báo khác | UNKNOWN |
-| URL riêng lẻ có ML LOW | LOW cho URL đó, kèm lưu ý phạm vi phân tích |
-| Email/tin nhắn chỉ có ML LOW, LLM tắt/lỗi/UNKNOWN | UNKNOWN cho toàn bộ thông điệp |
-| Không có URL, LLM hợp lệ | Dùng nhận định LLM |
+| LLM LOW, ML HIGH | Hành vi LOW; URL HIGH vẫn hiện rõ, yêu cầu xác minh |
+| LLM HIGH có bằng chứng hợp lệ, ML LOW | Hành vi HIGH; URL LOW, nêu rõ hai mức khác nhau |
+| LLM WARNING hợp lệ | Hành vi WARNING; URL được đánh giá riêng |
+| Có URL lỗi nhưng LLM hợp lệ | Giữ nhận định hành vi; URL UNKNOWN/partial và cần kiểm tra |
+| URL riêng lẻ có ML LOW | Headline LOW cho chuỗi URL đó, kèm lưu ý phạm vi |
+| LLM tắt/lỗi/UNKNOWN | Hành vi UNKNOWN; không xóa cảnh báo URL |
+| Không có URL, LLM hợp lệ | Hành vi theo LLM; URL ghi không có |
 
 **LOW** nghĩa là chưa phát hiện dấu hiệu rõ ràng qua phần đã phân tích; không đồng nghĩa chắc chắn an toàn. Điểm ML chưa được hiệu chỉnh thành xác suất. Không thay đổi ngưỡng hoặc tự huấn luyện lại khi khởi động ứng dụng.
+
+Prompt text hiện dùng `message-2.0`/`message-rag-2.0`. Headline text chỉ áp dụng cho bản người dùng đã xác nhận gửi LLM; giao diện ghi rõ nếu bạn sửa bản này. [Thiết kế và kiểm tra v2](../evaluation/CONTEXT_V2.md). Quy tắc max-alarm cũ được giữ riêng cho các thí nghiệm v1.
 
 ## 6. Cấu trúc mã nguồn
 
@@ -150,4 +152,4 @@ Xem [đánh giá và diễn giải kết quả](../evaluation/SYNTHETIC.md), [ph
 
 ## 10. Kho tài liệu chuẩn bị cho RAG
 
-Đã thu thập **25 nguồn riêng biệt từ 11 đơn vị**, gồm 15 cảnh báo thủ đoạn, 7 hướng dẫn/quy trình hợp lệ, 2 hướng dẫn xử lý sự cố và 1 tài liệu kết hợp. [Hướng dẫn kho tài liệu](../../data/knowledge/README.md), [danh mục nguồn CSV](../../data/knowledge/corpus_v1/sources.csv) và [corpus tóm lược có provenance](../../data/knowledge/corpus_v1/documents.jsonl) được lưu trong dự án. Nội dung là bản tóm lược biên tập có nguồn dẫn; 14 nguồn có ngày công bố được xác minh, các nguồn còn lại để trống thay vì đoán. Giai đoạn này chuẩn bị tài liệu; ứng dụng vẫn chạy baseline chưa dùng truy xuất RAG.
+Đã thu thập **25 nguồn riêng biệt từ 11 đơn vị**, gồm 15 cảnh báo thủ đoạn, 7 hướng dẫn/quy trình hợp lệ, 2 hướng dẫn xử lý sự cố và 1 tài liệu kết hợp. [Hướng dẫn kho tài liệu](../../data/knowledge/README.md), [danh mục nguồn CSV](../../data/knowledge/corpus_v1/sources.csv) và [corpus tóm lược có provenance](../../data/knowledge/corpus_v1/documents.jsonl) được lưu trong dự án. Nội dung là bản tóm lược biên tập có nguồn dẫn; 14 nguồn có ngày công bố được xác minh, các nguồn còn lại để trống thay vì đoán. Đã tích hợp truy xuất bằng E5-small, lựa chọn ngưỡng trên tập dev và kiểm tra nguồn dẫn. Xem [hướng dẫn RAG](RAG.md). Hiệu quả phân loại và rubric vẫn cần đánh giá độc lập.

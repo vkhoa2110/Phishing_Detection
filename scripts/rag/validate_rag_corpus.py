@@ -18,8 +18,15 @@ def validate(corpus, catalog_path):
     catalog = collector.load_catalog(catalog_path)
     sources = {s["id"]: s for s in catalog["sources"]}
     documents = [json.loads(line) for line in (corpus / "documents.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
-    if not 20 <= len(documents) <= 30:
-        raise ValueError("Initial corpus must contain 20–30 reviewed documents.")
+    if not 20 <= len(documents) <= 100:
+        raise ValueError("Small reviewed corpus must contain 20–100 documents.")
+    if catalog.get("require_all_sources") and {d["id"] for d in documents} != set(sources):
+        raise ValueError("Catalog and snapshot must contain exactly the same source IDs.")
+    manifest_path = corpus / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    for name, expected in manifest["files"].items():
+        if collector.sha((corpus / name).read_bytes()) != expected:
+            raise ValueError("Snapshot file hash mismatch: " + name)
     for field in ("id", "source_text_sha256", "summary_sha256"):
         if len({d[field] for d in documents}) != len(documents):
             raise ValueError("Duplicate " + field)
@@ -42,8 +49,6 @@ def validate(corpus, catalog_path):
     if sum(d["kind"] == "legitimate_workflow" for d in documents) < 6:
         raise ValueError("Include guidance for legitimate workflows, not only scam warnings.")
     # Freeze the final curator-reviewed content separately from the original HTTP collection phase.
-    manifest_path = corpus / "manifest.json"
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest.setdefault("collection_phase", {k: manifest[k] for k in ("catalog_sha256", "expanded_catalog_sha256", "files")})
     manifest["catalog_sha256"] = collector.sha(catalog_path.read_bytes())
     manifest["expanded_catalog_sha256"] = collector.sha(json.dumps(catalog, ensure_ascii=False, sort_keys=True))

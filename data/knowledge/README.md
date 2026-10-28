@@ -1,5 +1,7 @@
 # Kho tài liệu tiếng Việt cho RAG — bản đầu
 
+**Cập nhật 28/10/2026:** đã bàn giao [corpus v2 gồm 37 nguồn](corpus_v2/README.md), thêm 12 tài liệu cho 8 nhóm kịch bản. [Kết quả 100 truy vấn BM25/E5/Hybrid](../../docs/evaluation/RAG_RETRIEVAL_V2.md). Ứng dụng mặc định vẫn dùng v1. Phần dưới ghi nguồn gốc và trạng thái bản v1.
+
 Đã thu thập và rà soát **25 nguồn nội dung riêng biệt từ 11 đơn vị**, chốt ngày **26/10/2026**. Đầu vào ban đầu có 26 URL; một URL Microsoft trả về cùng nội dung với nguồn đã có nên được loại trùng. Tất cả nguồn được giữ trong corpus đã tải thành công bằng HTTPS, trích được nội dung và kiểm tra chủ đề. Robots.txt được kiểm tra trước khi thu thập.
 
 Kho hiện là **các bản tóm lược biên tập có provenance**, không phải bản sao nguyên văn bài báo hoặc tài liệu nhà cung cấp. Mỗi bản có khoảng 80–100 từ theo cách đếm khoảng trắng, mã nguồn riêng, URL bài gốc, đơn vị công bố, nhóm chủ đề, ngày thu thập và hash. Phần `context_note` ghi giới hạn sử dụng và lưu ý của người biên tập, được tách khỏi `text` tóm lược nguồn.
@@ -51,7 +53,7 @@ Các hướng dẫn từ năm 2023–2024 được dùng cho mô tả thủ đo�
 
 Chỉ lập chỉ mục `text` cùng tiêu đề/chủ đề cần thiết. Đính kèm `id`, URL, đơn vị và ngày làm metadata để dẫn nguồn. Hiển thị nội dung truy xuất dưới nhãn **tóm lược từ nguồn**, không ghi là trích nguyên văn bài gốc. Giữ `context_note` để kiểm soát phạm vi sử dụng.
 
-Chưa tạo embedding, chia chunk hoặc thay đổi prompt/API của ứng dụng. Sau khi chốt kho, có thể dùng tokenizer của embedding để chia đoạn; số đoạn thực tế cần đo từ bản tóm lược, không giả định đạt 100–200 chunk như dự toán cho kho nguyên văn. Khi triển khai, thử khả năng truy xuất trên tập phát triển trước khi mở rộng nguồn.
+Cập nhật 27/10/2026: đã tạo chỉ mục E5-small gồm 25 đoạn, mỗi đoạn từ một nguồn; các tóm lược đều nằm trong ngân sách 300 token nên chưa cần cắt nhỏ. Corpus chốt giữ nguyên byte. Runtime và công cụ dựng ở [hướng dẫn RAG](../../docs/guides/RAG.md); model và chỉ mục đặt cục bộ, không commit. Khi nội dung thay đổi phải dựng và chọn ngưỡng lại; không dùng chỉ mục cũ với corpus mới.
 
 Không đưa email người dùng, mẫu test PhishVN hoặc bộ 200 thông điệp đánh giá vào chỉ mục. Nếu xây tình huống dựa trên một cảnh báo trong kho, cần ghi nguồn gốc và tránh dùng bản gần như sao chép làm test độc lập. Những bài cảnh báo có nêu URL hoặc email độc hại không được dùng làm bằng chứng danh tiếng hiện tại chỉ vì chúng xuất hiện trong nguồn cũ.
 
@@ -72,3 +74,9 @@ Từ thư mục chứa `run.py`:
 ```
 
 Collector chỉ tải các URL trong danh mục đã duyệt và từ chối redirect ra ngoài danh sách host. Không đi theo các liên kết nghi vấn nằm trong bài, không tải ứng dụng hay tệp đính kèm và không gọi LLM. Khi nội dung gốc thay đổi, bản tóm lược cũ cần được rà soát lại; tải thành công và khớp chủ đề không tự chứng minh tóm lược vẫn đầy đủ hoặc chính xác.
+
+## Nguồn đề xuất mở rộng
+
+Ngày 28/10/2026 đã lập [12 nguồn ứng viên cho 8 nhóm kịch bản](proposals/rag_v2_sources.json), kèm [đề xuất tổ chức và đánh giá](../../docs/architecture/RAG_V2_PROPOSAL.md). Đây là danh mục tìm kiếm để biên tập/kiểm định tiếp, không phải corpus đã nhập chỉ mục. ID `CANDIDATE-*` không dùng làm nguồn dẫn trong ứng dụng. Ưu tiên Zalo QR, device code, email doanh nghiệp, điện lực, đặt vé/phòng; ghép cảnh báo với quy trình hợp lệ và hướng dẫn xử lý.
+
+Đợt triển khai sau đề xuất đã thu thập đủ 12 nguồn; [bảng ánh xạ](corpus_v2/ingestion_map.json) nối ID ứng viên với `VN-RAG-101–112`. Danh mục đề xuất giữ nguyên như tài liệu lịch sử, trạng thái thực nghiệm mới xem ở corpus v2.

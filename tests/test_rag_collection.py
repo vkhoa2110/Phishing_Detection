@@ -69,6 +69,27 @@ def test_verified_publication_hint_wins_over_unreliable_inferred_date(monkeypatc
     assert result["date_status"] == "visible_date_confirmed"
 
 
+def test_reviewed_selectors_extract_faq_and_skip_empty_logo_heading(monkeypatch):
+    extraction_fixture(monkeypatch)
+    html = '<h1></h1><h3 class="article-title">Hướng dẫn</h3><div class="faq">' + ('OTP quy trình hợp lệ. ' * 20) + '</div>'
+    item = source() | {"content_selector": ".faq", "title_selector": ".article-title"}
+    parsed = collector.parse_source(html.encode(), item["url"], item)
+    assert parsed["title"] == "Hướng dẫn" and "quy trình" in parsed["text"]
+    with pytest.raises(ValueError, match="selector"):
+        collector.parse_source(html.encode(), item["url"], item | {"content_selector": ".missing"})
+
+
+def test_malformed_publisher_timezone_does_not_invent_a_date(monkeypatch):
+    extraction_fixture(monkeypatch)
+    def fail(*args, **kwargs):
+        raise ValueError("offset must be a timedelta")
+    monkeypatch.setattr(collector.trafilatura, "extract_metadata", fail)
+    item = source() | {"title_selector": "h1.article"}
+    html = '<h1>Site logo</h1><h1 class="article">Article</h1><time>09/10/2024</time>'
+    parsed = collector.parse_source(html.encode(), item["url"], item)
+    assert parsed["title"] == "Article" and parsed["published_at"] is None
+
+
 def test_publisher_date_selector_ignores_other_footer_dates(monkeypatch):
     extraction_fixture(monkeypatch)
     html = '<h1>Cảnh báo OTP</h1><p class="text-bca-gray-400">08/09/2025</p><footer><span>01/01/2026</span></footer>'

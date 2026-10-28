@@ -1,0 +1,37 @@
+{
+  "snapshot": "corpus_v2",
+  "catalog_sha256": "5f6cae96de55ca6eefa7e6877f144f6ac486bfdb40a471e1b0ec6d4401445b44",
+  "expanded_catalog_sha256": "0d089ad6bf64012f1fd8b19ade51cf4060320496900af9cd1821e4148b9e8ad9",
+  "parents": [
+    {
+      "snapshot": "data/knowledge/corpus_v1",
+      "manifest_sha256": "69e6ae96b54b3ebef8dc15c3019e932bee13fd9ced2c238bcbb6809a50dc166a",
+      "documents_sha256": "6741d6496d019afae14c263fba44ff8b5a7b39828305a85e0f2b299572b6dc83"
+    },
+    {
+      "snapshot": "data/knowledge/collections/v2_additions_20261028",
+      "manifest_sha256": "033b431cb79f7dddb59e4fc4ab02e13186c5020b156196fa4c52a7f4775873b5",
+      "documents_sha256": "f2f2529f411446091b51a465e899f2c0a17eaa050aa6bda82e3dedf35b276595"
+    }
+  ],
+  "assembler_sha256": "36cd8803297cf6038b8837f380285418a6043743ea8988adf3508c202459abdd",
+  "collected_at": "2026-10-28T03:46:52.136819+00:00",
+  "files": {
+    "documents.jsonl": "a65c476e01f5d992ac701a42bb01d2a05948283029229d4669d0e107cb18e56f",
+    "sources.csv": "d9fe61d83510966c71ca3896c566817353e79f6b2d3467bf4b3e00a2444ce60a",
+    "collection_report.json": "b7642c28aa4ceb1a27f71e88b53b87c45c80d9ff829d028f73f9aefe27a2140e",
+    "source_review.json": "68d47636319164605a596a358e45cdd057fc8afcf06785df78b7cfbf8faf442f"
+  },
+  "collection_phase": {
+    "catalog_sha256": "5f6cae96de55ca6eefa7e6877f144f6ac486bfdb40a471e1b0ec6d4401445b44",
+    "expanded_catalog_sha256": "0d089ad6bf64012f1fd8b19ade51cf4060320496900af9cd1821e4148b9e8ad9",
+    "files": {
+      "documents.jsonl": "a65c476e01f5d992ac701a42bb01d2a05948283029229d4669d0e107cb18e56f",
+      "sources.csv": "d9fe61d83510966c71ca3896c566817353e79f6b2d3467bf4b3e00a2444ce60a",
+      "collection_report.json": "b7642c28aa4ceb1a27f71e88b53b87c45c80d9ff829d028f73f9aefe27a2140e"
+    }
+  },
+  "curation_completed_at": "2026-10-28T03:46:52.349853+00:00",
+  "curation_validator_sha256": "ef46dd1de2989429434b045dead41e670b1e2e74cd07f78a557097198c295fa1",
+  "curation_scope": "Source relevance, note fidelity, duplicate control and metadata; not independent expert approval."
+}

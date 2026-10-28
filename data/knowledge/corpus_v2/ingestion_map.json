@@ -1,0 +1,89 @@
+{
+  "proposal": "../proposals/rag_v2_sources.json",
+  "mapping": [
+    {
+      "candidate_id": "CANDIDATE-001",
+      "document_id": "VN-RAG-101",
+      "source_url": "https://help.zalo.me/huong-dan/chuyen-muc/bao-mat-va-rieng-tu/an-toan-hon-khi-quet-ma-qr-dang-nhap-tren-zalo/",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-002",
+      "document_id": "VN-RAG-102",
+      "source_url": "https://www.microsoft.com/en-us/security/blog/2026/04/06/ai-enabled-device-code-phishing-campaign-april-2026/",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-003",
+      "document_id": "VN-RAG-103",
+      "source_url": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-device-code",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-004",
+      "document_id": "VN-RAG-104",
+      "source_url": "https://techcombank.com/thong-tin/thong-bao/canh-giac-truoc-nhung-hanh-vi-lua-dao-qua-email-doanh-nghiep",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-005",
+      "document_id": "VN-RAG-105",
+      "source_url": "https://caa.gov.vn/hoat-dong-nganh/canh-bao-hinh-thuc-lua-mua-ve-may-bay-gia-re-de-chiem-doat-tai-san-20240820085544856.htm",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-006",
+      "document_id": "VN-RAG-106",
+      "source_url": "https://www.vietnamairlines.com/vn/vi/help-desk/common-topics/purchase-tickets-payment-VAT-invoice/online-payment-methods",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-007",
+      "document_id": "VN-RAG-107",
+      "source_url": "https://evn.com.vn/d/vi-VN/news/Khuyen-cao-nguoi-dan-canh-giac-truoc-chieu-tro-lua-dao-cai-dat-ung-dung-dien-luc-moi-60-134-500858",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-008",
+      "document_id": "VN-RAG-108",
+      "source_url": "https://cskh.evnspc.vn/TinTuc/TinTucChiTiet?LoaiTinBai=ALL&MaTinBai=2919",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-009",
+      "document_id": "VN-RAG-109",
+      "source_url": "https://cskh.evnspc.vn/ThanhToanTienDien/HuongDanThanhToan",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-010",
+      "document_id": "VN-RAG-110",
+      "source_url": "https://www.bocongan.gov.vn/bai-viet/canh-giac-thu-doan-bat-coc-online-gia-danh-cong-an-co-lap-sinh-vien-de-chiem-doat-tien-1791168262",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-011",
+      "document_id": "VN-RAG-111",
+      "source_url": "https://www.bocongan.gov.vn/bai-viet/canh-giac-voi-thu-doan-ghep-anh-tong-tien-tren-khong-gian-mang-1791190146",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    },
+    {
+      "candidate_id": "CANDIDATE-012",
+      "document_id": "VN-RAG-112",
+      "source_url": "https://congan.khanhhoa.gov.vn/vi/canh-bao-thu-doan-lua-dao-gia-danh-ho-tro-lay-lai-tien-bi-treo-hoan-tien-bi-loi",
+      "collection_status": "collected_and_assistant_reviewed",
+      "live_application_index": false
+    }
+  ]
+}

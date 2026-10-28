@@ -1,0 +1,39 @@
+{
+  "snapshot": "vi-phishing-knowledge-v2-additions-20261028",
+  "started_at": "2026-10-28T03:46:02.159464+00:00",
+  "completed_at": "2026-10-28T03:46:09.528009+00:00",
+  "candidates": 12,
+  "documents": 12,
+  "deferred": 0,
+  "by_kind": {
+    "mixed_guidance": 3,
+    "scam_warning": 5,
+    "legitimate_workflow": 4
+  },
+  "by_publisher": {
+    "Zalo": 1,
+    "Microsoft": 1,
+    "Microsoft Learn": 1,
+    "Techcombank": 1,
+    "Cục Hàng không Việt Nam": 1,
+    "Vietnam Airlines": 1,
+    "EVN": 1,
+    "EVNSPC": 2,
+    "Bộ Công an": 2,
+    "Công an tỉnh Khánh Hòa": 1
+  },
+  "by_topic": {
+    "zalo_qr": 1,
+    "device_code": 2,
+    "business_email_compromise": 1,
+    "travel_booking": 2,
+    "electricity_service": 3,
+    "online_coercion": 1,
+    "image_based_extortion": 1,
+    "recovery_refund_scam": 1
+  },
+  "verified_publication_dates": 8,
+  "unknown_publication_dates": 4,
+  "full_source_articles_redistributed": false,
+  "indexed": false
+}

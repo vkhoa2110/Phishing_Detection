@@ -1,1 +1,11 @@
 @import url("/static/base.css");
+
+.source-link { display: inline-block; margin-top: .5rem; color: #17667b; text-decoration: underline; overflow-wrap: anywhere; }
+.source-link:focus-visible { outline: 2px solid #17667b; outline-offset: 3px; }
+
+.url-assessment { padding: 16px 18px; margin: 14px 0; border: 1px solid #cbd5e1; border-left-width: 5px; border-radius: 10px; overflow-wrap: anywhere; }
+.url-assessment p { margin: 7px 0 0; font-size: 13px; line-height: 1.6; }
+.url-assessment.HIGH { color: #991b1b; border-color: #fca5a5; background: #fff1f2; }
+.url-assessment.WARNING { color: #92400e; border-color: #fcd34d; background: #fffbeb; }
+.url-assessment.LOW { color: #115e59; border-color: #99f6e4; background: #f0fdfa; }
+.url-assessment.UNKNOWN { color: #334155; background: #f8fafc; }
