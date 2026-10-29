@@ -1,62 +1,103 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>PhishLens — Kiểm tra nguy cơ lừa đảo</title>
+  <meta name="theme-color" content="#f6f7f3">
+  <meta name="description" content="Kiểm tra dấu hiệu lừa đảo trong tin nhắn, email và đường dẫn. Xem căn cứ và gợi ý xử lý bằng tiếng Việt.">
+  <title>PhishLens — Kiểm tra trước khi tin</title>
   <link rel="icon" href="/static/shield.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/styles.css">
   <script src="/static/app.js" defer></script>
 </head>
 <body>
-<header class="site-header"><div class="header-inner">
-  <a class="brand" href="/" aria-label="PhishLens, trang chủ"><img src="/static/shield.svg" alt="" width="38" height="42"><span>Phish<span class="brand-light">Lens</span><small>PHISHING DETECTION & ANALYSIS</small></span></a>
-  <nav aria-label="Điều hướng"><span class="nav-active">Kiểm tra</span><button id="how-button" class="nav-link" type="button">Cách hoạt động <span aria-hidden="true">↗</span></button></nav>
-  <div class="local-label"><span class="status-dot"></span> Chạy cục bộ</div>
-</div></header>
+<a class="skip-link" href="#input-text">Đến nội dung cần kiểm tra</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="PhishLens, trang chủ"><img src="/static/shield.svg" alt="" width="34" height="38"><span>Phish<span class="brand-light">Lens</span></span></a>
+    <span class="brand-caption">Kiểm tra trước khi tin.</span>
+    <nav aria-label="Trợ giúp và thiết lập">
+      <button id="how-button" class="nav-link" type="button" aria-label="Hướng dẫn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 .4c0 1.6-2.5 2-2.5 3.6m0 3h.01"/></svg><span>Hướng dẫn</span></button>
+      <button id="settings-button" class="nav-link" type="button" aria-label="Thiết lập"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></svg><span>Thiết lập</span></button>
+    </nav>
+  </div>
+</header>
 <main class="page">
-  <section class="intro">
-    <div><div class="eyebrow"><span class="eyebrow-line"></span> KIỂM TRA URL · EMAIL · TIN NHẮN</div><h1>Kiểm tra nội dung<br>trước khi làm theo.</h1><p>Nhận diện dấu hiệu đáng ngờ và xem căn cứ của cảnh báo<br class="desktop-break"> bằng mô hình học máy kết hợp LLM.</p></div>
-    <div class="system-panel"><div class="system-top"><span class="tiny-label">TRẠNG THÁI HỆ THỐNG</span><span class="version-tag">RAG v1</span></div>
-      <div class="system-row"><span class="system-icon">ML</span><div><strong>Mô hình phân loại URL</strong><span id="model-status">Đang kiểm tra gói mô hình…</span></div><button id="reload-model" class="icon-button" type="button" aria-label="Nạp lại mô hình" title="Nạp lại mô hình">↻</button></div>
-      <div class="system-row"><span class="system-icon teal">AI</span><div><strong id="llm-name">DeepSeek-V4-Flash</strong><span id="api-status">Qua API FPT · Đang kiểm tra kho tham khảo</span></div><span class="small-dot" id="api-dot"></span></div>
-    </div>
+  <section class="intro" aria-labelledby="page-title">
+    <div class="eyebrow"><span class="eyebrow-dot"></span> THÊM MỘT BƯỚC KIỂM TRA, BỚT MỘT LẦN LO LẮNG</div>
+    <h1 id="page-title">Có gì đó đáng ngờ?<br><span>Cùng kiểm tra trước đã.</span></h1>
+    <p>Dán tin nhắn, email hoặc đường dẫn bạn vừa nhận.<br class="desktop-break"> PhishLens giúp bạn nhận diện dấu hiệu và biết nên làm gì tiếp theo.</p>
   </section>
   <div id="connection-error" class="error-box" role="alert" hidden></div>
-  <section class="workspace" aria-label="Không gian phân tích">
-    <form id="analysis-form" class="input-card card">
-      <div class="section-heading"><span class="step">01</span><div><h2>Nội dung cần kiểm tra</h2><p>Dán đường dẫn hoặc văn bản bạn nhận được.</p></div></div>
-      <div class="tabs" role="group" aria-label="Loại đầu vào"><button id="tab-text" type="button" class="tab active" aria-pressed="true">Email / tin nhắn</button><button id="tab-url" type="button" class="tab" aria-pressed="false">URL riêng lẻ</button></div>
-      <label for="input-text" class="field-label" id="input-label">Nội dung email hoặc tin nhắn</label>
-      <textarea id="input-text" maxlength="8000" rows="9" placeholder="Dán nội dung tại đây. Có thể chứa hoặc không chứa đường dẫn…" required spellcheck="false"></textarea>
-      <div class="input-meta"><span id="input-hint">Tối đa 5 URL trong một nội dung</span><span><span id="char-count">0</span> / 8.000</span></div>
-      <div class="examples"><span>Thử với</span><button type="button" data-sample="suspicious">Tin nhắn đáng ngờ</button><button type="button" data-sample="normal">Thông báo thông thường</button></div>
-      <div class="divider"></div>
-      <div class="option-row"><label class="switch"><input id="use-llm" type="checkbox" checked><span class="switch-track"></span><span class="sr-only">Bật phân tích bằng LLM</span></label><div><label for="use-llm" class="option-title">Phân tích thêm bằng LLM</label><p>Giải thích dấu hiệu và gợi ý cách xử lý bằng tiếng Việt.</p></div><span class="api-tag">API</span></div>
-      <label class="check-row"><input id="include-ml" type="checkbox"><span>Cho LLM tham khảo thêm điểm URL (tùy chọn)</span></label>
-      <p class="help-text">URL luôn được kiểm tra riêng tại máy. Tắt tùy chọn này để LLM tập trung vào hành vi trong tin nhắn.</p>
-      <label class="check-row"><input id="use-rag" type="checkbox"><span>Tham khảo tài liệu có nguồn (RAG)</span></label>
-      <p id="rag-status" class="help-text">Đang kiểm tra kho tài liệu cục bộ…</p>
-      <details class="api-settings"><summary>Kết nối LLM <span id="key-status">Chưa nhập API key</span></summary><div class="settings-body">
-        <label class="field-label" for="endpoint">API endpoint</label><input id="endpoint" type="url" value="https://mkp-api.fptcloud.com/v1/chat/completions" autocomplete="off" spellcheck="false">
-        <label class="field-label" for="llm-model">Tên model</label><input id="llm-model" value="DeepSeek-V4-Flash" autocomplete="off" spellcheck="false">
-        <label class="field-label" for="api-key">API key</label><div class="key-field"><input id="api-key" type="password" autocomplete="off" placeholder="Nhập key hoặc dùng key trong .env" spellcheck="false"><button id="show-key" type="button" aria-label="Hiện API key">Hiện</button></div>
-        <p class="help-text">Key chỉ được giữ trong phiên đang mở, không lưu sau khi tải lại trang. Nếu đã đặt key trong .env, bạn có thể để trống.</p>
-      </div></details>
-      <div class="privacy-note"><svg width="17" height="19" viewBox="0 0 20 22" aria-hidden="true"><path d="M10 1 2 4v6c0 5 8 10 8 10s8-5 8-10V4Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m6 10 3 3 5-6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Bạn sẽ xác nhận bản gửi tới FPT. Khi bật RAG, các tóm lược liên quan cũng được gửi để tham khảo.</span></div>
+  <div class="workspace">
+    <form id="analysis-form" class="input-card card" aria-labelledby="input-title">
+      <div class="card-heading"><div><h2 id="input-title">Bạn muốn kiểm tra gì?</h2><p>Chỉ cần nội dung bạn nhận được, không cần mở đường dẫn.</p></div><span class="card-mark" aria-hidden="true">01</span></div>
+      <div class="tabs" role="group" aria-label="Loại nội dung">
+        <button id="tab-text" type="button" class="tab active" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6 3V6a2 2 0 0 1 2-2Z"/><path d="M7 9h10M7 13h6"/></svg>Tin nhắn / email</button>
+        <button id="tab-url" type="button" class="tab" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 13 4-4m-6 6-1 1a4.2 4.2 0 0 1-6-6l4-4a4.2 4.2 0 0 1 6 0m2 2 1-1a4.2 4.2 0 0 1 6 6l-4 4a4.2 4.2 0 0 1-6 0" transform="translate(1 1)"/></svg>Đường dẫn</button>
+      </div>
+      <div class="editor">
+        <label for="input-text" class="field-label" id="input-label">Nội dung email hoặc tin nhắn</label>
+        <textarea id="input-text" maxlength="8000" rows="5" placeholder="Ví dụ: “Tài khoản của bạn sắp bị khóa. Hãy xác minh ngay…”&#10;&#10;Dán toàn bộ nội dung để có thêm ngữ cảnh kiểm tra." required spellcheck="false" aria-describedby="input-hint"></textarea>
+        <div class="editor-footer"><span id="input-hint">Có thể kiểm tra cả tin nhắn không có đường dẫn</span><div><button class="clear-button" type="button" id="clear-button">Xóa</button><span class="char-counter"><span id="char-count">0</span> / 8.000</span></div></div>
+      </div>
+      <div class="examples"><span>Chưa có nội dung? Thử mẫu:</span><button type="button" data-sample="suspicious">Tin nhắn đáng ngờ <span aria-hidden="true">↗</span></button><button type="button" data-sample="normal">Tin nhắn thông thường <span aria-hidden="true">↗</span></button></div>
+      <div class="analysis-option"><div class="option-copy"><label for="use-llm" class="option-title" id="ai-label">Giải thích và gợi ý bằng AI</label><p id="ai-description">Hiểu dấu hiệu đáng ngờ, kể cả khi tin nhắn không có đường dẫn.</p></div><label class="switch"><input id="use-llm" type="checkbox" checked><span class="switch-track"></span><span class="sr-only">Bật giải thích và gợi ý bằng AI</span></label></div>
+      <p id="local-only-note" class="inline-notice" hidden>Đã tắt AI: chỉ kiểm tra các đường dẫn. Hành vi trong tin nhắn sẽ chưa được đánh giá.</p>
+      <div class="privacy-note"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></svg><span>Bạn được xem, sửa và xác nhận nội dung trước khi gửi tới dịch vụ AI bên ngoài.</span></div>
       <div id="form-error" class="error-box" role="alert" hidden></div>
-      <button class="primary-button" type="submit" id="analyze-button"><span id="button-label">Phân tích nội dung</span><span class="button-arrow" aria-hidden="true">→</span></button>
-      <button class="clear-button" type="button" id="clear-button">Xóa nội dung</button>
+      <button class="primary-button" type="submit" id="analyze-button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span id="button-label">Kiểm tra ngay</span><span class="button-arrow" aria-hidden="true">→</span></button>
+      <div class="submit-caption"><span>Không tự mở hoặc truy cập trang đích</span><span class="keyboard-hint">Ctrl / ⌘ + Enter</span></div>
     </form>
-    <section class="result-card card" aria-label="Kết quả phân tích" aria-live="polite" aria-atomic="false">
-      <div class="result-heading"><div class="section-heading"><span class="step">02</span><h2>Kết quả phân tích</h2></div><button id="download-result" class="text-button" type="button" hidden>Tải JSON ↓</button></div>
-      <div id="empty-state" class="empty-state"><div class="empty-art" aria-hidden="true"><span class="scan-line"></span><img src="/static/shield.svg" width="74" height="82" alt=""><span class="art-check">✓</span><span class="art-lines"><i></i><i></i><i></i></span></div><span class="empty-eyebrow">BẮT ĐẦU TỪ MỘT NỘI DUNG</span><h3>Xem rõ hơn trước khi tin.</h3><p>Nhập nội dung ở bên trái để xem mức cảnh báo,<br>dấu hiệu liên quan và hướng dẫn xử lý.</p><div class="empty-pills"><span>Phân loại URL</span><span>Phân tích ngữ cảnh</span><span>Giải thích</span></div><div class="empty-footnote">Chỉ phân tích đầu vào. Không tự mở đường dẫn.</div></div>
-      <div id="loading-state" class="loading-state" hidden><span class="loader"></span><h3>Đang phân tích nội dung</h3><p id="loading-message">Đang chạy mô hình và chờ phản hồi…</p><small>Kết quả sẽ hiển thị ngay khi xử lý hoàn tất.</small></div>
-      <div id="result-content" hidden></div>
-    </section>
+    <aside class="guidance" aria-label="Gợi ý bảo vệ bản thân">
+      <section class="guide-card">
+        <div class="guide-illustration" aria-hidden="true"><div class="illustration-orbit orbit-one"></div><div class="illustration-orbit orbit-two"></div><div class="illustration-message"><span></span><span></span><span></span></div><div class="illustration-shield"><img src="/static/shield.svg" alt="" width="57" height="63"></div><span class="illustration-spark spark-one">+</span><span class="illustration-spark spark-two">+</span></div>
+        <span class="guide-eyebrow">CHẬM LẠI MỘT CHÚT</span><h2>Đừng để sự vội vàng<br>quyết định thay bạn.</h2><p>Kẻ lừa đảo thường tạo áp lực để bạn làm theo trước khi kịp kiểm tra.</p>
+        <ul class="red-flags"><li><span aria-hidden="true">!</span>Giục chuyển tiền hoặc dọa khóa tài khoản</li><li><span aria-hidden="true">!</span>Yêu cầu mật khẩu, mã OTP hay thông tin thẻ</li><li><span aria-hidden="true">!</span>Nhờ cài ứng dụng hoặc đăng nhập qua link lạ</li></ul>
+      </section>
+      <details class="urgent-help"><summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5m0 3h.01"/></svg>Đã lỡ làm theo tin nhắn?</summary><div><p><strong>Nếu đã chuyển tiền hoặc lộ thông tin thẻ:</strong> liên hệ ngay ngân hàng qua số chính thức để yêu cầu hỗ trợ khóa giao dịch hoặc tài khoản.</p><p>Đổi mật khẩu bị lộ qua ứng dụng hoặc website chính thức. Giữ lại tin nhắn và bằng chứng để trình báo cơ quan công an.</p></div></details>
+      <div class="availability"><span id="service-dot" class="status-dot"></span><span id="service-status" role="status">Đang kết nối ứng dụng…</span></div>
+    </aside>
+  </div>
+  <section id="results-panel" class="result-card card" aria-labelledby="result-title" tabindex="-1" hidden>
+    <div class="result-heading"><div><span class="guide-eyebrow">ĐỐI CHIẾU TRƯỚC KHI LÀM THEO</span><h2 id="result-title">Kết quả kiểm tra</h2></div><button id="new-check" class="text-button" type="button">Kiểm tra nội dung khác <span aria-hidden="true">↑</span></button></div>
+    <div id="empty-state" hidden></div>
+    <div id="result-announcement" class="sr-only" role="status" aria-live="polite"></div>
+    <div id="loading-state" class="loading-state" role="status" hidden><span class="loader" aria-hidden="true"></span><div><h3>Đang kiểm tra nội dung của bạn</h3><p id="loading-message">Đang xử lý…</p><small>Bạn có thể giữ trang này mở trong lúc chờ.</small></div></div>
+    <div id="result-content" hidden></div>
   </section>
-  <footer class="page-footer"><span>PhishLens <span class="footer-separator">/</span> ML + LLM + RAG</span><span>Kết quả hỗ trợ kiểm tra, không bảo đảm tuyệt đối về độ an toàn.</span></footer>
+  <footer class="page-footer"><span><strong>PhishLens</strong> · Thêm căn cứ để bạn tự quyết định.</span><span>Kết quả mang tính hỗ trợ, không bảo đảm tuyệt đối về độ an toàn.</span></footer>
 </main>
-<dialog id="privacy-dialog" aria-labelledby="privacy-title"><div class="dialog-body"><div class="dialog-eyebrow">TRƯỚC KHI GỬI TỚI FPT</div><h2 id="privacy-title">Kiểm tra bản nội dung gửi đi</h2><p>Ứng dụng đã che một số thông tin theo quy tắc. Bạn cần kiểm tra và sửa thêm nếu còn dữ liệu cá nhân hoặc thông tin không muốn chia sẻ.</p><div id="masked-fields" class="masked-fields"></div><label class="field-label" for="preview-text">Nội dung gửi tới LLM</label><textarea id="preview-text" rows="9" maxlength="8000" spellcheck="false"></textarea><p class="help-text" id="preview-ml-note">Kết quả ML và URL đã che cũng được gửi nếu bạn bật tùy chọn tương ứng. Bản gốc chỉ dùng để phân loại URL tại máy chạy ứng dụng.</p><label class="consent-row"><input type="checkbox" id="consent"><span>Tôi đã kiểm tra và đồng ý gửi bản nội dung này qua API bên ngoài.</span></label><div id="preview-error" class="error-box" role="alert" hidden></div><div class="dialog-actions"><button id="cancel-preview" class="secondary-button" type="button">Quay lại</button><button id="confirm-send" class="primary-button" type="button" disabled>Gửi và phân tích →</button></div></div></dialog>
-<dialog id="how-dialog" aria-labelledby="how-title"><div class="dialog-body"><div class="dialog-eyebrow">ML + LLM + TÀI LIỆU THAM KHẢO</div><h2 id="how-title">Ứng dụng xử lý như thế nào?</h2><ol class="how-list"><li><strong>Phân loại URL tại máy chạy ứng dụng.</strong><p>Trích xuất đặc trưng từ chuỗi URL và dùng mô hình đã huấn luyện. Không truy cập trang đích.</p></li><li><strong>Phân tích ngữ cảnh bằng LLM.</strong><p>Sau khi bạn xác nhận, bản đã che được gửi tới FPT. Mặc định LLM đánh giá hành vi trong thông điệp, còn điểm URL được hiển thị riêng.</p></li><li><strong>Tham khảo tài liệu có nguồn.</strong><p>Khi bật RAG, ứng dụng tìm tài liệu phù hợp trong kho cục bộ. Tóm lược được gửi cùng bản nội dung đã xác nhận; không dùng để xác minh danh tiếng tên miền.</p></li><li><strong>Đối chiếu hai đánh giá.</strong><p>Ví dụ trong bài học có thể chứa URL đáng ngờ. Ứng dụng hiển thị riêng hành vi trong nội dung và cảnh báo URL, ghi rõ khi hai kết quả khác nhau. Nếu LLM lỗi hoặc chưa bật, hành vi được ghi là chưa đủ thông tin.</p></li></ol><p class="help-text">Điểm ML không phải xác suất lừa đảo đã hiệu chỉnh. Ứng dụng chưa tra cứu blacklist hoặc xác minh nguồn gửi. Tài liệu tham khảo là bản tóm lược biên tập, không phải trích nguyên văn bài gốc.</p><button id="close-how" type="button" class="primary-button">Đã hiểu</button></div></dialog>
-</body></html>
+<dialog id="settings-dialog" aria-labelledby="settings-title"><div class="dialog-body">
+  <div class="dialog-heading"><div><div class="dialog-eyebrow">TÙY CHỌN NÂNG CAO</div><h2 id="settings-title">Thiết lập phân tích</h2></div><button id="close-settings" class="icon-button" type="button" aria-label="Đóng thiết lập">×</button></div>
+  <p>Các thiết lập được dùng trong phiên này. Bạn có thể kiểm tra nội dung với cấu hình đã có sẵn.</p>
+  <div class="settings-section"><h3>Nguồn tham khảo và cách phân tích</h3>
+    <label class="check-row"><input id="use-rag" type="checkbox"><span><strong>Đối chiếu với tài liệu có nguồn</strong><span id="rag-status" class="help-text">Đang kiểm tra kho tài liệu…</span></span></label>
+    <label class="check-row"><input id="include-ml" type="checkbox"><span><strong>Cho AI tham khảo thêm điểm đường dẫn</strong><span class="help-text">Đường dẫn luôn được kiểm tra riêng. Mặc định AI tập trung vào hành vi trong tin nhắn.</span></span></label>
+  </div>
+  <details class="api-settings"><summary>Kết nối dịch vụ AI <span id="key-status">Đang kiểm tra…</span></summary><div class="settings-body">
+    <p class="help-text">Nội dung được gửi đến endpoint bên dưới sau khi bạn xác nhận. Chỉ sử dụng dịch vụ bạn tin cậy.</p>
+    <label class="field-label" for="endpoint">API endpoint</label><input id="endpoint" type="url" value="https://mkp-api.fptcloud.com/v1/chat/completions" autocomplete="off" spellcheck="false">
+    <label class="field-label" for="llm-model">Tên mô hình</label><input id="llm-model" value="DeepSeek-V4-Flash" autocomplete="off" spellcheck="false">
+    <label class="field-label" for="api-key">API key</label><div class="key-field"><input id="api-key" type="password" autocomplete="off" placeholder="Để trống nếu máy chủ đã cấu hình" spellcheck="false"><button id="show-key" type="button" aria-label="Hiện API key">Hiện</button></div>
+    <p class="help-text">Key nhập ở đây chỉ giữ trong phiên đang mở, không lưu sau khi tải lại trang.</p>
+  </div></details>
+  <details class="system-details"><summary>Trạng thái kỹ thuật</summary><div class="system-row"><div><strong>Mô hình kiểm tra đường dẫn</strong><span id="model-status">Đang kiểm tra…</span></div><button id="reload-model" class="secondary-button" type="button">Nạp lại</button></div><div class="system-row"><div><strong id="llm-name">Dịch vụ AI</strong><span id="api-status">Đang kiểm tra…</span></div><span class="status-dot" id="api-dot"></span></div></details>
+  <button id="done-settings" type="button" class="primary-button">Xong</button>
+</div></dialog>
+<dialog id="privacy-dialog" aria-labelledby="privacy-title"><div class="dialog-body">
+  <div class="dialog-eyebrow">BẠN QUYẾT ĐỊNH NỘI DUNG ĐƯỢC CHIA SẺ</div><h2 id="privacy-title">Kiểm tra bản nội dung gửi đi</h2>
+  <p id="preview-provider">Bản bên dưới sẽ được gửi tới dịch vụ AI bên ngoài. Ứng dụng đã che một số thông tin theo quy tắc; bạn cần kiểm tra và sửa thêm trước khi gửi.</p>
+  <div id="masked-fields" class="masked-fields"></div><label class="field-label" for="preview-text">Nội dung gửi tới AI — bạn có thể chỉnh sửa</label><textarea id="preview-text" rows="8" maxlength="8000" spellcheck="false"></textarea><p class="help-text" id="preview-ml-note"></p>
+  <label class="consent-row"><input type="checkbox" id="consent"><span>Tôi đã kiểm tra và đồng ý gửi bản nội dung này qua dịch vụ AI bên ngoài.</span></label><div id="preview-error" class="error-box" role="alert" hidden></div>
+  <div class="dialog-actions"><button id="cancel-preview" class="secondary-button" type="button">Quay lại</button><button id="confirm-send" class="primary-button" type="button" disabled>Đồng ý và kiểm tra <span aria-hidden="true">→</span></button></div>
+</div></dialog>
+<dialog id="how-dialog" aria-labelledby="how-title"><div class="dialog-body">
+  <div class="dialog-eyebrow">SỬ DỤNG PHISHLENS</div><h2 id="how-title">Một bước kiểm tra trước khi tin</h2>
+  <ol class="how-list"><li><strong>Dán nội dung bạn nhận được.</strong><p>Chọn tin nhắn / email hoặc đường dẫn. Giữ ngữ cảnh để hệ thống hiểu bạn đang được yêu cầu làm gì; tránh nhập mật khẩu và mã OTP thật.</p></li><li><strong>Kiểm tra nội dung trước khi chia sẻ.</strong><p>Nếu bật AI, bạn được xem và sửa bản đã che thông tin trước khi xác nhận gửi đến dịch vụ bên ngoài. Tắt AI nếu chỉ muốn phân loại đường dẫn tại máy chạy ứng dụng.</p></li><li><strong>Đọc kết luận cùng căn cứ.</strong><p>Ứng dụng đánh giá riêng hành vi trong tin nhắn và chuỗi đường dẫn. Một tin nhắn trông bình thường vẫn có thể chứa đường dẫn đáng ngờ; ngược lại, điểm đường dẫn thấp không bác bỏ một yêu cầu nguy hiểm.</p></li><li><strong>Xác minh qua kênh chính thức.</strong><p>Nếu còn nghi ngờ, tự mở ứng dụng chính thức hoặc liên hệ đơn vị qua thông tin đã biết. Không dùng chính đường dẫn hay số điện thoại trong tin nhắn đáng ngờ để xác minh.</p></li></ol>
+  <div class="inline-notice">PhishLens không mở trang đích, xác thực người gửi hay tra cứu danh sách đen. Tài liệu tham khảo là các bản tóm lược có dẫn nguồn, không xác nhận độ an toàn của tên miền.</div>
+  <button id="close-how" type="button" class="primary-button">Đã hiểu</button>
+</div></dialog>
+</body>
+</html>

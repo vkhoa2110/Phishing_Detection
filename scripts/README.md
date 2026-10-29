@@ -9,6 +9,7 @@ Chạy từ thư mục gốc repository bằng `.venv/bin/python`.
 | Đánh giá RAG | `evaluation/verify_rag_ablation.py RUN_DIR` | Kiểm chứng độc lập bốn arm, fusion, checkpoint và nguồn dẫn |
 | Đánh giá RAG | `evaluation/plot_rag_ablation.py RUN_DIR` | Biểu đồ toàn bộ và nhóm có/không URL |
 | Giao diện v2 | `evaluation/check_context_ui.py` | Replay phản hồi diagnostic tại desktop/mobile; không gọi thêm LLM |
+| Giao diện người dùng | `evaluation/check_consumer_ui.py` | Kiểm tra desktop/tablet/mobile, đồng ý gửi API, cảnh báo mâu thuẫn, lỗi và XSS; replay AI, URL chạy thật cục bộ; kết quả ở thư mục mới |
 | Dữ liệu SMS | `data/prepare_vn_sms.py --out NEW_DIR` | Tải revision nguồn cố định, khử trùng/nhóm/chọn 200 SMS chờ review |
 | RAG | `rag/prepare_index.py --download` | Tải model E5-small đã ghim revision và dựng chỉ mục mới |
 | RAG | `rag/collect_rag_sources.py --out NEW_DIR` | Tải các nguồn đã duyệt vào snapshot mới |

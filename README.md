@@ -21,7 +21,7 @@ Mở **http://127.0.0.1:8000**. Trên Windows, thay `.venv/bin/python` bằng `.
 
 Đặt gói mô hình tại **`models/inference_XGBoost_d6_s42/`**, gồm `model.ubj`, `config.json`, `predict_url.py`, `url_features.py` và `url_preprocessing.py`. Xem [hướng dẫn model](models/README.md). Trọng số được cài riêng; thiếu model sẽ được báo rõ.
 
-Để dùng RAG, làm theo [thiết lập E5-small và chỉ mục](docs/guides/RAG.md). Trên máy hiện tại đã chuẩn bị model, chỉ mục và ngưỡng; giao diện có tùy chọn **Tham khảo tài liệu có nguồn (RAG)** cho email/tin nhắn. Cài ứng dụng cơ bản không tự tải model embedding.
+Để dùng RAG, làm theo [thiết lập E5-small và chỉ mục](docs/guides/RAG.md). Trên máy hiện tại đã chuẩn bị model, chỉ mục và ngưỡng; mở **Thiết lập → Đối chiếu với tài liệu có nguồn** cho email/tin nhắn. Cài ứng dụng cơ bản không tự tải model embedding.
 
 Khi bật LLM, cấu hình `FPT_API_KEY` trong `.env` hoặc nhập ở giao diện. Ứng dụng có bản xem trước và bước xác nhận gửi API. Hướng dẫn đầy đủ ở [Cài đặt và sử dụng](docs/guides/USAGE.md).
 

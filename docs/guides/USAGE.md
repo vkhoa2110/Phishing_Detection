@@ -1,6 +1,6 @@
 # PhishLens — Phishing Detection & Analysis
 
-Bản cơ bản cho dự án của **Lê Văn Khoa**: giao diện tiếng Việt kiểm tra URL, email và tin nhắn, kết hợp mô hình ML đã huấn luyện với DeepSeek-V4-Flash qua API FPT. Có thể bật **Tham khảo tài liệu có nguồn (RAG)** sau khi [chuẩn bị chỉ mục cục bộ](RAG.md).
+Bản cơ bản cho dự án của **Lê Văn Khoa**: giao diện tiếng Việt kiểm tra URL, email và tin nhắn, kết hợp mô hình ML đã huấn luyện với DeepSeek-V4-Flash qua API FPT. Có thể bật **Thiết lập → Đối chiếu với tài liệu có nguồn** sau khi [chuẩn bị chỉ mục cục bộ](RAG.md).
 
 Ứng dụng gồm FastAPI và giao diện HTML/CSS/JavaScript, chạy cùng một địa chỉ. Không cần Node.js, npm, GPU hoặc cơ sở dữ liệu. Các tệp giao diện và biểu tượng nằm sẵn trong dự án, không dùng CDN.
 
@@ -19,7 +19,7 @@ Phishing_Detection/models/inference_XGBoost_d6_s42/url_preprocessing.py
 
 Gói bạn xuất ở cell trước đã có đủ các tệp này. Nếu giải nén thêm một tầng thư mục, hãy đưa thư mục chứa trực tiếp `config.json` về vị trí trên. Ứng dụng cũng nhận gói cũ dùng `run.json` nếu `predict_url.py` đi kèm đọc đúng tệp đó.
 
-Muốn dùng nơi khác: chép `.env.example` thành `.env`, sửa `MODEL_DIR` thành đường dẫn thư mục model. Sau khi thêm hoặc thay model, bấm **↻ Nạp lại mô hình** trên giao diện. Tên lượt huấn luyện, số feature và ngưỡng được đọc từ gói thật; ứng dụng không giả lập dự đoán khi thiếu model.
+Muốn dùng nơi khác: chép `.env.example` thành `.env`, sửa `MODEL_DIR` thành đường dẫn thư mục model. Sau khi thêm hoặc thay model, mở **Thiết lập → Trạng thái kỹ thuật → Nạp lại**. Tên lượt huấn luyện, số feature và ngưỡng được đọc từ gói thật; ứng dụng không giả lập dự đoán khi thiếu model.
 
 Chỉ nạp gói mô hình do bạn tự xuất hoặc đã kiểm tra: các tệp Python trong gói sẽ được import. Mô hình XGBoost chạy inference trên CPU. Bản này không nạp BERT; gói Random Forest/Logistic Regression được hỗ trợ nếu dùng cùng định dạng. Nếu dùng LightGBM, cài thêm `lightgbm==4.6.0`.
 
@@ -49,7 +49,7 @@ Mở **http://127.0.0.1:8000**. Có thể dùng `localhost:8000`. Trên Linux x8
 
 ## 3. Kết nối LLM theo hướng dẫn FPT
 
-Trong giao diện, mở **Kết nối LLM**:
+Trong giao diện, mở **Thiết lập → Kết nối dịch vụ AI**:
 
 | Trường | Giá trị mặc định theo ảnh bạn cung cấp |
 |---|---|
@@ -72,11 +72,14 @@ Tài liệu đối chiếu:
 
 ## 4. Cách sử dụng
 
-1. Chọn **Email / tin nhắn** hoặc **URL riêng lẻ**, dán dữ liệu. Giới hạn 8.000 ký tự và 5 URL khác nhau mỗi lượt.
-2. Nếu chỉ muốn chạy ML, tắt **Phân tích thêm bằng LLM**. Phần này không gọi API và không tự truy cập URL.
-3. Khi bật LLM, có thể chọn cung cấp hoặc không cung cấp kết quả ML cho LLM. Dữ liệu không có URL vẫn được phân tích bằng LLM.
-4. Bấm **Phân tích nội dung**. Khi dùng LLM, ứng dụng mở bản xem trước đã che một số thông tin. Kiểm tra, sửa thêm nếu cần, đánh dấu đồng ý rồi gửi.
-5. Xem cảnh báo tổng hợp, kết quả từng URL, nhận định LLM, bằng chứng và hướng dẫn. Có thể tải kết quả JSON về máy.
+1. Chọn **Tin nhắn / email** hoặc **Đường dẫn**, dán dữ liệu. Giới hạn 8.000 ký tự và 5 URL khác nhau mỗi lượt. Đổi tab giữ riêng bản nháp của từng loại trong phiên đang mở.
+2. Nếu chỉ muốn kiểm tra URL tại máy, tắt **Giải thích và gợi ý bằng AI** (ở tab URL là **Nhờ AI giải thích thêm**). Tin nhắn không có URL và không bật AI sẽ được ghi nhận là chưa đủ thông tin.
+3. Mở **Thiết lập** nếu cần thay kết nối AI, bật/tắt đối chiếu tài liệu hoặc cho AI tham khảo thêm điểm URL. Mặc định AI không nhận điểm URL; tài liệu tự bật khi kho sẵn sàng, chỉ áp dụng cho tin nhắn / email.
+4. Bấm **Kiểm tra ngay** hoặc Ctrl/⌘ + Enter. Khi dùng AI, ứng dụng mở bản xem trước đã che một số thông tin, ghi rõ máy chủ nhận. Kiểm tra, sửa thêm nếu cần, đánh dấu đồng ý rồi gửi. Sửa bản xem trước sẽ yêu cầu đánh dấu đồng ý lại; hủy hoặc nhấn Escape không gửi phân tích.
+5. Đọc kết luận, **Bạn nên làm gì tiếp theo?**, dấu hiệu và nguồn tham khảo. Cảnh báo URL được hiển thị riêng; nếu URL đáng ngờ nhưng nội dung LOW/UNKNOWN thì cảnh báo URL đứng trước kết luận nội dung. Các URL cần kiểm tra hiển thị dưới dạng văn bản, không phải liên kết để mở.
+6. Mở **Xem điểm kiểm tra đường dẫn** hoặc **Chi tiết phân tích và tải kết quả** khi cần điểm số, thông số mô hình, bản nội dung đã gửi hoặc tệp JSON. **Kiểm tra nội dung khác** đưa con trỏ về ô nhập; **Xóa** xóa nội dung của tab hiện tại và kết quả đang hiển thị.
+
+Giao diện thích ứng với màn hình máy tính và điện thoại. Phần hướng dẫn **Đã lỡ làm theo tin nhắn?** có gợi ý xử lý sự cố; **Hướng dẫn** giải thích cách dùng và giới hạn của công cụ. Không lưu bản nháp hay API key vào localStorage.
 
 Việc che dữ liệu dùng quy tắc cho email, số điện thoại, mã xác thực/thông tin truy cập, dãy số dài, giá trị query, fragment và tài khoản trong URL. Quy tắc có thể bỏ sót hoặc che thừa; bản xem trước để bạn kiểm tra. Không có bước bảo đảm tự động che hết tên, địa chỉ hoặc mọi thông tin cá nhân. Khi bạn sửa bản gửi, LLM phân tích **bản đã sửa**; metadata ML chỉ kèm URL còn xuất hiện trong bản đó. ML vẫn phân loại các URL trong bản gốc tại máy chạy ứng dụng. RAG truy xuất từ bản đã sửa, đã che và không dùng score ML; tối đa ba tóm lược công khai được gửi cùng nội dung khi bạn bật tùy chọn này.
 
@@ -130,6 +133,14 @@ python -m pytest -q
 ```
 
 Các test không gọi FPT thật và không phát sinh phí. Chúng kiểm tra tách URL, che dữ liệu, sự đồng ý gửi API, cấu trúc LLM, quy tắc kết hợp và giữ kết quả ML khi API lỗi. Giao diện được kiểm tra riêng ở kích thước máy tính và điện thoại.
+
+Kiểm tra luồng giao diện bằng Chromium khi ứng dụng đang chạy (cần cài Playwright/Chromium và có snapshot diagnostic `context_regression_v2` cục bộ):
+
+```bash
+.venv/bin/python scripts/evaluation/check_consumer_ui.py
+```
+
+Script chặn các yêu cầu AI bằng phản hồi đã ghi hoặc fixture trạng thái/lỗi, chỉ gọi API thật cho nhánh URL cục bộ. Ảnh chụp và biên bản mới lưu ở `artifacts/evaluations/consumer_ui_v1/`, không ghi vào snapshot diagnostic cũ. Đây là kiểm tra hành vi giao diện, không phải phép đo chất lượng mô hình.
 
 Đã bổ sung kiểm thử với trọng số `models/inference_XGBoost_d6_s42` thật và API FPT thật. Model được đánh giá trên tập test PhishVN chính thức; hai cấu hình LLM được so sánh trên cùng 100 URL test. Xem [báo cáo PhishVN](../evaluation/PHISHVN.md) để đọc phương pháp, ngưỡng, số đo và giới hạn. Khi cài trên máy khác, vẫn cần đặt gói model và cấu hình API key riêng.
 
