@@ -6,7 +6,12 @@
 | Cài đặt, API, cấu hình và sử dụng | [USAGE.md](guides/USAGE.md) |
 | Quy ước thư mục, chuyển đổi đường dẫn | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) |
 | Phạm vi kiến trúc baseline | [BASELINE.md](architecture/BASELINE.md) |
+| Thiết kế v3, kiểm tra bằng chứng và ưu tiên cải tiến chất lượng | [QUALITY_V3.md](architecture/QUALITY_V3.md) |
 | Dữ liệu và phương pháp đánh giá | [METHODS.md](evaluation/METHODS.md) |
+| Bộ đánh giá cố định, 200 SMS + 72 ca khó và nhãn AI ghi rõ giới hạn | [OBJECTIVE_V1.md](evaluation/OBJECTIVE_V1.md) |
+| Kết quả 364 lượt dev: bốn cấu hình, báo nhầm và giới hạn nhãn AI | [OBJECTIVE_DEV_RESULTS_V1.md](evaluation/OBJECTIVE_DEV_RESULTS_V1.md) |
+| Bộ đánh giá URL/ngữ cảnh: 160 URL thực, 200 ca đối chiếu và ba nhãn riêng | [URL_CONTEXT_V1.md](evaluation/URL_CONTEXT_V1.md) |
+| Kết quả 720 lượt dev URL/ngữ cảnh: F1, báo nhầm, coverage và độ bất định | [URL_CONTEXT_DEV_RESULTS_V1.md](evaluation/URL_CONTEXT_DEV_RESULTS_V1.md) |
 | Kết quả URL PhishVN | [PHISHVN.md](evaluation/PHISHVN.md) |
 | Phân tích bộ thông điệp mô phỏng | [SYNTHETIC.md](evaluation/SYNTHETIC.md) |
 | So sánh bốn cấu hình LLM/URL/RAG và phương pháp truy xuất | [RAG_ABLATION.md](evaluation/RAG_ABLATION.md) |

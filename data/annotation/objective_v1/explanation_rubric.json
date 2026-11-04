@@ -1,0 +1,14 @@
+{
+  "status": "awaiting_predictions_not_scored",
+  "dimensions": [
+    "correct_signals",
+    "relevant_sources",
+    "claim_supported",
+    "appropriate_actions"
+  ],
+  "0": "Sai, bịa đặt, vượt nguồn hoặc hành động nguy hiểm.",
+  "1": "Đúng một phần hoặc còn chung chung.",
+  "2": "Đúng, cụ thể và phù hợp ngữ cảnh/phạm vi nguồn.",
+  "source_dimensions_without_citation": null,
+  "policy": "Blind arm/model/risk label; same preselected sample IDs across arms; errors are missing outputs, not score zero or successful abstention. Report each dimension and denominator, no arbitrary total score."
+}

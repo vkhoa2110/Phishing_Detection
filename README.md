@@ -50,6 +50,11 @@ Xem [quy ước thư mục và bảng đường dẫn cũ–mới](docs/PROJECT_
 
 ## Tài liệu
 
+- [Thiết kế v3 và lộ trình cải tiến chất lượng](docs/architecture/QUALITY_V3.md): kiểm tra bằng chứng, tách điều phối, phân tích báo nhầm và đánh giá độc lập.
+- [Bộ đánh giá có protocol cố định](docs/evaluation/OBJECTIVE_V1.md): 200 SMS, 72 ca đối chiếu, 24 truy vấn RAG và nhãn AI sơ bộ có căn cứ; chưa phải gold độc lập.
+- [Kết quả 364 lượt đánh giá dev](docs/evaluation/OBJECTIVE_DEV_RESULTS_V1.md): bốn cấu hình LLM/URL/RAG trên 51 SMS và 40 ca mô phỏng, có giữ lỗi và UNKNOWN; chưa chứng minh RAG cải thiện phân loại.
+- [Bộ đánh giá URL và ngữ cảnh](docs/evaluation/URL_CONTEXT_V1.md): 160 URL thực, 200 ca đối chiếu; đo riêng rủi ro URL, hành vi và hành động, có runner đăng ký trước và lưu từng lượt API.
+- [Kết quả 720 lượt dev URL/ngữ cảnh](docs/evaluation/URL_CONTEXT_DEV_RESULTS_V1.md): thêm model URL tăng F1 URL đứng riêng nhưng tăng báo nhầm; báo đủ kết quả, độ bất định và giới hạn.
 - [Thiết lập và sử dụng RAG](docs/guides/RAG.md).
 - [Mục lục tài liệu](docs/README.md) · [Kiến trúc baseline](docs/architecture/BASELINE.md).
 - [Kết quả URL trên PhishVN](docs/evaluation/PHISHVN.md) · [Chẩn đoán thông điệp mô phỏng](docs/evaluation/SYNTHETIC.md).

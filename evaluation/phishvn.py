@@ -151,7 +151,6 @@ def paired_rows(selected, predictions, cache):
 
 async def evaluate(args):
     out = Path(args.out)
-    out.mkdir(parents=True, exist_ok=True)
     settings = replace(Settings(), max_tokens=4096, timeout_seconds=90)
     model = ModelService(settings)
     if not model.load()["ready"]:
@@ -162,14 +161,27 @@ async def evaluate(args):
             raise ValueError("Notebook and exported inference source disagree.")
     frames, audit = prepare_splits(args.archive, constants["CFG"], sys.modules["url_preprocessing"])
     fingerprint, recovered = recover_fingerprint(constants["CFG"], constants, frames, model.spec)
+    # Select and fingerprint in memory before touching any existing snapshot.
+    # A configuration mismatch must not rewrite predictions/provenance first.
+    selected = pd.concat([frames["test"][frames["test"].labels == label].sample(n=args.llm_sample // 2, random_state=args.seed)
+                          for label in (0, 1)]).sample(frac=1, random_state=args.seed).reset_index(drop=True)
+    config = {"dataset": DOI, "archive_sha256": SHA256, "notebook_sha256": digest(args.notebook),
+              "model_sha256": digest(model.path / "model.ubj"), "config_sha256": digest(model.path / "config.json"),
+              "runner_sha256": digest(__file__), "sample_ids": selected.id.tolist(), "seed": args.seed,
+              "llm_model": settings.llm_model, "endpoint": settings.endpoint, "max_tokens": settings.max_tokens, "timeout": 90,
+              "prompt_sha256": digest(Path(__file__).parents[1] / "app/llm_service.py"), "live": args.live}
+    if out.exists() and any(out.iterdir()) and not (out / "manifest.json").is_file():
+        raise ValueError("Existing output has no matching manifest. Choose another --out directory.")
+    out.mkdir(parents=True, exist_ok=True)
+    prepare_manifest(out, config)
+    cache = load_checkpoints(out / "checkpoints.jsonl")
+    if not cache.keys() <= {(case_id, arm) for case_id in selected.id for arm in ARMS}:
+        raise ValueError("Unknown case or arm in checkpoint.")
     write_json(out / "provenance.json", {"doi": DOI, "archive_sha256": SHA256, "notebook_sha256": digest(args.notebook),
                "recovered_fingerprint": fingerprint, "fingerprint_configuration": recovered, "splits": audit,
                "disjoint_columns_checked": ["id", "model_input", "domain_group"],
                "feature_source_matches_notebook": True, "preprocessing_source_matches_notebook": True})
     print("Verified dataset, splits, feature source and training fingerprint:", fingerprint, flush=True)
-    # Select from labels/IDs only, before model scores, independently within both classes.
-    selected = pd.concat([frames["test"][frames["test"].labels == label].sample(n=args.llm_sample // 2, random_state=args.seed)
-                          for label in (0, 1)]).sample(frac=1, random_state=args.seed).reset_index(drop=True)
     selected[["id", "labels", "source", "tier"]].to_csv(out / "selected_ids.csv", index=False)
     spec = model.spec
     thresholds = {"warning": spec["thresholds"]["warning_threshold"], "high": spec["thresholds"]["high_threshold"], "fixed_0.5": .5}
@@ -196,13 +208,6 @@ async def evaluate(args):
     if any(abs(delta) > 1 for changes in full_metrics["validation_reproduction"].values() for delta in changes.values()):
         raise ValueError("Validation metrics differ from the export by more than one boundary-tie row; investigate before LLM evaluation.")
     predictions = {key: {**value, "id": "URL-01", "status": "ok"} for key, value in test_outputs.items()}
-    config = {"dataset": DOI, "archive_sha256": SHA256, "notebook_sha256": digest(args.notebook),
-              "model_sha256": digest(model.path / "model.ubj"), "config_sha256": digest(model.path / "config.json"),
-              "runner_sha256": digest(__file__), "sample_ids": selected.id.tolist(), "seed": args.seed,
-              "llm_model": settings.llm_model, "endpoint": settings.endpoint, "max_tokens": settings.max_tokens, "timeout": 90,
-              "prompt_sha256": digest(Path(__file__).parents[1] / "app/llm_service.py"), "live": args.live}
-    prepare_manifest(out, config)
-    cache = load_checkpoints(out / "checkpoints.jsonl")
     def save():
         rows = paired_rows(selected, predictions, cache)
         write_json(out / "summary.json", summarize(rows))

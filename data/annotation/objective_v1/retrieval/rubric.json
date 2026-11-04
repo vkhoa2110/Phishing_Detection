@@ -1,0 +1,8 @@
+{
+  "0": "Không giúp phân tích hoặc hướng dẫn xác minh cho nội dung được hỏi.",
+  "1": "Cùng chủ đề hoặc có hướng dẫn chung nhưng không trực tiếp hỗ trợ dấu hiệu/claim trong ngữ cảnh cụ thể.",
+  "2": "Trực tiếp hỗ trợ ít nhất một dấu hiệu hoặc bước xác minh phù hợp ngữ cảnh; không vượt đơn vị, thời điểm hay phạm vi nguồn. Cần quote nguồn và lý do.",
+  "UNKNOWN": "Người chấm chưa đủ căn cứ; không đổi thành không liên quan.",
+  "query_task": "Tài liệu này có hỗ trợ phân tích dấu hiệu và bước xác minh của tin nhắn không? Không yêu cầu tài liệu chứng minh người gửi thật/giả.",
+  "no_match": "Chỉ kết luận không có nguồn trực tiếp khi toàn bộ corpus được chấm và không có grade 2 hoặc UNKNOWN."
+}

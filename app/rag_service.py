@@ -16,6 +16,7 @@ MODEL_REVISION = "614241f622f53c4eeff9890bdc4f31cfecc418b3"
 INDEX_VERSION = "e5-summary-v1"
 DIMENSION = 384
 MAX_TOKENS = 512
+SCOPE_METADATA_FIELDS = ("scenario", "entity", "document_role", "scope", "valid_from", "temporal_note")
 
 
 def sha_file(path):
@@ -149,9 +150,12 @@ def rank_chunks(chunks, vectors, query_vectors, top_k=3, min_score=-1):
     selected, documents = [], set()
     for i in order:
         chunk = chunks[i]
-        if float(scores[i]) < min_score or chunk["document_id"] in documents:
+        # Calibration and persisted evaluation predictions use six decimals.
+        # Filter that same score, while retaining raw cosine ordering above.
+        score = round(float(scores[i]), 6)
+        if score < min_score or chunk["document_id"] in documents:
             continue
-        selected.append({**chunk, "score": round(float(scores[i]), 6)})
+        selected.append({**chunk, "score": score})
         documents.add(chunk["document_id"])
         if len(selected) >= top_k:
             break
@@ -165,12 +169,13 @@ class RetrievalIndex:
     manifest: dict
 
     @classmethod
-    def load(cls, directory, corpus):
+    def load(cls, directory, corpus, include_scope=False):
         directory = Path(directory)
         m = read_json(directory / "manifest.json")
         if m["version"] != INDEX_VERSION or m["model_id"] != MODEL_ID or m["revision"] != MODEL_REVISION:
             raise ValueError("Index version/model does not match.")
-        if m["corpus_sha256"] != sha_file(corpus):
+        corpus_bytes = Path(corpus).read_bytes()
+        if m["corpus_sha256"] != hashlib.sha256(corpus_bytes).hexdigest():
             raise ValueError("Corpus changed; rebuild and recalibrate the RAG index.")
         for name in ("chunks.jsonl", "embeddings.npy"):
             if sha_file(directory / name) != m["files"][name]:
@@ -180,12 +185,34 @@ class RetrievalIndex:
         validate_vectors(vectors, len(chunks))
         if len(chunks) != m["chunks"] or len({c["chunk_id"] for c in chunks}) != len(chunks):
             raise ValueError("RAG chunk IDs/count do not match.")
+        if include_scope:
+            # Enrich in memory from the exact corpus bytes verified above.
+            # Stored chunks, embeddings, manifest, and calibration stay frozen.
+            documents = {}
+            for line in corpus_bytes.decode("utf-8").splitlines():
+                if not line.strip():
+                    continue
+                document = json.loads(line)
+                if document["id"] in documents:
+                    raise ValueError("Duplicate document ID in RAG corpus.")
+                documents[document["id"]] = document
+            scoped_chunks = []
+            for chunk in chunks:
+                if chunk["document_id"] not in documents:
+                    raise ValueError("RAG chunk has no matching corpus document.")
+                document = documents[chunk["document_id"]]
+                # Missing metadata stays missing; publication dates do not
+                # establish validity, and publisher names do not verify senders.
+                scoped_chunks.append({**chunk, **{key: document[key] for key in SCOPE_METADATA_FIELDS
+                                                 if key in document}})
+            chunks = scoped_chunks
         return cls(chunks, vectors, m)
 
 
 class RAGService:
-    def __init__(self, settings):
+    def __init__(self, settings, include_scope=False):
         self.settings = settings
+        self.include_scope = include_scope
         self.lock = RLock()
         self.index = self.encoder = self.calibration = None
 
@@ -196,7 +223,8 @@ class RAGService:
         """Validate small metadata/index without importing torch, downloading, or loading weights."""
         try:
             directory = self.path(self.settings.rag_index_dir)
-            index = RetrievalIndex.load(directory, self.path(self.settings.rag_corpus))
+            index = RetrievalIndex.load(directory, self.path(self.settings.rag_corpus),
+                                        include_scope=self.include_scope)
             config = read_json(directory / "calibration.json")
             if config["index_manifest_sha256"] != sha_file(directory / "manifest.json"):
                 raise ValueError("Calibration belongs to a different index.")

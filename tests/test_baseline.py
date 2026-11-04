@@ -134,7 +134,7 @@ def test_api_masks_text_and_ml_metadata(tmp_path):
     def handler(request):
         captured.append(json.loads(request.content))
         assert request.headers["authorization"] == "Bearer test-key"
-        return httpx.Response(200, json=api_response(completion()))
+        return httpx.Response(200, json=api_response({**completion(), "context_kind": "scam_request"}))
     with TestClient(create_app(settings(tmp_path), httpx.MockTransport(handler), FakeML())) as c:
         response = c.post("/api/analyze", json={"text": "Hãy gửi mã OTP tới khoa@example.org; https://example.org/?token=supersecret", "consent": True, "api_key": "test-key"})
         assert response.status_code == 200, response.text
@@ -188,7 +188,7 @@ def test_include_ml_can_be_disabled_and_no_url_is_not_invented(tmp_path):
     calls = []
     def handler(request):
         calls.append(json.loads(request.content))
-        return httpx.Response(200, json=api_response({"risk_level": "LOW", "summary": "Chưa thấy dấu hiệu rõ ràng.", "evidence": [], "recommended_actions": []}))
+        return httpx.Response(200, json=api_response({"risk_level": "LOW", "context_kind": "routine", "summary": "Chưa thấy dấu hiệu rõ ràng.", "evidence": [], "recommended_actions": []}))
     with TestClient(create_app(settings(tmp_path), httpx.MockTransport(handler), FakeML())) as c:
         r = c.post("/api/analyze", json={"text": "Thông báo họp nhóm", "consent": True, "api_key": "test-key", "include_ml": False}).json()
         assert r["llm"]["included_ml"] is False and r["final"]["risk_level"] == "LOW"

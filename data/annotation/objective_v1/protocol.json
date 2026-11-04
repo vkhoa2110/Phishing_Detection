@@ -1,0 +1,142 @@
+{
+  "version": "objective-evaluation-1.0",
+  "created_at": "2026-11-02T14:46:12.481072+00:00",
+  "seed": 20261102,
+  "status": "inputs_frozen_reference_labels_not_gold",
+  "primary_dataset": {
+    "source": "https://huggingface.co/datasets/trannguyenthaituan/vietnamese_sms_dataset",
+    "revision": "a90e2bd7e8df2376939658075ba8094dcee488ad",
+    "count": 200,
+    "dev": 80,
+    "test": 120,
+    "source_manifest_sha256": "1496403e4a23201109ae36b3948c39d352e4857a5cb8fd690b0731451aeafc46"
+  },
+  "secondary_dataset": {
+    "kind": "assistant_authored_challenge",
+    "count": 72,
+    "families": 12,
+    "split_by": "family",
+    "pooled_with_primary": false
+  },
+  "arms": [
+    "llm_only",
+    "llm_url",
+    "llm_rag",
+    "llm_url_rag"
+  ],
+  "prompt_profile": "message-v3",
+  "fusion_policy": "separate",
+  "model": "DeepSeek-V4-Flash",
+  "endpoint": "https://mkp-api.fptcloud.com/v1/chat/completions",
+  "max_tokens": 8192,
+  "timeout_seconds": 90,
+  "temperature": 0.1,
+  "top_p": 1,
+  "top_k": 40,
+  "workers": 2,
+  "primary_repetitions": 1,
+  "optional_repetitions": "Register a new protocol before additional runs; report all repeats, never pick the best.",
+  "max_primary_test_calls": 576,
+  "primary_metrics": [
+    "precision",
+    "recall",
+    "f1",
+    "false_positive_rate",
+    "coverage",
+    "error_rate"
+  ],
+  "unknown_policy": "Gold UNKNOWN is a separate set; predicted UNKNOWN on binary gold stays in recall/F1 denominator for positive cases. API errors are technical failures, not correct abstentions.",
+  "baseline": [
+    "always_alarm",
+    "always_low"
+  ],
+  "comparison": "Same messages, model, prompt profile, budget and redaction; no labels/source/tier/annotation passed to LLM. Report main SMS and authored challenge separately.",
+  "statistics": "Report counts and paired differences; cluster-bootstrap by group_id for exploratory CIs; do not treat near-duplicates as independent or claim significance from best run.",
+  "test_policy": "Dev only for prompt/threshold decisions. Test once after freeze. Never append test answers to RAG or drop difficult/failed cases.",
+  "explanation": {
+    "selection_before_outputs": true,
+    "samples_per_split_per_dataset": 8,
+    "dimensions": [
+      "correct_signals",
+      "relevant_sources",
+      "claim_supported",
+      "appropriate_actions"
+    ],
+    "scale": [
+      0,
+      1,
+      2
+    ],
+    "source_dimensions_without_citation": null,
+    "blinding": "Hide arm, model and verdict label; disclose missing source information can partially reveal arm."
+  },
+  "retrieval": {
+    "queries": 24,
+    "corpus_documents": 25,
+    "pairs_per_rater": 600,
+    "top_k": 3,
+    "relevance_scale": [
+      0,
+      1,
+      2,
+      "UNKNOWN"
+    ],
+    "strict_relevance": 2,
+    "metrics": [
+      "hit_at_3",
+      "precision_at_3",
+      "precision_returned",
+      "recall_at_3",
+      "mrr_at_3",
+      "ndcg_at_3",
+      "no_match_rejection"
+    ],
+    "exhaustive": "All corpus documents per query, not only top hits from a favored retriever."
+  },
+  "human_review": "Two independent blinded raters; disagreements require a third declared adjudicator. No invented human identities.",
+  "prior_exposure": "200 SMS previously received AI preliminary labels; selection was not based on classifier correctness. New AI reference judgments remain unverified; this is not a pristine external gold test.",
+  "additional_redaction": "Mask literal MKC2/password-level-2 values in derived SMS text; original selection stays unchanged. Rule redaction does not guarantee complete PII removal.",
+  "ai_reference_policy": "May be used for explicitly provisional diagnostic only. Not accepted by validate_gold. Do not call AI agreement objective accuracy.",
+  "corpus_sha256": "6741d6496d019afae14c263fba44ff8b5a7b39828305a85e0f2b299572b6dc83",
+  "corpus_path": "data/knowledge/corpus_v1/documents.jsonl",
+  "runtime_files_sha256": {
+    "app/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "app/analysis_service.py": "b95e6518362f70b098abb7f53c8dccfee280c55f9a6f193a5e9affc729753780",
+    "app/fusion.py": "b55378e850c7ff98d0ad50757d4b60b6b3cf6313530a98f14e4f18952835cfe3",
+    "app/llm_service.py": "9d9969036d3f9811ba0e3927ffc05c1d77b90f1613fa31dbb55c95a52a874f74",
+    "app/main.py": "e44cddef78334901ae019ffd4349674011a319680ddb9323823dce5de0d239d3",
+    "app/ml_service.py": "0665beb60ba89f2052a0c8bbcdbbd0caa310e2569d0a495caa84a4d5f4f17c0c",
+    "app/privacy.py": "2ec22e1c77aec6018b4df7a9debcf690a5c133a6703ff8403af1e61de93c5d4a",
+    "app/rag_service.py": "76bf90cad30b9a9bbbe4c09ecc6b3ce5181b441ed70df4bc9b3cfe58eb936f67",
+    "app/schemas.py": "09a61ad7bae4616b97696f3782f5f9564904f0e521a022ba99bc14edc55aeccb",
+    "app/settings.py": "18edb548fb52b30e3a0d891abc59bb35f946e119c4a345bf3d1f6357b95a4171",
+    "app/urls.py": "9a447cfc61d24a5bea61e23dba8727c732d73268e13f39a4eef9d433fb741b7c",
+    "app/verdict_validation.py": "9e96587676b374e8bd896f18000a0c8aa405ca052307fc72d4070eddb82bbd85",
+    "evaluation/ablation.py": "f1c1be24611c3c72ed93ba770dd28259075a06e3ed0ae8da48d234fc3c22bfb6",
+    "evaluation/metrics.py": "79f637796138cd9da89a8f1d206f3390981156f24ba5947a0c9300be09833f9f",
+    "evaluation/review.py": "240d9e9aa8877bdd953df19ac51c45db5677d87a33bc9d85961c8d11e992487a",
+    "evaluation/message_data.py": "8480588715a736d3b8b13d3bf8dcbec716fc15452d93dc4dd6c8a6c61721ad33",
+    "evaluation/benchmark_pack.py": "123228ae27d8c34e08f7aa510dc8a389ca1fce357afd3e771f81b5dd20bcdf57",
+    "evaluation/challenge_candidates.py": "396b6e02509d367674fb49f87ff4a8e33625c97ea72bb47930cc351c44f0400b",
+    "evaluation/relevance_review.py": "039d4944ade96733e7af320d2d6f9d8b412f4f7048deb9dc947ef9011ad109a4",
+    "evaluation/objective_run.py": "94dffa3843a50259e68ad17f38c753a6f73699bf2319e183702220c9e05e06c3"
+  },
+  "frozen_artifacts": {
+    "model_config": {
+      "path": "models/inference_XGBoost_d6_s42/config.json",
+      "sha256": "ee6d1e3b691484003499b9aba739a7d92d6432d15c03060081fa070ca6723b98"
+    },
+    "url_model": {
+      "path": "models/inference_XGBoost_d6_s42/model.ubj",
+      "sha256": "21cad34c07619483dd23aaf614347d2285129c3e084adc42b24d6476faaa1032"
+    },
+    "rag_manifest": {
+      "path": "artifacts/rag/e5-small-v1/manifest.json",
+      "sha256": "45359a716680573b5fe5cfdb2061319f957260b46e0b849b3ba250e60f231673"
+    },
+    "rag_calibration": {
+      "path": "artifacts/rag/e5-small-v1/calibration.json",
+      "sha256": "9f561cdf430970e4a950c79f8909245ed11532600ef754f2d32df82a5a1e1014"
+    }
+  }
+}

@@ -150,3 +150,16 @@ def test_delivered_selection_has_200_unique_group_isolated_items_without_gold_la
     assert all("label" not in i and "source_label" not in i for i in items)
     assert manifest["status"] == "awaiting_two_independent_raters"
     assert_split_isolation(items)
+
+
+def test_authored_challenge_provenance_is_not_exported_as_external_sms(workspace, tmp_path):
+    manifest_path = workspace / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["source_kind"] = "assistant_authored_challenge_not_real_incident"
+    write_json(manifest_path, manifest)
+    for side in ("a", "b"):
+        fill(workspace / f"annotator_{side}.csv", "unit-test-" + side)
+    out = tmp_path / "challenge_gold_fixture"
+    exported = finalize(workspace, out)
+    assert exported["source_kind"] == manifest["source_kind"]
+    assert all(i["source_kind"] == manifest["source_kind"] for i in read_jsonl(out / "test.jsonl"))

@@ -1,0 +1,11 @@
+{
+  "count": 200,
+  "splits": {
+    "dev": 80,
+    "test": 120
+  },
+  "with_url": 103,
+  "groups": 182,
+  "source_kind": "external_sms_authors_report_real_not_independently_verified",
+  "labels_present": false
+}

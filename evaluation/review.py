@@ -148,7 +148,7 @@ def finalize(workspace, out):
             "rater_ids": raters + ([adjudicator] if resolved else []),
             "evidence_quotes": [decision["evidence_quote"]] if resolved else [a[key]["evidence_quote"], b[key]["evidence_quote"]],
             "source_url": selection["source_url"], "source_revision": selection["source_revision"],
-            "source_kind": "external_sms_authors_report_real_not_independently_verified"})
+            "source_kind": selection.get("source_kind", "external_sms_authors_report_real_not_independently_verified")})
     assert_split_isolation(gold)
     out.mkdir(parents=True)
     for split in ("dev", "test"):
@@ -163,6 +163,7 @@ def finalize(workspace, out):
         "selection_manifest_sha256": sha(workspace / "manifest.json"), "source_revision": selection["source_revision"],
         "upstream_labels_used_as_gold": False, "split_policy": selection["grouping"],
         "source_url": selection["source_url"], "source_license": selection["source_license"],
+        "source_kind": selection.get("source_kind", "external_sms_authors_report_real_not_independently_verified"),
         "annotation_sha256": {name: sha(workspace / name) for name in ("annotator_a.csv", "annotator_b.csv", "adjudication.csv") if (workspace / name).exists()},
         "identity_verification": agreement_data["identity_verification"],
         "counts": {split: dict(Counter("UNKNOWN" if i["label"] is None else str(i["label"]) for i in gold if i["split"] == split)) for split in ("dev", "test")},

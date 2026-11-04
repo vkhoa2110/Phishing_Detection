@@ -11,6 +11,8 @@ import numpy as np
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_fscore_support
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from app.urls import extract_urls
 ARMS = ("llm_only", "llm_url", "llm_rag", "llm_url_rag")
 
 
@@ -29,6 +31,29 @@ def read_lines(path):
 def predict(level):
     assert level in {"HIGH", "WARNING", "LOW", "UNKNOWN"}
     return 1 if level in {"HIGH", "WARNING"} else 0 if level == "LOW" else -1
+
+
+def verify_original_fields(original, result, prepared):
+    """Input URL strings become scored URL records in the saved result.
+
+    Verify both representations against each other, rather than treating this
+    documented change of shape as a mutated reference annotation.
+    """
+    metadata_difference = None
+    for key, value in original.items():
+        if key == "urls":
+            assert isinstance(value, list) and all(isinstance(u, str) for u in value), "Unexpected source URL metadata"
+            # The runner reads URLs from text, not the annotation's URL list.
+            # Compare actual targets with that same hash-locked pipeline and
+            # expose annotation/parser disagreements rather than erase them.
+            extracted, _ = extract_urls(original["text"], "text")
+            assert extracted == [u["url"] for u in prepared["urls"]], (original["id"], "URL targets changed")
+            if value != extracted:
+                metadata_difference = {"id":original["id"], "annotated_urls":value, "extracted_urls":extracted}
+        else:
+            assert result[key] == value, (original["id"], "Reference field changed", key)
+    assert all(result[k] == v for k, v in prepared.items()), (original["id"], "Prepared inputs changed")
+    return metadata_difference
 
 
 def verify_metrics(rows, saved):
@@ -75,9 +100,11 @@ def verify(out):
     for path, fingerprint in config["source_sha256"].items():
         assert sha(ROOT / path) == fingerprint, path
     valid_citations = 0
+    url_metadata_differences = []
     for r in rows:
-        assert all(r[k] == v for k, v in originals[r["id"]].items())
-        assert all(r[k] == v for k, v in prepared[r["id"]].items())
+        difference = verify_original_fields(originals[r["id"]], r, prepared[r["id"]])
+        if difference:
+            url_metadata_differences.append(difference)
         assert r["has_url"] == bool(r["urls"])
         ml = [u["risk_level"] for u in r["urls"] if u["status"] == "ok"]
         ml_level = "HIGH" if "HIGH" in ml else "WARNING" if "WARNING" in ml else "LOW" if ml else "UNKNOWN"
@@ -114,6 +141,7 @@ def verify(out):
         verify_metrics([r for r in rows if bool(r.get("prompt_injection")) == flag], summary["by_injection"][group])
     result = {"verified": True, "cases": len(rows), "checkpoints": len(checkpoints),
               "systems": len(summary["metrics"]), "valid_exact_source_quotes": valid_citations,
+              "url_annotation_extraction_disagreements": url_metadata_differences,
               "independent_metric_library": "scikit-learn", "semantic_citation_quality": "not_verified"}
     (out / "verification.json").write_text(json.dumps(result, indent=2) + "\n")
     return result

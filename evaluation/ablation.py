@@ -21,7 +21,8 @@ import httpx
 
 from app.fusion import POLICY_VERSION, fuse as fuse_context, fuse_legacy as fuse
 from app.llm_service import (LLMFailure, LLMService, PROMPT_VERSION, RAG_PROMPT_VERSION,
-                             MESSAGE_PROMPT_VERSION, MESSAGE_RAG_PROMPT_VERSION)
+                             MESSAGE_PROMPT_VERSION, MESSAGE_RAG_PROMPT_VERSION,
+                             MESSAGE_V3_PROMPT_VERSION, MESSAGE_V3_RAG_PROMPT_VERSION)
 from app.ml_service import ModelService
 from app.privacy import redact
 from app.rag_service import RAGService
@@ -34,6 +35,11 @@ from .run import FATAL_CODES, digest, level, load_checkpoints, pct, prepare_mani
 DATASET = ROOT / "data/evaluation/vietnamese_messages_rag_v1.jsonl"
 ARMS = ("llm_only", "llm_url", "llm_rag", "llm_url_rag")
 SYSTEMS = ("url_model_only", *ARMS, *("fusion_" + a for a in ARMS))
+PROMPT_VERSIONS = {
+    "legacy": [PROMPT_VERSION, RAG_PROMPT_VERSION],
+    "message-v2": [MESSAGE_PROMPT_VERSION, MESSAGE_RAG_PROMPT_VERSION],
+    "message-v3": [MESSAGE_V3_PROMPT_VERSION, MESSAGE_V3_RAG_PROMPT_VERSION],
+}
 
 
 def load_cases(path):
@@ -136,6 +142,16 @@ def table(lines, values):
 
 def export(out, manifest, rows, state):
     summary = {"run_state": state, **summarize(rows)}
+    config = manifest["configuration"]
+    if config.get("evaluation_protocol"):
+        pending = sum(r[a]["status"] == "pending" for r in rows for a in ARMS)
+        summary["metrics_ready"] = pending == 0
+        summary["evaluation_status"] = ("prepared" if pending == 4 * len(rows) else "partial") if pending else (
+            "complete_reviewed" if config.get("reviewed_gold") else "complete_diagnostic")
+        if pending:
+            # Preparation/partial runs must not display 0%-F1 as model results.
+            for key in ("metrics", "by_url", "by_category", "by_injection", "comparisons"):
+                summary[key] = None
     write_json(out / "summary.json", summary)
     (out / "results.jsonl").write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8")
     with (out / "comparison.csv").open("w", encoding="utf-8-sig", newline="") as f:
@@ -147,11 +163,19 @@ def export(out, manifest, rows, state):
     lines = ["# So sánh LLM, model URL và RAG", "", f"Tạo lúc (UTC): {manifest['created_at']}",
              f"Trạng thái: {state}", "", f"{summary['n']} mẫu mô phỏng; {summary['positive']} lừa đảo; "
              f"{summary['n'] - summary['positive']} bình thường; {summary['complete_cases']} mẫu có đủ 4 kết quả thành công.", ""]
-    config = manifest["configuration"]
     lines[5] = (f"{summary['n']} mẫu; {summary['positive']} nhãn dương; {summary['n'] - summary['positive']} nhãn âm; "
                 f"{summary['complete_cases']} mẫu có đủ bốn phản hồi thành công.")
     lines += [f"Prompt profile: {config.get('prompt_profile', 'legacy')}; fusion: {config.get('fusion_policy', 'legacy')}; "
               f"nhãn đã review: {bool(config.get('reviewed_gold'))}; diagnostic: {config.get('diagnostic', False)}.", ""]
+    if config.get("diagnostic") and not config.get("reviewed_gold"):
+        lines += ["**Diagnostic: nhãn chưa được thẩm định độc lập, không phải gold. "
+                  "Các chỉ số chỉ dùng chẩn đoán/hồi quy, không chứng minh chất lượng trên dữ liệu thực.**", ""]
+    if config.get("evaluation_protocol") and not summary["metrics_ready"]:
+        lines += ["**Chưa đủ lượt phân tích LLM: chưa công bố Precision/Recall/F1.**", "",
+                  f"Trạng thái: {summary['evaluation_status']}. Xem status_counts trong summary.json; "
+                  "pending là chưa chạy, không được diễn giải thành dự đoán UNKNOWN của mô hình."]
+        (out / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        return summary
     table(lines, summary["metrics"])
     for group, values in summary["by_url"].items():
         lines += ["", "## " + group, ""]
@@ -190,7 +214,7 @@ def export(out, manifest, rows, state):
 async def evaluate(args):
     profile = getattr(args, "prompt_profile", "legacy")
     fusion_policy = getattr(args, "fusion_policy", "legacy")
-    if profile not in {"legacy", "message-v2"} or fusion_policy not in {"legacy", "separate"}:
+    if profile not in PROMPT_VERSIONS or fusion_policy not in {"legacy", "separate"}:
         raise ValueError("Unknown prompt profile or fusion policy.")
     reviewed_path = getattr(args, "reviewed_manifest", None)
     diagnostic = getattr(args, "diagnostic", False)
@@ -198,13 +222,14 @@ async def evaluate(args):
     if reviewed_path:
         from .review import validate_gold
         reviewed_gold = validate_gold(reviewed_path, args.dataset)
-    elif profile == "message-v2" and not diagnostic:
-        raise ValueError("Message-v2 benchmark requires --reviewed-manifest; use --diagnostic only for explicitly non-benchmark regression checks.")
+    elif profile in {"message-v2", "message-v3"} and not diagnostic:
+        raise ValueError(f"{profile.capitalize()} benchmark requires --reviewed-manifest; use --diagnostic only for explicitly non-benchmark regression checks.")
     cases = load_cases(args.dataset)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     settings = replace(Settings(), max_tokens=args.max_tokens, timeout_seconds=args.timeout)
-    ml, rag = ModelService(settings), RAGService(settings)
+    ml = ModelService(settings)
+    rag = RAGService(settings, include_scope=True) if profile == "message-v3" else RAGService(settings)
     ml_status, rag_status = ml.load(), rag.status()
     if not ml_status["ready"] or not rag_status["ready"]:
         raise ValueError("ML and RAG must both be ready before evaluating.")
@@ -227,9 +252,14 @@ async def evaluate(args):
               "source_sha256": {str(p.relative_to(ROOT)): digest(p) for p in sources},
               "llm": {"endpoint": settings.endpoint, "model": settings.llm_model, "max_tokens": settings.max_tokens,
                       "timeout_seconds": settings.timeout_seconds, "temperature": .1, "top_p": 1, "top_k": 40,
-                      "prompt_versions": [MESSAGE_PROMPT_VERSION, MESSAGE_RAG_PROMPT_VERSION] if profile == "message-v2" else [PROMPT_VERSION, RAG_PROMPT_VERSION]},
+                      "prompt_versions": PROMPT_VERSIONS[profile]},
               "seed": args.seed, "workers": args.workers,
               "versions": {p: importlib.metadata.version(p) for p in ("httpx", "xgboost-cpu", "numpy", "pydantic", "torch", "transformers")}}
+    if profile == "message-v3":
+        config["rag_scope_metadata"] = True
+        config["retrieval_score_contract"] = "rounded_cosine_6_decimals"
+    if getattr(args, "evaluation_protocol", None):
+        config["evaluation_protocol"] = args.evaluation_protocol
     manifest = prepare_manifest(out, config)
     cache = load_checkpoints(out / "checkpoints.jsonl")
     if not cache.keys() <= {(c["id"], a) for c in cases for a in ARMS}:
@@ -320,7 +350,7 @@ def main():
     parser.add_argument("--dataset", type=Path, default=DATASET)
     parser.add_argument("--out", type=Path, default=ROOT / "artifacts/evaluations/rag_ablation_v1")
     parser.add_argument("--live", action="store_true")
-    parser.add_argument("--prompt-profile", choices=("legacy", "message-v2"), default="legacy")
+    parser.add_argument("--prompt-profile", choices=tuple(PROMPT_VERSIONS), default="legacy")
     parser.add_argument("--fusion-policy", choices=("legacy", "separate"), default="legacy")
     parser.add_argument("--reviewed-manifest", type=Path)
     parser.add_argument("--diagnostic", action="store_true", help="Explicitly mark synthetic/unreviewed checks; never report as an independent benchmark.")

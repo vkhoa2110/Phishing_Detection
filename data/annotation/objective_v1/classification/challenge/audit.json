@@ -1,0 +1,11 @@
+{
+  "count": 72,
+  "splits": {
+    "test": 24,
+    "dev": 48
+  },
+  "with_url": 72,
+  "groups": 12,
+  "source_kind": "assistant_authored_challenge_not_real_incident",
+  "labels_present": false
+}

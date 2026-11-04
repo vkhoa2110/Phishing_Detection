@@ -1,0 +1,10 @@
+{
+  "version": "retrieval-review-1.0",
+  "status": "awaiting_independent_review",
+  "files": {
+    "queries.jsonl": "3c5850cccf6fa7a83679c8fabee777d87a38615dfe1a5575735eaf7336fba6fc",
+    "corpus.jsonl": "6741d6496d019afae14c263fba44ff8b5a7b39828305a85e0f2b299572b6dc83",
+    "pairs.jsonl": "340703ccc5ef60800ea3d7da3936df4945278d305e11a068c8430bcb4bc81795",
+    "rubric.json": "0aaea1ec8579874d62f6ef321d2d52f79b207b351688029ebabcd4ca4167cce9"
+  }
+}

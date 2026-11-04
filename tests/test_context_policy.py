@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.fusion import POLICY_VERSION, assess_urls, fuse
-from app.llm_service import MESSAGE_PROMPT_VERSION, parse_verdict
+from app.llm_service import MESSAGE_V3_PROMPT_VERSION, parse_verdict
 from app.main import create_app
 from app.schemas import AnalyzeInput
 from app.settings import Settings
@@ -73,7 +73,7 @@ def test_api_defaults_do_not_send_ml_metadata_but_keep_url_alarm_visible(tmp_pat
         r = client.post("/api/analyze", json={"text": "Bài tập: Đừng mở https://example.org/otp", "consent": True}).json()
         assert r["final"]["risk_level"] == "LOW" and r["final"]["conflict"]
         assert r["assessments"]["url"]["risk_level"] == "HIGH"
-        assert r["llm"]["prompt_version"] == MESSAGE_PROMPT_VERSION
+        assert r["llm"]["prompt_version"] == MESSAGE_V3_PROMPT_VERSION
         body = json.loads(captured[0]["messages"][1]["content"])
         assert "url_results" not in body
         assert body["assessment_target"] == "message_actions_not_url_reputation"

@@ -1,0 +1,141 @@
+{
+  "urls": 160,
+  "cases": 360,
+  "selection_used_model_scores": false,
+  "model_predictions": 0,
+  "provider_requests": 0,
+  "training_fingerprint": "d3d1ee19f42b",
+  "unique_domains": 160,
+  "train_domain_overlap": 0,
+  "dev_test_domain_overlap": 0,
+  "prior_selected_domain_overlap": 0,
+  "excluded_prior_domains": 80,
+  "official_split_audit": {
+    "train": {
+      "raw": 36909,
+      "clean": 36909,
+      "invalid_ids": [],
+      "duplicates": 0,
+      "benign": 11004,
+      "phishing": 25905,
+      "sha256": "568e788eda4bdf62531adcddd093373ef6a1e97feec1354063ae337325367b61"
+    },
+    "val": {
+      "raw": 7266,
+      "clean": 7266,
+      "invalid_ids": [],
+      "duplicates": 0,
+      "benign": 1561,
+      "phishing": 5705,
+      "sha256": "d9ef64d29df6639af698ef228e5af5ec6f8ae44c8f1a1dd1367f9ba6d073d81f"
+    },
+    "test": {
+      "raw": 8941,
+      "clean": 8941,
+      "invalid_ids": [],
+      "duplicates": 0,
+      "benign": 3845,
+      "phishing": 5096,
+      "sha256": "b692882e8ae26b2c0b217c090e92d3a19307a26acbfb3c8c89692db26d409bc9"
+    }
+  },
+  "selection_strata": {
+    "dev": [
+      {
+        "source": "tinnhiemmang",
+        "tier": "silver",
+        "label": 1,
+        "eligible_domains_at_draw": 24,
+        "selected": 20
+      },
+      {
+        "source": "tinnhiem_org",
+        "tier": "gold",
+        "label": 0,
+        "eligible_domains_at_draw": 9,
+        "selected": 5
+      },
+      {
+        "source": "tinnhiem_web",
+        "tier": "gold",
+        "label": 0,
+        "eligible_domains_at_draw": 173,
+        "selected": 5
+      },
+      {
+        "source": "tranco_vn",
+        "tier": "silver",
+        "label": 0,
+        "eligible_domains_at_draw": 346,
+        "selected": 5
+      },
+      {
+        "source": "tranco",
+        "tier": "silver",
+        "label": 0,
+        "eligible_domains_at_draw": 935,
+        "selected": 5
+      }
+    ],
+    "test": [
+      {
+        "source": "tinnhiemmang",
+        "tier": "gold",
+        "label": 1,
+        "eligible_domains_at_draw": 69,
+        "selected": 30
+      },
+      {
+        "source": "tinnhiemmang",
+        "tier": "silver",
+        "label": 1,
+        "eligible_domains_at_draw": 413,
+        "selected": 30
+      },
+      {
+        "source": "tinnhiem_org",
+        "tier": "gold",
+        "label": 0,
+        "eligible_domains_at_draw": 66,
+        "selected": 15
+      },
+      {
+        "source": "tinnhiem_web",
+        "tier": "gold",
+        "label": 0,
+        "eligible_domains_at_draw": 175,
+        "selected": 15
+      },
+      {
+        "source": "tranco_vn",
+        "tier": "silver",
+        "label": 0,
+        "eligible_domains_at_draw": 346,
+        "selected": 15
+      },
+      {
+        "source": "tranco",
+        "tier": "silver",
+        "label": 0,
+        "eligible_domains_at_draw": 874,
+        "selected": 15
+      }
+    ]
+  },
+  "cases_by_split_task": {
+    "test/url_only": 120,
+    "dev/url_only": 40,
+    "dev/message_context": 80,
+    "test/message_context": 120
+  },
+  "url_labels_by_split": {
+    "dev": {
+      "0": 20,
+      "1": 20
+    },
+    "test": {
+      "1": 60,
+      "0": 60
+    }
+  }
+}

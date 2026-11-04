@@ -1,0 +1,22 @@
+{
+  "version": "url-context-diagnostic-1.0",
+  "builder_sha256": "1cf860fbdde2b62a8afddca8e9d5b56bdbfed23a59112ff89ab933e351b40e54",
+  "files": {
+    "DATA_LICENSE.txt": "5f0f46d6011b0d85a2e609a2a0cc08997ab761c5332a3c865c3abb702cc7b5ff",
+    "README.md": "8bbea14cca1abf82c16caee5cf7cf043adcb79675595bbcaca5491088e073390",
+    "SOURCE_DATASHEET.md": "8759e022310e42c44deefee16ec4c6443ca8189bbf85b08303499f5e55c3cfbb",
+    "audit.json": "1fdeb2d6f14e22d2abf88ca899341de924f4bc692911ada516ba3e36381fc2a6",
+    "dev.jsonl": "040d6bed44a34a590f0f8b6648dc7c18fbecf108562c08b2b56fd5d168d6c78a",
+    "dev_inputs.jsonl": "f6b024e4c1b71b14691def5a5c035f2dd7647d7efb1f9cbc4958357baeeae88c",
+    "protocol.json": "ff1c918f1e9e507b58052c30ebdefcecc139c701f910df042260239a21b4fcef",
+    "reference_review.csv": "3a803f7a7ff8211ed2f8bf6a032a2e1f9da18b8c803fe58c58f35851e752aa7a",
+    "system_prompt.txt": "27c9f4e07a378c11995241797efc723fc259f6111c80ca2f8ecea8c5fd5229cd",
+    "test.jsonl": "5ac4ab6170d41502d5f1fbd545f854af8a1c7a5620f49c0e242691fc4f6df85a",
+    "test_inputs.jsonl": "6614f017983efca14c2ae20cdffbe8372ba6e9412c162c2f009153950fa90065",
+    "urls.jsonl": "bf84621994497314f267089027681afd124162c95d2c53cde7f3eb9910695da6"
+  },
+  "review_sheets_editable": [
+    "reviewer_a.csv",
+    "reviewer_b.csv"
+  ]
+}

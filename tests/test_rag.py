@@ -138,7 +138,7 @@ def test_rag_api_uses_only_confirmed_redacted_text_and_separate_sources(tmp_path
     requests, rag = [], FakeRAG()
     def handler(request):
         payload = json.loads(request.content);requests.append(payload)
-        return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(verdict())}, "finish_reason": "stop"}]})
+        return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps({**verdict(), "context_kind": "scam_request"})}, "finish_reason": "stop"}]})
     cfg = replace(Settings(), root=tmp_path, api_key="")
     with TestClient(create_app(cfg, httpx.MockTransport(handler), rag_service=rag)) as c:
         assert c.post('/api/analyze', json={"text": "gửi mã OTP", "use_rag": True}).status_code == 422
@@ -150,7 +150,7 @@ def test_rag_api_uses_only_confirmed_redacted_text_and_separate_sources(tmp_path
         assert "private.example" not in json.dumps(payload) and "demo@" not in json.dumps(payload)
         assert rag.seen[0][0] == data["text"]
         assert "reference_documents" in data and "score" not in data["reference_documents"][0]
-        assert result['llm']['rag'] and result['llm']['prompt_version'] == 'message-rag-2.0'
+        assert result['llm']['rag'] and result['llm']['prompt_version'] == 'message-rag-3.0'
         assert result['retrieval']['sources'][0]['source_url'] == source()['source_url']
 
 
@@ -161,11 +161,12 @@ def test_empty_or_failed_retrieval_falls_back_without_fabricated_citations(tmp_p
         data = json.loads(request.content)
         assert "reference_documents" not in json.loads(data['messages'][1]['content'])
         v = verdict();v.pop('knowledge_support')
+        v['context_kind'] = 'scam_request'
         return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(v)}}]})
     with TestClient(create_app(replace(Settings(), root=tmp_path, api_key=""), httpx.MockTransport(handler), rag_service=rag)) as c:
         r = c.post('/api/analyze', json={"text": "Hãy gửi mã OTP", "use_rag": True, "consent": True, "api_key": "fixture"}).json()
         assert r['retrieval']['status'] == status and r['llm']['rag'] is False
-        assert r['llm']['prompt_version'] == 'message-2.0'
+        assert r['llm']['prompt_version'] == 'message-3.0'
 
 
 def test_rag_disabled_or_llm_disabled_never_loads_the_retriever(tmp_path):
@@ -174,6 +175,7 @@ def test_rag_disabled_or_llm_disabled_never_loads_the_retriever(tmp_path):
         data = json.loads(request.content)
         assert "reference_documents" not in json.loads(data['messages'][1]['content'])
         v = verdict();v.pop('knowledge_support')
+        v['context_kind'] = 'scam_request'
         return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(v)}}]})
     with TestClient(create_app(replace(Settings(), root=tmp_path, api_key=""), httpx.MockTransport(handler), rag_service=rag)) as c:
         for use_llm, use_rag in [(False, True), (True, False)]:

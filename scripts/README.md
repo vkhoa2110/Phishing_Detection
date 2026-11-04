@@ -22,6 +22,10 @@ Chạy từ thư mục gốc repository bằng `.venv/bin/python`.
 
 Package chạy thí nghiệm nằm riêng ở `evaluation/`: `python -m evaluation.run` cho bộ thông điệp mô phỏng và `python -m evaluation.phishvn` cho PhishVN. Mặc định các công cụ này không gọi LLM; `--live` mới phát sinh gọi API. [Phương pháp đánh giá](../docs/evaluation/METHODS.md).
 
+`python -m evaluation.url_context_pack prepare|verify --out PACK` dựng/kiểm tra bộ 160 URL nguồn thực và 200 ca ngữ cảnh, không đọc dự đoán để chọn mẫu. `python -m evaluation.url_context_score` chấm dự đoán nhập theo ba mục tiêu, giữ kết quả chưa đủ ở trạng thái pending; không gọi API và không xác thực nguồn gốc provider của file dự đoán. [Schema, phương pháp và giới hạn](../docs/evaluation/URL_CONTEXT_V1.md).
+
+`python -m evaluation.url_context_run --split dev --repetitions 3 --out NEW_RUN` đăng ký lượt chạy và tính URL cục bộ; thêm `--live` mới gọi API (720 yêu cầu trên 120 ca dev nếu chạy đủ ba lượt). Journal ngăn gửi lại yêu cầu đã thử, lỗi được giữ trong kết quả. `scripts/evaluation/report_url_context.py --run RUN --out NEW_REPORT` kiểm chứng số học và payload rồi tạo báo cáo/biểu đồ khi đã đủ lượt.
+
 Chọn ngưỡng và kiểm tra retrieval bằng `python -m evaluation.retrieval`. Không gọi LLM, không đưa nhãn hay score ML vào truy vấn. [Hướng dẫn RAG](../docs/guides/RAG.md).
 
 `python -m evaluation.ablation` chuẩn bị so sánh bốn cấu hình LLM/URL/RAG; thêm `--live` để gọi API. `python -m evaluation.retrieval_comparison` đối chiếu BM25, E5 và Hybrid chỉ trên máy, không đổi cấu hình truy xuất ứng dụng. [Phương pháp, lệnh và giới hạn](../docs/evaluation/RAG_ABLATION.md).

@@ -1,6 +1,6 @@
 # Baseline tham chiếu: ML + LLM
 
-> Đây là mốc tham chiếu v1. Từ 28/10/2026, ứng dụng dùng [hai đánh giá riêng và prompt message-v2](../evaluation/CONTEXT_V2.md). `fuse_legacy`, `baseline-1.0` và `rag-1.0` vẫn được giữ cho các công cụ thực nghiệm cũ. Xem [RAG](../guides/RAG.md) cho phần truy xuất.
+> Đây là mốc tham chiếu v1. Từ 28/10/2026, ứng dụng dùng [hai đánh giá riêng](../evaluation/CONTEXT_V2.md); từ 02/11 bổ sung [prompt message-v3 và kiểm tra đầu ra](QUALITY_V3.md). `fuse_legacy`, `baseline-1.0`, `rag-1.0` và message-v2 vẫn được giữ cho các công cụ thực nghiệm cũ. Xem [RAG](../guides/RAG.md) cho phần truy xuất.
 
 ## Mục đích
 

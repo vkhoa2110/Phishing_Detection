@@ -228,6 +228,8 @@ function render(data) {
         }
       } catch { /* Invalid source metadata is never turned into a clickable link. */ }
       const details = node("details", "source-details"); details.append(node("summary", "", "Xem nội dung tham khảo"), node("p", "", "Tóm lược từ nguồn: " + source.text));
+      if (typeof source.scope === "string" && source.scope.trim()) details.append(node("p", "source-meta", "Phạm vi áp dụng: " + source.scope));
+      if (typeof source.temporal_note === "string" && source.temporal_note.trim()) details.append(node("p", "source-meta", "Lưu ý thời điểm: " + source.temporal_note));
       if (cited) details.append(node("p", "", "Kiến thức AI sử dụng: " + cited.claim), node("blockquote", "", "Đoạn trong tóm lược: “" + cited.source_quote + "”"));
       else details.append(node("p", "result-subtle", "Tài liệu được tìm thấy; AI chưa dẫn nguồn này."));
       details.append(node("p", "source-meta", "Mã tài liệu: " + source.document_id)); card.append(details); sources.append(card);

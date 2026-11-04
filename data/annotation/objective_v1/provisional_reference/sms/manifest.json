@@ -1,0 +1,29 @@
+{
+  "status": "ai_reference_unverified",
+  "rater_ids": [],
+  "version": "objective-ai-reference-1.0",
+  "upstream_labels_used_as_gold": false,
+  "method": "Assistant read all 200 frozen message texts against the explicit behavior rubric without reading prior AI labels, upstream labels, ML scores or RAG rankings. Single AI judgment, not independent gold. UNKNOWN retained conservatively.",
+  "notes_sha256": "14257d376699223c282e5bbdaf64ab01edbd63927a2cc1c380c6a1e0b3abe6f5",
+  "source_kind": "external_sms_authors_report_real_not_independently_verified",
+  "counts": {
+    "dev": {
+      "0": 42,
+      "UNKNOWN": 29,
+      "1": 9
+    },
+    "test": {
+      "0": 69,
+      "UNKNOWN": 39,
+      "1": 12
+    }
+  },
+  "files": {
+    "dev.jsonl": "33e8088e78e15cc6ea6eaba680aac915ecd6ab346d2e81426db25cc62fdfd7e0",
+    "dev_unknown.jsonl": "4e7bad16556d1f1f8735456b0a07915cdce38a172c1ac7d426d4be7a5945f46a",
+    "review.csv": "b769ea4ce3a6780a55e26424af28297c9f2acdcf49a81c061e7d6a89d22f13ab",
+    "test.jsonl": "92287b4f4bf48afb712e2f4da09ee3b7e6653b796edc62a462f1a850d5a037b8",
+    "test_unknown.jsonl": "59de42949329d0d55c4652dc0a116d9f44f71b52862f18d1debd5eff4eaae2b0"
+  },
+  "limitations": "AI annotations have errors and bias; cannot prove model accuracy. Binary subsets may contain very few phishing positives. No identity verification or adjudication occurred."
+}

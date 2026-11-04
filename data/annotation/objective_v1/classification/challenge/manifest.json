@@ -1,0 +1,14 @@
+{
+  "source_url": "local:assistant-authored-challenges",
+  "source_revision": "objective-challenge-1.0",
+  "source_license": "Project-authored text; example domains only",
+  "version": "objective-review-1.0",
+  "status": "awaiting_two_independent_raters",
+  "source_labels_are_gold": false,
+  "source_kind": "assistant_authored_challenge_not_real_incident",
+  "grouping": "Inherited SMS domain/template components or disjoint authored scenario families; no re-split based on outcomes.",
+  "files": {
+    "items.jsonl": "93250bfa0edaf84c4f56952f0275673c5a8bf96d81c56af67048a96d5e0fb07f",
+    "audit.json": "d37984eb3e7a834aea09e4c1306076d977c5b77ea2b1af72ec6676a6eed761f4"
+  }
+}
