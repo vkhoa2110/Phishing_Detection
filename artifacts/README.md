@@ -1,34 +1,52 @@
-# Kết quả thực nghiệm
+# Kết quả và đầu ra cục bộ
 
-Các snapshot đã chốt:
+`evaluations/` chứa bằng chứng thực nghiệm; `ui/` chứa ảnh và biên bản kiểm tra giao diện. Các đầu ra này phục vụ hai mục đích khác nhau, không dùng ảnh UI làm số đo chất lượng mô hình.
 
-| Thư mục | Phạm vi |
+## Kết quả hiện hành
+
+| Thư mục | Phạm vi và tài liệu |
 |---|---|
-| [evaluations/phishvn_official_v1/](evaluations/phishvn_official_v1/) | Model trên 8.941 URL test; hai nhánh LLM trên cùng 100 URL |
-| [evaluations/url_model_ablation_v1/](evaluations/url_model_ablation_v1/) | Chẩn đoán 60 thông điệp mô phỏng, hai nhánh LLM |
-| [evaluations/pilot_1536_tokens/](evaluations/pilot_1536_tokens/) | Lượt pilot chưa hoàn tất; không gộp với kết quả chính |
+| `evaluations/url_source_audit_v1/` | 39 lượt huấn luyện; [baseline PhishVN, ảnh hưởng bronze/nguồn và calibration](../docs/evaluation/URL_SOURCE_AUDIT_V1.md) |
+| `evaluations/url_calibration_v1/` | 7 chính sách trên score URL hiện hành; [cross-fit ngưỡng theo miền và đánh đổi FPR/Recall](../docs/evaluation/URL_CALIBRATION_V1.md) |
+| `evaluations/quality_v4_pilot_v1/` | 240 lần thử v3/v4; [chất lượng v4 và giới hạn](../docs/architecture/QUALITY_V4.md) |
+| `evaluations/quality_v4_pilot_results_v1/` | Báo cáo, kiểm chứng và biểu đồ của pilot v4 |
+| `evaluations/quality_v4_url_policy_v2/` | Chính sách URL thận trọng trên điểm dev/validation đã lưu |
+| `evaluations/components_dev_live_v1/` và `components_dev_results_v1/` | Bốn cấu hình LLM/URL/RAG; [phương pháp và kết quả](../docs/evaluation/COMPONENTS_DEV_V1.md) |
+| `evaluations/url_context_dev_live_v1/` và `url_context_dev_results_v1/` | 720 lượt dev URL/ngữ cảnh; [điều kiện và giới hạn](../docs/evaluation/URL_CONTEXT_DEV_RESULTS_V1.md) |
+| `evaluations/reputation_dev_v1/` | [Thử nghiệm kho uy tín URL](../docs/evaluation/REPUTATION_V1.md) |
 
-Mỗi snapshot giữ nguyên CSV/JSONL, manifest, checkpoint, chỉ số và hình đã tạo. Không chỉnh tên đường dẫn hay hash bên trong file lịch sử. Xem [bảng chuyển đổi](../docs/PROJECT_STRUCTURE.md#đối-chiếu-đường-dẫn-cũmới) khi đối chiếu đường dẫn trước ngày tổ chức lại.
+Các nhãn SMS trong các lượt này là nhãn AI sơ bộ; ngữ cảnh đối chiếu có mẫu tự soạn. Đọc giới hạn trong tài liệu trước khi sử dụng số đo.
 
-Kết quả chạy mới và `report-builds/` bị Git bỏ qua mặc định. Chọn thư mục `--out` mới cho cấu hình mới; không ghi đè snapshot đã chốt. Báo cáo Word/PDF được giữ cục bộ và không theo dõi trên Git.
+## Kiểm tra giao diện
 
-Các lượt RAG cục bộ ngày 27/10/2026 (bị Git bỏ qua):
+Ảnh mới và biên bản ở **`ui/consumer/`**:
 
-| Thư mục | Phạm vi |
+- [Desktop](ui/consumer/desktop-initial.png), [mobile](ui/consumer/mobile-initial.png).
+- [Kết quả trên desktop](ui/consumer/desktop-result-panel.png), [mobile](ui/consumer/mobile-result-panel.png).
+- [Kiểm tra bốn cỡ màn hình](ui/consumer/verification.json).
+- `ui/baseline-v4/verification.json`: biên bản UI trước lần thiết kế lại, giữ để đối chiếu với tài liệu v4.
+
+Chạy lại khi ứng dụng đang mở bằng `python scripts/evaluation/check_consumer_ui.py`. Mặc định cập nhật cùng thư mục UI; dùng `--out` nếu cần lưu một lần chạy riêng. Script phát lại phản hồi AI đã ghi và chạy model URL cục bộ, không gọi provider.
+
+## Các mốc trước và dữ liệu nghiên cứu
+
+| Nhóm | Thư mục / tài liệu |
 |---|---|
-| `evaluations/rag_ablation_v1/` | 400 lượt API, 100 tin nhắn mô phỏng, bốn arm và fusion; đã kiểm chứng, có PNG/SVG |
-| `evaluations/rag_budget_diagnostic_v1/` | Bốn lượt chẩn đoán ca hết token với ngân sách lớn hơn; không gộp vào số đo chính |
-| `rag-evaluation/retrieval_comparison_v1/` | BM25, E5 và Hybrid RRF; ngưỡng riêng chọn trên dev, không thay cấu hình ứng dụng |
+| PhishVN, 8.941 URL test và hai nhánh LLM trên cùng 100 URL | [evaluations/phishvn_official_v1/](evaluations/phishvn_official_v1/), [PHISHVN.md](../docs/evaluation/PHISHVN.md) |
+| Chẩn đoán 60 thông điệp mô phỏng | [evaluations/url_model_ablation_v1/](evaluations/url_model_ablation_v1/), [SYNTHETIC.md](../docs/evaluation/SYNTHETIC.md) |
+| Pilot ngân sách 1.536 token, chưa hoàn tất | [evaluations/pilot_1536_tokens/](evaluations/pilot_1536_tokens/) |
+| So sánh bốn cấu hình và chẩn đoán token v1 | `evaluations/rag_ablation_v1/`, `rag_budget_diagnostic_v1/`; [RAG_ABLATION.md](../docs/evaluation/RAG_ABLATION.md) |
+| Các lượt objective dev và ngữ cảnh v2 | `evaluations/objective_*`, `context_regression_v2/`; [kết quả objective](../docs/evaluation/OBJECTIVE_DEV_RESULTS_V1.md) |
+| Đánh giá truy xuất | `rag-evaluation/`; [RAG v2](../docs/evaluation/RAG_RETRIEVAL_V2.md), [bỏ dấu](../docs/evaluation/RETRIEVAL_ROBUSTNESS.md) |
+| Checkpoint, các lượt bổ sung và gói nhãn AI đã ghép | `annotations/`; [AI_PRELABELS.md](../docs/evaluation/AI_PRELABELS.md) |
+| Chỉ mục embedding dùng trong ứng dụng | `rag/`; [cài đặt RAG](../docs/guides/RAG.md) |
 
-[Phương pháp, kết quả và giới hạn](../docs/evaluation/RAG_ABLATION.md).
+Giữ nguyên manifest, checkpoint, raw response và hash trong snapshot đã chốt. `evaluations/layout_smoke/selected_ids.csv` vẫn được protocol của bộ URL/ngữ cảnh tham chiếu; tên “smoke” không có nghĩa là có thể xóa cả thư mục. Các lần chuẩn bị, bổ sung nhãn và snapshot nguồn cũng có thể là đầu vào của lần chạy sau.
 
-Các lượt cục bộ bổ sung ngày 28/10/2026, không theo dõi trên Git:
+## Quy ước lưu trữ
 
-| Thư mục | Phạm vi |
-|---|---|
-| `rag-evaluation/retrieval_comparison_v2_r1/` | 37 nguồn, dev 60/test 40, so sánh BM25/E5/Hybrid |
-| `rag-evaluation/accent_robustness_v1/` | Dev tăng cường 117 truy vấn; hồi quy 40 câu đã xem, không phải test độc lập |
-| `annotations/vn_sms_ai_complete_v1/` | Gói nhãn AI sơ bộ 200 SMS, CSV, HTML để rà soát, không phải gold |
-| `annotations/vn_sms_ai_v1/` và `annotations/vn_sms_ai_repair_v*/` | Checkpoint lượt đầu và các lượt bổ sung mẫu thiếu phản hồi hợp lệ |
-
-[Nhãn AI và giới hạn](../docs/evaluation/AI_PRELABELS.md) · [Retrieval không dấu](../docs/evaluation/RETRIEVAL_ROBUSTNESS.md). Toàn bộ nhãn AI và kết quả API mới nằm ở `artifacts/`, không ghi vào hai phiếu gán nhãn mù hoặc corpus RAG.
+- Lần đánh giá mô hình mới dùng `--out` mới; không ghi đè kết quả đã chốt.
+- UI chỉ lưu ảnh hiện hành và biên bản cần thiết, tránh giữ đồng thời `before`, `preview`, `retry` và nhiều bản chụp cùng trạng thái.
+- `make clean` chỉ dọn cache, không xóa các thư mục ở đây.
+- Kết quả chạy mới, `ui/`, chỉ mục và bản dựng báo cáo bị Git bỏ qua. Ba snapshot lịch sử được version là PhishVN, URL ablation và pilot 1.536 token.
+- Báo cáo học thuật trong `docs/reports/` được giữ cục bộ, không đưa lên Git.

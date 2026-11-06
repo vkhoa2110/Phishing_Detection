@@ -5,8 +5,16 @@
 .venv/
 __pycache__/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 *.py[cod]
 .ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+*.log
 
 # Model exports and raw third-party data are installed locally.
 /models/*
@@ -27,6 +35,7 @@ inference_*/
 /artifacts/rag/
 /artifacts/rag-evaluation/
 /artifacts/annotations/
+/artifacts/ui/
 # Academic reports, their assets, and report-generation sources stay local.
 /docs/reports/
 /scripts/reporting/

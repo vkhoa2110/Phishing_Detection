@@ -22,7 +22,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default="http://127.0.0.1:8000")
     parser.add_argument("--run", type=Path, default=ROOT / "artifacts/evaluations/context_regression_v2")
-    parser.add_argument("--out", type=Path, default=ROOT / "artifacts/evaluations/consumer_ui_v1")
+    parser.add_argument("--out", type=Path, default=ROOT / "artifacts/ui/consumer")
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
     rows = {r["id"]: r for r in (json.loads(s) for s in (args.run / "results.jsonl").read_text().splitlines())}
@@ -77,6 +77,21 @@ def main():
                 assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), viewport
                 assert page.evaluate("Array.from(document.querySelectorAll('dialog[open]')).every(d => d.scrollWidth <= d.clientWidth)"), viewport + " dialog"
 
+            def screenshot(name, result=False):
+                # Settle animations and sticky-header position for reproducible full-page captures.
+                header = page.locator(".site-header")
+                try:
+                    if result:
+                        header.evaluate("el => { el.hidden = true; }")
+                        page.locator("#results-panel").screenshot(
+                            path=str(args.out / f"{viewport}-{name}.png"), animations="disabled")
+                    else:
+                        header.evaluate("el => { el.style.position = 'static'; }")
+                        page.evaluate("window.scrollTo({top: 0, behavior: 'instant'})")
+                        page.screenshot(path=str(args.out / f"{viewport}-{name}.png"), full_page=True, animations="disabled")
+                finally:
+                    header.evaluate("el => { el.hidden = false; el.style.removeProperty('position'); }")
+
             def submit(case_id="N26", edit=False):
                 page.locator("#input-text").fill(rows[case_id]["text"])
                 page.locator("#analyze-button").click()
@@ -96,11 +111,13 @@ def main():
             expect(page.locator("#results-panel")).to_be_hidden()
             expect(page.locator("#service-status")).to_contain_text("Sẵn sàng")
             no_overflow()
-            page.screenshot(path=str(args.out / f"{viewport}-initial.png"), full_page=True)
+            screenshot("initial")
 
             # Settings, keyboard close, key concealment, and help dialog.
             page.locator("#settings-button").click()
-            expect(page.locator("#use-rag")).to_be_checked()
+            # v4 keeps retrieval opt-in; enable it explicitly for the source replay below.
+            expect(page.locator("#use-rag")).not_to_be_checked()
+            page.locator("#use-rag").check()
             expect(page.locator("#include-ml")).not_to_be_checked()
             page.locator(".api-settings > summary").click()
             page.locator("#api-key").fill("ui-test-only")
@@ -108,6 +125,36 @@ def main():
             expect(page.locator("#api-key")).to_have_attribute("type", "text")
             no_overflow()
             page.keyboard.press("Escape")
+
+            # Clipboard reads occur only after the user's click and cannot silently truncate input.
+            page.evaluate("""() => {
+                window.clipboardReads = 0;
+                Object.defineProperty(navigator, 'clipboard', {configurable: true, value: {
+                    readText: async () => { window.clipboardReads++; return 'Nội dung vừa sao chép.'; }
+                }});
+            }""")
+            assert page.evaluate("window.clipboardReads") == 0
+            page.locator("#paste-button").click()
+            expect(page.locator("#input-text")).to_have_value("Nội dung vừa sao chép.")
+            expect(page.locator("#clipboard-status")).to_contain_text("Đã dán")
+            assert page.evaluate("window.clipboardReads") == 1
+            page.evaluate("() => { navigator.clipboard.readText = async () => 'x'.repeat(8001); }")
+            page.locator("#paste-button").click()
+            expect(page.locator("#clipboard-status")).to_contain_text("vượt 8.000")
+            expect(page.locator("#input-text")).to_have_value("Nội dung vừa sao chép.")
+            page.evaluate("() => { navigator.clipboard.readText = async () => { throw new Error('denied'); }; }")
+            page.locator("#paste-button").click()
+            expect(page.locator("#clipboard-status")).to_contain_text("Ctrl / ⌘ + V")
+            expect(page.locator("#paste-button")).to_be_enabled()
+
+            # A delayed clipboard permission must not overwrite a later edit.
+            page.evaluate("() => { navigator.clipboard.readText = () => new Promise(resolve => { window.finishPaste = resolve; }); }")
+            page.locator("#paste-button").click()
+            page.locator("#input-text").fill("Bản đang chỉnh sửa.")
+            page.evaluate("window.finishPaste('Nội dung cũ trong bộ nhớ tạm.')")
+            expect(page.locator("#paste-button")).to_be_enabled()
+            expect(page.locator("#input-text")).to_have_value("Bản đang chỉnh sửa.")
+            expect(page.locator('.workflow [aria-current="step"]')).to_have_attribute("data-step", "input")
             expect(page.locator("#api-key")).to_have_attribute("type", "password")
             page.locator("#settings-button").click()
             page.locator("#api-key").fill("")
@@ -127,6 +174,7 @@ def main():
 
             # Cancellation and empty/editable previews cannot send a request.
             page.locator("#analyze-button").click()
+            expect(page.locator('.workflow [aria-current="step"]')).to_have_attribute("data-step", "review")
             expect(page.locator("#preview-provider")).to_contain_text("mkp-api.fptcloud.com")
             page.locator("#preview-text").fill(" ")
             page.locator("#consent").check()
@@ -136,11 +184,13 @@ def main():
             no_overflow()
             page.locator("#cancel-preview").click()
             assert not requests
+            expect(page.locator('.workflow [aria-current="step"]')).to_have_attribute("data-step", "input")
 
             replay["edited"] = True
             submit(edit=True)
             assert requests[-1]["edited"] is True
             expect(page.locator(".verdict.LOW")).to_be_visible()
+            expect(page.locator('.workflow [aria-current="step"]')).to_have_attribute("data-step", "result")
             expect(page.locator(".url-assessment.HIGH")).to_be_visible()
             assert page.locator(".result-main > :first-child").get_attribute("class") == "url-assessment HIGH"
             expect(page.locator(".conflict-note")).to_contain_text("URL cần cảnh giác")
@@ -148,7 +198,7 @@ def main():
             assert page.locator(".source-link").count() > 0
             assert page.locator("a.url-text").count() == 0
             no_overflow()
-            page.screenshot(path=str(args.out / f"{viewport}-conflicting-result.png"), full_page=True)
+            screenshot("conflicting-result", result=True)
             page.locator(".technical-details > summary").click()
             with page.expect_download() as download:
                 page.locator("#download-result").click()
@@ -157,6 +207,8 @@ def main():
             page.locator(".technical-details > summary").click()
             page.locator("#new-check").click()
             expect(page.locator("#input-text")).to_be_focused()
+            expect(page.locator("#results-panel")).to_be_hidden()
+            expect(page.locator('.workflow [aria-current="step"]')).to_have_attribute("data-step", "input")
 
             replay["edited"] = False
             replay["body"] = fixture("P26")
@@ -164,7 +216,7 @@ def main():
             expect(page.locator(".verdict.HIGH")).to_be_visible()
             expect(page.locator(".actions-section")).to_be_visible()
             no_overflow()
-            page.screenshot(path=str(args.out / f"{viewport}-high-result.png"), full_page=True)
+            screenshot("result-panel", result=True)
 
             for level in ("WARNING", "UNKNOWN"):
                 replay["body"] = fixture(level=level)

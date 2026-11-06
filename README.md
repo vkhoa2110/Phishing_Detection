@@ -1,14 +1,12 @@
-# PhishLens — Phishing Detection & Analysis
+# PhishLens
 
-Ứng dụng web tiếng Việt kiểm tra URL, email và tin nhắn, kết hợp XGBoost với DeepSeek-V4-Flash qua API FPT. Chạy cục bộ bằng FastAPI và HTML/CSS/JavaScript. RAG v1 dùng embedding E5-small chạy cục bộ, truy xuất kho 25 tóm lược và hiển thị URL nguồn tham khảo.
+Ứng dụng web tiếng Việt giúp kiểm tra dấu hiệu lừa đảo trong tin nhắn, email và đường dẫn. FastAPI phục vụ giao diện HTML/CSS/JavaScript; XGBoost kiểm tra URL cục bộ, LLM giải thích nội dung và RAG cung cấp tài liệu tham khảo khi được bật.
 
-Từ v2, **hành vi trong tin nhắn và rủi ro URL được hiển thị riêng**. Mặc định LLM không nhận điểm ML; model URL vẫn chạy tại máy và giữ cảnh báo riêng. [Thiết kế, quy trình đánh giá v2](docs/evaluation/CONTEXT_V2.md). Đã chuẩn bị [200 SMS từ nguồn công khai chờ gán nhãn độc lập](data/annotation/vn_sms_v2/README.md); chưa dùng nhãn spam nguồn làm nhãn phishing.
+Ứng dụng hiện dùng **chính sách v4**: đánh giá riêng hành vi trong nội dung và rủi ro URL, giữ mức “chưa đủ thông tin” khi thiếu căn cứ. [Thiết kế và giới hạn chất lượng](docs/architecture/QUALITY_V4.md).
 
-Đã dựng riêng [kho RAG v2 gồm 37 nguồn và đánh giá retrieval](docs/evaluation/RAG_RETRIEVAL_V2.md), có [thử nghiệm tiếng Việt không dấu](docs/evaluation/RETRIEVAL_ROBUSTNESS.md). [Nhãn AI sơ bộ cho 200 SMS](docs/evaluation/AI_PRELABELS.md) được lưu riêng để rà soát, không thay nhãn người đánh giá hoặc dùng làm gold tính F1.
+## Chạy ứng dụng
 
-## Chạy nhanh
-
-Dùng Python 3.11 hoặc 3.12, mở terminal tại thư mục có `run.py`:
+Dùng Python 3.11 hoặc 3.12 tại thư mục có `run.py`:
 
 ```bash
 python3 -m venv .venv
@@ -17,62 +15,46 @@ cp .env.example .env
 .venv/bin/python run.py
 ```
 
-Mở **http://127.0.0.1:8000**. Trên Windows, thay `.venv/bin/python` bằng `.venv\Scripts\python.exe` và sao chép `.env.example` bằng trình quản lý tệp hoặc `Copy-Item`.
+Mở **http://127.0.0.1:8000**. Trên Windows, dùng `.venv\Scripts\python.exe` và `Copy-Item .env.example .env`.
 
-Đặt gói mô hình tại **`models/inference_XGBoost_d6_s42/`**, gồm `model.ubj`, `config.json`, `predict_url.py`, `url_features.py` và `url_preprocessing.py`. Xem [hướng dẫn model](models/README.md). Trọng số được cài riêng; thiếu model sẽ được báo rõ.
+- Đặt gói XGBoost trong `models/inference_XGBoost_d6_s42/` theo [hướng dẫn model](models/README.md).
+- Cấu hình `FPT_API_KEY` trong `.env` hoặc nhập trong thiết lập giao diện để dùng AI. Bạn được xem, sửa và xác nhận nội dung trước khi gửi tới dịch vụ bên ngoài.
+- Muốn dùng RAG, chuẩn bị embedding E5-small và chỉ mục theo [hướng dẫn RAG](docs/guides/RAG.md), rồi bật **Đối chiếu với tài liệu có nguồn**. RAG mặc định tắt.
 
-Để dùng RAG, làm theo [thiết lập E5-small và chỉ mục](docs/guides/RAG.md). Trên máy hiện tại đã chuẩn bị model, chỉ mục và ngưỡng; mở **Thiết lập → Đối chiếu với tài liệu có nguồn** cho email/tin nhắn. Cài ứng dụng cơ bản không tự tải model embedding.
+[Cài đặt, API và xử lý lỗi](docs/guides/USAGE.md). Khi cần đối chiếu ứng dụng baseline v3: `PHISHLENS_PROFILE=legacy .venv/bin/python run.py`.
 
-Khi bật LLM, cấu hình `FPT_API_KEY` trong `.env` hoặc nhập ở giao diện. Ứng dụng có bản xem trước và bước xác nhận gửi API. Hướng dẫn đầy đủ ở [Cài đặt và sử dụng](docs/guides/USAGE.md).
+## Các thư mục chính
 
-## Cấu trúc dự án
+| Thư mục | Dùng để làm gì? |
+|---|---|
+| `app/` | API, xử lý nội dung/URL và giao diện trong `static/` |
+| `evaluation/` | Các phép đánh giá và công cụ chuẩn bị nhãn |
+| `data/` | Bộ đánh giá, phiếu gán nhãn và kho tài liệu RAG |
+| `models/` | Trọng số và gói suy luận cài cục bộ |
+| `artifacts/` | Kết quả thực nghiệm; ảnh kiểm tra giao diện ở `ui/` |
+| `docs/` | Hướng dẫn, thiết kế và phương pháp đánh giá |
+| `scripts/` | Công cụ chạy từ dòng lệnh, gồm dọn cache |
+| `tests/`, `notebooks/` | Kiểm thử tự động và notebook huấn luyện |
 
-```text
-.
-├── app/                    # FastAPI, xử lý ML/LLM và giao diện
-├── data/
-│   ├── evaluation/         # Mẫu thông điệp có nhãn
-│   ├── knowledge/          # Danh mục và snapshot tài liệu RAG
-│   └── raw/                # Dữ liệu gốc cài cục bộ, không đưa lên Git
-├── models/                 # Gói mô hình suy luận cài cục bộ
-├── notebooks/              # Notebook huấn luyện và xuất model
-├── artifacts/evaluations/  # Kết quả thực nghiệm đã chốt
-├── docs/                   # Hướng dẫn, thiết kế và đánh giá
-├── scripts/                # Công cụ evaluation / rag
-├── tests/                  # Kiểm thử tự động
-├── requirements/           # Phụ thuộc theo mục đích sử dụng
-├── requirements.txt        # Điểm cài đặt cho ứng dụng
-├── Makefile                # Lệnh thao tác thường dùng
-└── run.py                  # Điểm khởi động ứng dụng
-```
+[Quy ước thư mục](docs/PROJECT_STRUCTURE.md) · [Các lệnh công cụ](scripts/README.md) · [Mục lục kết quả](artifacts/README.md).
 
-Xem [quy ước thư mục và bảng đường dẫn cũ–mới](docs/PROJECT_STRUCTURE.md). Repository nằm ngay tại thư mục đang mở; không còn tầng thư mục `phishing_baseline/` ở máy cục bộ.
-
-## Tài liệu
-
-- [Thiết kế v3 và lộ trình cải tiến chất lượng](docs/architecture/QUALITY_V3.md): kiểm tra bằng chứng, tách điều phối, phân tích báo nhầm và đánh giá độc lập.
-- [Bộ đánh giá có protocol cố định](docs/evaluation/OBJECTIVE_V1.md): 200 SMS, 72 ca đối chiếu, 24 truy vấn RAG và nhãn AI sơ bộ có căn cứ; chưa phải gold độc lập.
-- [Kết quả 364 lượt đánh giá dev](docs/evaluation/OBJECTIVE_DEV_RESULTS_V1.md): bốn cấu hình LLM/URL/RAG trên 51 SMS và 40 ca mô phỏng, có giữ lỗi và UNKNOWN; chưa chứng minh RAG cải thiện phân loại.
-- [Bộ đánh giá URL và ngữ cảnh](docs/evaluation/URL_CONTEXT_V1.md): 160 URL thực, 200 ca đối chiếu; đo riêng rủi ro URL, hành vi và hành động, có runner đăng ký trước và lưu từng lượt API.
-- [Kết quả 720 lượt dev URL/ngữ cảnh](docs/evaluation/URL_CONTEXT_DEV_RESULTS_V1.md): thêm model URL tăng F1 URL đứng riêng nhưng tăng báo nhầm; báo đủ kết quả, độ bất định và giới hạn.
-- [Thiết lập và sử dụng RAG](docs/guides/RAG.md).
-- [Mục lục tài liệu](docs/README.md) · [Kiến trúc baseline](docs/architecture/BASELINE.md).
-- [Kết quả URL trên PhishVN](docs/evaluation/PHISHVN.md) · [Chẩn đoán thông điệp mô phỏng](docs/evaluation/SYNTHETIC.md).
-- [So sánh LLM / URL / RAG và BM25 / E5 / Hybrid](docs/evaluation/RAG_ABLATION.md).
-- [Hai phạm vi đánh giá và bộ SMS chờ review](docs/evaluation/CONTEXT_V2.md).
-- [Nhãn AI sơ bộ và cách rà soát](docs/evaluation/AI_PRELABELS.md) · [Thử nghiệm retrieval không dấu](docs/evaluation/RETRIEVAL_ROBUSTNESS.md).
-- [Phương pháp và lệnh đánh giá](docs/evaluation/METHODS.md) · [Kết quả theo lần chạy](artifacts/README.md).
-- [Kho 25 nguồn RAG](data/knowledge/README.md) · [Danh mục nguồn kèm URL](data/knowledge/corpus_v1/sources.csv).
-
-Báo cáo Word/PDF và các tệp phục vụ biên soạn được giữ cục bộ trong `docs/reports/`, không theo dõi trên Git. Đường dẫn lịch sử của dữ liệu thực nghiệm được đối chiếu trong [bảng chuyển đổi](docs/PROJECT_STRUCTURE.md#đối-chiếu-đường-dẫn-cũmới).
-
-## Phát triển và kiểm thử
+## Phát triển
 
 ```bash
 .venv/bin/python -m pip install -r requirements/dev.txt
-.venv/bin/python -m pytest -q
+make test
+make clean
 ```
 
-Các test chạy offline, không gọi FPT. Có thể dùng `make run`, `make test` hoặc `make help` trên môi trường có Make. [Các profile phụ thuộc](requirements/README.md) và [các công cụ](scripts/README.md) mô tả lệnh đánh giá và thu thập.
+`make clean` chỉ xóa cache phát sinh. Không xóa dữ liệu, model, kết quả thực nghiệm hoặc báo cáo. Có thể xem trước bằng `.venv/bin/python -B scripts/maintenance/clean.py`.
 
-Kết quả hiện có gồm đánh giá model trên 8.941 URL test PhishVN, so sánh LLM trên cùng 100 URL, bộ chẩn đoán 60 thông điệp v1 và lượt so sánh bốn cấu hình LLM/URL/RAG trên 100 thông điệp mô phỏng (60 mẫu cũ có URL, 40 mẫu mới không URL). Đã đối chiếu BM25, E5 và Hybrid trên 40 câu dev, 12 câu test truy xuất. Các bộ này có nhiệm vụ khác nhau; giới hạn được trình bày trong từng tài liệu. Nhãn tin nhắn và relevance do trợ lý soạn, chưa có tập tin nhắn thực được gán nhãn độc lập.
+Bộ test chạy offline. Các phép đánh giá LLM chỉ gọi API khi chạy với `--live`; xem [phương pháp và lệnh đánh giá](docs/evaluation/METHODS.md). Nhãn AI sơ bộ và các bộ mô phỏng chưa thay thế tập có nhãn người độc lập.
+
+## Tài liệu nên đọc
+
+- [Sử dụng ứng dụng](docs/guides/USAGE.md) và [thiết lập RAG](docs/guides/RAG.md).
+- [Chất lượng v4](docs/architecture/QUALITY_V4.md): thay đổi hiện hành, kiểm chứng và đánh đổi Recall/coverage.
+- [So sánh LLM / URL / RAG](docs/evaluation/COMPONENTS_DEV_V1.md) và [bộ đánh giá cố định](docs/evaluation/OBJECTIVE_V1.md).
+- [Toàn bộ tài liệu, gồm các phiên bản trước](docs/README.md).
+
+`.env`, môi trường Python, trọng số, dữ liệu gốc và kết quả chạy mới không được đưa lên Git. Báo cáo học thuật cùng tài sản biên soạn ở `docs/reports/` và `scripts/reporting/` chỉ giữ cục bộ.

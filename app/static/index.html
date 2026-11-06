@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#f6f7f3">
+  <meta name="theme-color" content="#f5f7fb">
   <meta name="description" content="Kiểm tra dấu hiệu lừa đảo trong tin nhắn, email và đường dẫn. Xem căn cứ và gợi ý xử lý bằng tiếng Việt.">
   <title>PhishLens — Kiểm tra trước khi tin</title>
   <link rel="icon" href="/static/shield.svg" type="image/svg+xml">
@@ -12,92 +12,127 @@
   <script src="/static/app.js" defer></script>
 </head>
 <body>
+<svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/><circle cx="11" cy="11" r="4"/><path d="m14 14 3 3"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24"><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6 3V6a2 2 0 0 1 2-2Z"/><path d="M7 9h10M7 13h6"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-6 6-1 1a4.2 4.2 0 0 1-6-6l4-4a4.2 4.2 0 0 1 6 0m2 2 1-1a4.2 4.2 0 0 1 6 6l-4 4a4.2 4.2 0 0 1-6 0" transform="translate(1 1)"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 .4c0 1.6-2.5 2-2.5 3.6m0 3h.01"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 2.6 6.4L21 12l-6.4 2.6L12 21l-2.6-6.4L3 12l6.4-2.6L12 3Zm7-1v4m-2-2h4"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+  <symbol id="i-paste" viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M8 12h8m-8 4h5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="m12 3 10 17H2L12 3Z"/><path d="M12 9v5m0 3h.01"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 8 3v6c0 5-8 11-8 11S4 16 4 11V5l8-3Z"/><path d="M12 7v5m0 4h.01"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></symbol>
+</svg>
 <a class="skip-link" href="#input-text">Đến nội dung cần kiểm tra</a>
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="/" aria-label="PhishLens, trang chủ"><img src="/static/shield.svg" alt="" width="34" height="38"><span>Phish<span class="brand-light">Lens</span></span></a>
-    <span class="brand-caption">Kiểm tra trước khi tin.</span>
-    <nav aria-label="Trợ giúp và thiết lập">
-      <button id="how-button" class="nav-link" type="button" aria-label="Hướng dẫn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 .4c0 1.6-2.5 2-2.5 3.6m0 3h.01"/></svg><span>Hướng dẫn</span></button>
-      <button id="settings-button" class="nav-link" type="button" aria-label="Thiết lập"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></svg><span>Thiết lập</span></button>
+    <a class="brand" href="/" aria-label="PhishLens, trang chủ"><img src="/static/shield.svg" alt="" width="34" height="38"><span>Phish<span class="brand-light">Lens</span><span class="brand-dot">.</span></span></a>
+    <nav class="header-nav" aria-label="Điều hướng chính">
+      <a class="nav-link nav-current" href="#analysis-form" aria-current="page"><svg aria-hidden="true"><use href="#i-scan"/></svg><span>Kiểm tra</span></a>
+      <button id="how-button" class="nav-link" type="button" aria-label="Hướng dẫn sử dụng"><svg aria-hidden="true"><use href="#i-help"/></svg><span>Hướng dẫn</span></button>
     </nav>
+    <button id="settings-button" class="settings-button" type="button" aria-label="Thiết lập phân tích"><svg aria-hidden="true"><use href="#i-sliders"/></svg><span>Thiết lập</span></button>
   </div>
 </header>
 <main class="page">
   <section class="intro" aria-labelledby="page-title">
-    <div class="eyebrow"><span class="eyebrow-dot"></span> THÊM MỘT BƯỚC KIỂM TRA, BỚT MỘT LẦN LO LẮNG</div>
-    <h1 id="page-title">Có gì đó đáng ngờ?<br><span>Cùng kiểm tra trước đã.</span></h1>
-    <p>Dán tin nhắn, email hoặc đường dẫn bạn vừa nhận.<br class="desktop-break"> PhishLens giúp bạn nhận diện dấu hiệu và biết nên làm gì tiếp theo.</p>
+    <div class="intro-title"><div class="eyebrow"><span></span> THÊM MỘT GÓC NHÌN, BỚT MỘT NỖI LO</div><h1 id="page-title">Kiểm tra trước.<br><span>An tâm quyết định.</span></h1></div>
+    <div class="intro-description"><p>Một tin nhắn lạ. Một đường dẫn đáng ngờ.<br>Dành một phút để hiểu rõ trước khi làm theo.</p><div class="intro-footnote"><svg aria-hidden="true"><use href="#i-lock"/></svg>Bạn chủ động chọn nội dung chia sẻ</div></div>
   </section>
   <div id="connection-error" class="error-box" role="alert" hidden></div>
   <div class="workspace">
     <form id="analysis-form" class="input-card card" aria-labelledby="input-title">
-      <div class="card-heading"><div><h2 id="input-title">Bạn muốn kiểm tra gì?</h2><p>Chỉ cần nội dung bạn nhận được, không cần mở đường dẫn.</p></div><span class="card-mark" aria-hidden="true">01</span></div>
-      <div class="tabs" role="group" aria-label="Loại nội dung">
-        <button id="tab-text" type="button" class="tab active" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6 3V6a2 2 0 0 1 2-2Z"/><path d="M7 9h10M7 13h6"/></svg>Tin nhắn / email</button>
-        <button id="tab-url" type="button" class="tab" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 13 4-4m-6 6-1 1a4.2 4.2 0 0 1-6-6l4-4a4.2 4.2 0 0 1 6 0m2 2 1-1a4.2 4.2 0 0 1 6 6l-4 4a4.2 4.2 0 0 1-6 0" transform="translate(1 1)"/></svg>Đường dẫn</button>
+      <ol class="workflow" aria-label="Các bước kiểm tra">
+        <li class="current" data-step="input" aria-current="step"><span class="step-number">1</span><span>Nhập nội dung</span></li>
+        <li data-step="review"><span class="step-number">2</span><span>Xác nhận chia sẻ</span></li>
+        <li data-step="result"><span class="step-number">3</span><span>Đọc kết quả</span></li>
+      </ol>
+      <div class="input-body">
+        <div class="card-heading"><div><h2 id="input-title">Bạn vừa nhận được gì?</h2><p>Dán nội dung vào đây. PhishLens sẽ giúp bạn xem xét.</p></div><span class="heading-icon" aria-hidden="true"><svg><use href="#i-scan"/></svg></span></div>
+        <div class="tabs" role="group" aria-label="Loại nội dung">
+          <button id="tab-text" type="button" class="tab active" aria-pressed="true"><svg aria-hidden="true"><use href="#i-message"/></svg><span>Tin nhắn / email</span></button>
+          <button id="tab-url" type="button" class="tab" aria-pressed="false"><svg aria-hidden="true"><use href="#i-link"/></svg><span>Đường dẫn</span></button>
+        </div>
+        <div class="editor">
+          <div class="editor-heading"><label for="input-text" class="field-label" id="input-label">Nội dung cần kiểm tra</label><button id="paste-button" class="paste-button" type="button"><svg aria-hidden="true"><use href="#i-paste"/></svg>Dán nội dung</button></div>
+          <textarea id="input-text" maxlength="8000" rows="5" placeholder="Dán tin nhắn hoặc email bạn nhận được…&#10;&#10;Giữ cả lời yêu cầu và đường dẫn để có đủ ngữ cảnh kiểm tra." required spellcheck="false" aria-describedby="input-hint clipboard-status"></textarea>
+          <div class="editor-footer"><span id="input-hint">Kiểm tra được cả nội dung không có đường dẫn</span><div><button class="clear-button" type="button" id="clear-button" aria-label="Xóa nội dung">Xóa</button><span class="char-counter"><span id="char-count">0</span><span class="counter-max"> / 8.000</span></span></div></div>
+        </div>
+        <p id="clipboard-status" class="clipboard-status" role="status" hidden></p>
+        <div class="examples"><span>Thử một ví dụ</span><button type="button" data-sample="suspicious"><span class="sample-dot suspicious" aria-hidden="true"></span><span>Tin nhắn đáng ngờ</span></button><button type="button" data-sample="normal"><span class="sample-dot normal" aria-hidden="true"></span><span>Tin nhắn thông thường</span></button></div>
+        <div class="analysis-option"><span class="option-icon" aria-hidden="true"><svg><use href="#i-spark"/></svg></span><div class="option-copy"><label for="use-llm" class="option-title" id="ai-label">Thêm góc nhìn từ AI</label><p id="ai-description">Giải thích dấu hiệu và gợi ý cách xử lý bằng tiếng Việt.</p></div><label class="switch"><input id="use-llm" type="checkbox" checked><span class="switch-track"></span><span class="sr-only">Bật giải thích và gợi ý bằng AI</span></label></div>
+        <p id="local-only-note" class="inline-notice" hidden>Đã tắt AI: chỉ kiểm tra các đường dẫn. Hành vi trong tin nhắn sẽ chưa được đánh giá.</p>
+        <div class="privacy-note"><svg aria-hidden="true"><use href="#i-lock"/></svg><span>Bạn được xem và sửa nội dung trước khi xác nhận gửi đến dịch vụ AI bên ngoài.</span></div>
+        <div id="form-error" class="error-box" role="alert" hidden></div>
+        <button class="primary-button analyze-button" type="submit" id="analyze-button"><svg aria-hidden="true"><use href="#i-scan"/></svg><span id="button-label">Kiểm tra ngay</span><svg class="button-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        <div class="submit-caption"><span>Không tự mở đường dẫn bạn gửi</span><span class="keyboard-hint"><kbd>Ctrl</kbd><span>+</span><kbd>Enter</kbd></span></div>
       </div>
-      <div class="editor">
-        <label for="input-text" class="field-label" id="input-label">Nội dung email hoặc tin nhắn</label>
-        <textarea id="input-text" maxlength="8000" rows="5" placeholder="Ví dụ: “Tài khoản của bạn sắp bị khóa. Hãy xác minh ngay…”&#10;&#10;Dán toàn bộ nội dung để có thêm ngữ cảnh kiểm tra." required spellcheck="false" aria-describedby="input-hint"></textarea>
-        <div class="editor-footer"><span id="input-hint">Có thể kiểm tra cả tin nhắn không có đường dẫn</span><div><button class="clear-button" type="button" id="clear-button">Xóa</button><span class="char-counter"><span id="char-count">0</span> / 8.000</span></div></div>
-      </div>
-      <div class="examples"><span>Chưa có nội dung? Thử mẫu:</span><button type="button" data-sample="suspicious">Tin nhắn đáng ngờ <span aria-hidden="true">↗</span></button><button type="button" data-sample="normal">Tin nhắn thông thường <span aria-hidden="true">↗</span></button></div>
-      <div class="analysis-option"><div class="option-copy"><label for="use-llm" class="option-title" id="ai-label">Giải thích và gợi ý bằng AI</label><p id="ai-description">Hiểu dấu hiệu đáng ngờ, kể cả khi tin nhắn không có đường dẫn.</p></div><label class="switch"><input id="use-llm" type="checkbox" checked><span class="switch-track"></span><span class="sr-only">Bật giải thích và gợi ý bằng AI</span></label></div>
-      <p id="local-only-note" class="inline-notice" hidden>Đã tắt AI: chỉ kiểm tra các đường dẫn. Hành vi trong tin nhắn sẽ chưa được đánh giá.</p>
-      <div class="privacy-note"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></svg><span>Bạn được xem, sửa và xác nhận nội dung trước khi gửi tới dịch vụ AI bên ngoài.</span></div>
-      <div id="form-error" class="error-box" role="alert" hidden></div>
-      <button class="primary-button" type="submit" id="analyze-button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span id="button-label">Kiểm tra ngay</span><span class="button-arrow" aria-hidden="true">→</span></button>
-      <div class="submit-caption"><span>Không tự mở hoặc truy cập trang đích</span><span class="keyboard-hint">Ctrl / ⌘ + Enter</span></div>
     </form>
     <aside class="guidance" aria-label="Gợi ý bảo vệ bản thân">
       <section class="guide-card">
-        <div class="guide-illustration" aria-hidden="true"><div class="illustration-orbit orbit-one"></div><div class="illustration-orbit orbit-two"></div><div class="illustration-message"><span></span><span></span><span></span></div><div class="illustration-shield"><img src="/static/shield.svg" alt="" width="57" height="63"></div><span class="illustration-spark spark-one">+</span><span class="illustration-spark spark-two">+</span></div>
-        <span class="guide-eyebrow">CHẬM LẠI MỘT CHÚT</span><h2>Đừng để sự vội vàng<br>quyết định thay bạn.</h2><p>Kẻ lừa đảo thường tạo áp lực để bạn làm theo trước khi kịp kiểm tra.</p>
-        <ul class="red-flags"><li><span aria-hidden="true">!</span>Giục chuyển tiền hoặc dọa khóa tài khoản</li><li><span aria-hidden="true">!</span>Yêu cầu mật khẩu, mã OTP hay thông tin thẻ</li><li><span aria-hidden="true">!</span>Nhờ cài ứng dụng hoặc đăng nhập qua link lạ</li></ul>
+        <div class="guide-topline"><span class="guide-tag">MỘT NHỊP CHẬM, MỘT BƯỚC CHẮC</span><svg aria-hidden="true"><use href="#i-spark"/></svg></div>
+        <img class="guide-illustration" src="/static/clarity.svg" alt="" width="320" height="164" aria-hidden="true">
+        <h2>Đừng để sự vội vàng<br>quyết định thay bạn.</h2><p>Hiểu dấu hiệu. Xem căn cứ.<br>Chọn bước tiếp theo phù hợp.</p>
+        <div class="guide-bottom"><span class="small-line"></span> PhishLens đồng hành cùng bạn</div>
       </section>
-      <details class="urgent-help"><summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5m0 3h.01"/></svg>Đã lỡ làm theo tin nhắn?</summary><div><p><strong>Nếu đã chuyển tiền hoặc lộ thông tin thẻ:</strong> liên hệ ngay ngân hàng qua số chính thức để yêu cầu hỗ trợ khóa giao dịch hoặc tài khoản.</p><p>Đổi mật khẩu bị lộ qua ứng dụng hoặc website chính thức. Giữ lại tin nhắn và bằng chứng để trình báo cơ quan công an.</p></div></details>
+      <section class="watchlist" aria-labelledby="watch-title"><h3 id="watch-title">Chậm lại nếu bạn được yêu cầu…</h3><ul class="red-flags">
+        <li><span class="flag-icon" aria-hidden="true"><svg><use href="#i-clock"/></svg></span><div><strong>Làm ngay, không được chờ</strong><p>Giục chuyển tiền, dọa khóa tài khoản.</p></div></li>
+        <li><span class="flag-icon" aria-hidden="true"><svg><use href="#i-lock"/></svg></span><div><strong>Chia sẻ điều riêng tư</strong><p>Gửi mật khẩu, mã OTP hoặc thông tin thẻ.</p></div></li>
+        <li><span class="flag-icon" aria-hidden="true"><svg><use href="#i-link"/></svg></span><div><strong>Mở một đường dẫn lạ</strong><p>Đăng nhập hoặc cài ứng dụng chưa rõ nguồn.</p></div></li>
+      </ul></section>
+      <details class="urgent-help"><summary><svg aria-hidden="true"><use href="#i-alert"/></svg>Đã lỡ làm theo tin nhắn?</summary><div><p><strong>Nếu đã chuyển tiền hoặc lộ thông tin thẻ:</strong> liên hệ ngay ngân hàng qua số chính thức để yêu cầu hỗ trợ khóa giao dịch hoặc tài khoản.</p><p>Đổi mật khẩu bị lộ qua ứng dụng hoặc website chính thức. Giữ lại tin nhắn và bằng chứng để trình báo cơ quan công an.</p></div></details>
       <div class="availability"><span id="service-dot" class="status-dot"></span><span id="service-status" role="status">Đang kết nối ứng dụng…</span></div>
     </aside>
   </div>
   <section id="results-panel" class="result-card card" aria-labelledby="result-title" tabindex="-1" hidden>
-    <div class="result-heading"><div><span class="guide-eyebrow">ĐỐI CHIẾU TRƯỚC KHI LÀM THEO</span><h2 id="result-title">Kết quả kiểm tra</h2></div><button id="new-check" class="text-button" type="button">Kiểm tra nội dung khác <span aria-hidden="true">↑</span></button></div>
-    <div id="empty-state" hidden></div>
+    <div class="result-heading"><div class="result-heading-copy"><span class="heading-icon" aria-hidden="true"><svg><use href="#i-eye"/></svg></span><div><span class="guide-eyebrow">THÊM CĂN CỨ ĐỂ QUYẾT ĐỊNH</span><h2 id="result-title">Kết quả kiểm tra</h2></div></div><button id="new-check" class="secondary-button" type="button">Kiểm tra nội dung khác <span aria-hidden="true">↗</span></button></div>
     <div id="result-announcement" class="sr-only" role="status" aria-live="polite"></div>
-    <div id="loading-state" class="loading-state" role="status" hidden><span class="loader" aria-hidden="true"></span><div><h3>Đang kiểm tra nội dung của bạn</h3><p id="loading-message">Đang xử lý…</p><small>Bạn có thể giữ trang này mở trong lúc chờ.</small></div></div>
+    <div id="loading-state" class="loading-state" role="status" hidden><span class="loading-orbit" aria-hidden="true"><span class="loader"></span><svg><use href="#i-scan"/></svg></span><div><span class="loading-eyebrow">ĐANG XEM XÉT NỘI DUNG</span><h3>Một chút kiên nhẫn, thêm chút an tâm.</h3><p id="loading-message">Đang xử lý…</p><small>Bạn có thể giữ trang này mở trong lúc chờ.</small></div></div>
     <div id="result-content" hidden></div>
   </section>
-  <footer class="page-footer"><span><strong>PhishLens</strong> · Thêm căn cứ để bạn tự quyết định.</span><span>Kết quả mang tính hỗ trợ, không bảo đảm tuyệt đối về độ an toàn.</span></footer>
+  <section class="principles" aria-label="Cách PhishLens hỗ trợ bạn">
+    <div><span class="principle-icon" aria-hidden="true"><svg><use href="#i-eye"/></svg></span><p><strong>Có căn cứ để đối chiếu</strong><span>Đọc dấu hiệu cùng lời giải thích.</span></p></div>
+    <div><span class="principle-icon" aria-hidden="true"><svg><use href="#i-lock"/></svg></span><p><strong>Chủ động với dữ liệu</strong><span>Xem và sửa trước khi gửi đến AI.</span></p></div>
+    <div><span class="principle-icon" aria-hidden="true"><svg><use href="#i-link"/></svg></span><p><strong>Kiểm tra ngay tại đây</strong><span>Không cần mở đường dẫn đáng ngờ.</span></p></div>
+  </section>
+  <footer class="page-footer"><a class="footer-brand" href="/">PhishLens<span>.</span></a><p>Kết quả mang tính hỗ trợ, không bảo đảm tuyệt đối về độ an toàn.</p><span>Kiểm tra trước khi tin.</span></footer>
 </main>
 <dialog id="settings-dialog" aria-labelledby="settings-title"><div class="dialog-body">
-  <div class="dialog-heading"><div><div class="dialog-eyebrow">TÙY CHỌN NÂNG CAO</div><h2 id="settings-title">Thiết lập phân tích</h2></div><button id="close-settings" class="icon-button" type="button" aria-label="Đóng thiết lập">×</button></div>
-  <p>Các thiết lập được dùng trong phiên này. Bạn có thể kiểm tra nội dung với cấu hình đã có sẵn.</p>
-  <div class="settings-section"><h3>Nguồn tham khảo và cách phân tích</h3>
+  <div class="dialog-heading"><span class="dialog-icon" aria-hidden="true"><svg><use href="#i-sliders"/></svg></span><button id="close-settings" class="icon-button" type="button" aria-label="Đóng thiết lập"><svg aria-hidden="true"><use href="#i-close"/></svg></button></div>
+  <div class="dialog-eyebrow">THEO CÁCH BẠN MUỐN</div><h2 id="settings-title">Thiết lập phân tích</h2><p>Cấu hình sẵn để bắt đầu. Tùy chỉnh thêm khi bạn cần; các lựa chọn chỉ áp dụng trong phiên này.</p>
+  <div class="settings-section"><h3>Thêm ngữ cảnh cho AI</h3>
     <label class="check-row"><input id="use-rag" type="checkbox"><span><strong>Đối chiếu với tài liệu có nguồn</strong><span id="rag-status" class="help-text">Đang kiểm tra kho tài liệu…</span></span></label>
-    <label class="check-row"><input id="include-ml" type="checkbox"><span><strong>Cho AI tham khảo thêm điểm đường dẫn</strong><span class="help-text">Đường dẫn luôn được kiểm tra riêng. Mặc định AI tập trung vào hành vi trong tin nhắn.</span></span></label>
+    <label class="check-row"><input id="include-ml" type="checkbox"><span><strong>Tham khảo thêm điểm đường dẫn</strong><span class="help-text">Đường dẫn luôn được kiểm tra riêng. Mặc định AI tập trung vào hành vi trong tin nhắn.</span></span></label>
   </div>
   <details class="api-settings"><summary>Kết nối dịch vụ AI <span id="key-status">Đang kiểm tra…</span></summary><div class="settings-body">
     <p class="help-text">Nội dung được gửi đến endpoint bên dưới sau khi bạn xác nhận. Chỉ sử dụng dịch vụ bạn tin cậy.</p>
     <label class="field-label" for="endpoint">API endpoint</label><input id="endpoint" type="url" value="https://mkp-api.fptcloud.com/v1/chat/completions" autocomplete="off" spellcheck="false">
     <label class="field-label" for="llm-model">Tên mô hình</label><input id="llm-model" value="DeepSeek-V4-Flash" autocomplete="off" spellcheck="false">
-    <label class="field-label" for="api-key">API key</label><div class="key-field"><input id="api-key" type="password" autocomplete="off" placeholder="Để trống nếu máy chủ đã cấu hình" spellcheck="false"><button id="show-key" type="button" aria-label="Hiện API key">Hiện</button></div>
-    <p class="help-text">Key nhập ở đây chỉ giữ trong phiên đang mở, không lưu sau khi tải lại trang.</p>
+    <label class="field-label" for="api-key">API key</label><div class="key-field"><input id="api-key" type="password" autocomplete="off" placeholder="Để trống nếu máy chủ đã cấu hình" spellcheck="false"><button id="show-key" type="button" aria-label="Hiện API key">Hiện</button></div><p class="help-text">Key nhập ở đây chỉ giữ trong phiên đang mở, không lưu sau khi tải lại trang.</p>
   </div></details>
   <details class="system-details"><summary>Trạng thái kỹ thuật</summary><div class="system-row"><div><strong>Mô hình kiểm tra đường dẫn</strong><span id="model-status">Đang kiểm tra…</span></div><button id="reload-model" class="secondary-button" type="button">Nạp lại</button></div><div class="system-row"><div><strong id="llm-name">Dịch vụ AI</strong><span id="api-status">Đang kiểm tra…</span></div><span class="status-dot" id="api-dot"></span></div></details>
-  <button id="done-settings" type="button" class="primary-button">Xong</button>
+  <button id="done-settings" type="button" class="primary-button">Lưu lựa chọn <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
 </div></dialog>
 <dialog id="privacy-dialog" aria-labelledby="privacy-title"><div class="dialog-body">
-  <div class="dialog-eyebrow">BẠN QUYẾT ĐỊNH NỘI DUNG ĐƯỢC CHIA SẺ</div><h2 id="privacy-title">Kiểm tra bản nội dung gửi đi</h2>
+  <div class="dialog-heading"><span class="dialog-icon" aria-hidden="true"><svg><use href="#i-lock"/></svg></span><span class="dialog-step">BƯỚC 02 / 03</span></div>
+  <div class="dialog-eyebrow">QUYỀN CHỦ ĐỘNG THUỘC VỀ BẠN</div><h2 id="privacy-title">Xem lại trước khi chia sẻ</h2>
   <p id="preview-provider">Bản bên dưới sẽ được gửi tới dịch vụ AI bên ngoài. Ứng dụng đã che một số thông tin theo quy tắc; bạn cần kiểm tra và sửa thêm trước khi gửi.</p>
-  <div id="masked-fields" class="masked-fields"></div><label class="field-label" for="preview-text">Nội dung gửi tới AI — bạn có thể chỉnh sửa</label><textarea id="preview-text" rows="8" maxlength="8000" spellcheck="false"></textarea><p class="help-text" id="preview-ml-note"></p>
+  <div id="masked-fields" class="masked-fields"></div><label class="field-label" for="preview-text">Nội dung gửi đến AI <span class="label-note">Có thể chỉnh sửa</span></label><textarea id="preview-text" rows="7" maxlength="8000" spellcheck="false"></textarea><p class="help-text" id="preview-ml-note"></p>
   <label class="consent-row"><input type="checkbox" id="consent"><span>Tôi đã kiểm tra và đồng ý gửi bản nội dung này qua dịch vụ AI bên ngoài.</span></label><div id="preview-error" class="error-box" role="alert" hidden></div>
-  <div class="dialog-actions"><button id="cancel-preview" class="secondary-button" type="button">Quay lại</button><button id="confirm-send" class="primary-button" type="button" disabled>Đồng ý và kiểm tra <span aria-hidden="true">→</span></button></div>
+  <div class="dialog-actions"><button id="cancel-preview" class="secondary-button" type="button">Quay lại</button><button id="confirm-send" class="primary-button" type="button" disabled>Đồng ý và kiểm tra <svg aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
 </div></dialog>
 <dialog id="how-dialog" aria-labelledby="how-title"><div class="dialog-body">
-  <div class="dialog-eyebrow">SỬ DỤNG PHISHLENS</div><h2 id="how-title">Một bước kiểm tra trước khi tin</h2>
-  <ol class="how-list"><li><strong>Dán nội dung bạn nhận được.</strong><p>Chọn tin nhắn / email hoặc đường dẫn. Giữ ngữ cảnh để hệ thống hiểu bạn đang được yêu cầu làm gì; tránh nhập mật khẩu và mã OTP thật.</p></li><li><strong>Kiểm tra nội dung trước khi chia sẻ.</strong><p>Nếu bật AI, bạn được xem và sửa bản đã che thông tin trước khi xác nhận gửi đến dịch vụ bên ngoài. Tắt AI nếu chỉ muốn phân loại đường dẫn tại máy chạy ứng dụng.</p></li><li><strong>Đọc kết luận cùng căn cứ.</strong><p>Ứng dụng đánh giá riêng hành vi trong tin nhắn và chuỗi đường dẫn. Một tin nhắn trông bình thường vẫn có thể chứa đường dẫn đáng ngờ; ngược lại, điểm đường dẫn thấp không bác bỏ một yêu cầu nguy hiểm.</p></li><li><strong>Xác minh qua kênh chính thức.</strong><p>Nếu còn nghi ngờ, tự mở ứng dụng chính thức hoặc liên hệ đơn vị qua thông tin đã biết. Không dùng chính đường dẫn hay số điện thoại trong tin nhắn đáng ngờ để xác minh.</p></li></ol>
-  <div class="inline-notice">PhishLens không mở trang đích, xác thực người gửi hay tra cứu danh sách đen. Tài liệu tham khảo là các bản tóm lược có dẫn nguồn, không xác nhận độ an toàn của tên miền.</div>
-  <button id="close-how" type="button" class="primary-button">Đã hiểu</button>
+  <div class="dialog-heading"><span class="dialog-icon" aria-hidden="true"><svg><use href="#i-help"/></svg></span><button class="icon-button" type="button" data-close-dialog="how-dialog" aria-label="Đóng hướng dẫn"><svg aria-hidden="true"><use href="#i-close"/></svg></button></div>
+  <div class="dialog-eyebrow">LÀM QUEN VỚI PHISHLENS</div><h2 id="how-title">Từ nghi ngờ đến hiểu rõ hơn.</h2>
+  <ol class="how-list"><li><strong>Dán nội dung bạn nhận được.</strong><p>Chọn tin nhắn / email hoặc đường dẫn. Giữ ngữ cảnh để hệ thống hiểu bạn đang được yêu cầu làm gì; tránh nhập mật khẩu và mã OTP thật.</p></li><li><strong>Chọn thông tin bạn muốn chia sẻ.</strong><p>Khi bật AI, bạn được xem và sửa bản đã che thông tin trước khi xác nhận gửi đến dịch vụ bên ngoài. Tắt AI nếu chỉ muốn kiểm tra chuỗi đường dẫn tại máy chạy ứng dụng.</p></li><li><strong>Đọc kết luận cùng căn cứ.</strong><p>Hành vi trong tin nhắn và đường dẫn được đánh giá riêng. Một nội dung thông thường vẫn có thể chứa URL đáng ngờ; điểm URL thấp cũng không bác bỏ một yêu cầu nguy hiểm.</p></li><li><strong>Xác minh qua kênh chính thức.</strong><p>Tự mở ứng dụng chính thức hoặc liên hệ đơn vị qua thông tin đã biết. Tránh dùng đường dẫn hay số điện thoại trong chính tin nhắn đáng ngờ để xác minh.</p></li></ol>
+  <div class="inline-notice">PhishLens không mở trang đích, xác thực người gửi hay tra cứu danh sách đen. Tài liệu tham khảo giúp giải thích dấu hiệu, không xác nhận độ an toàn của tên miền.</div>
+  <button id="close-how" type="button" class="primary-button">Bắt đầu kiểm tra <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
 </div></dialog>
 </body>
 </html>

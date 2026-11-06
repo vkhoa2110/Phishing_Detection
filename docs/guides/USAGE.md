@@ -140,7 +140,7 @@ Kiểm tra luồng giao diện bằng Chromium khi ứng dụng đang chạy (c�
 .venv/bin/python scripts/evaluation/check_consumer_ui.py
 ```
 
-Script chặn các yêu cầu AI bằng phản hồi đã ghi hoặc fixture trạng thái/lỗi, chỉ gọi API thật cho nhánh URL cục bộ. Ảnh chụp và biên bản mới lưu ở `artifacts/evaluations/consumer_ui_v1/`, không ghi vào snapshot diagnostic cũ. Đây là kiểm tra hành vi giao diện, không phải phép đo chất lượng mô hình.
+Script chặn các yêu cầu AI bằng phản hồi đã ghi hoặc fixture trạng thái/lỗi, chỉ gọi API thật cho nhánh URL cục bộ. Ảnh chụp và biên bản lưu ở `artifacts/ui/consumer/`; dùng `--out` để chọn vị trí khác. Công cụ này kiểm tra cả giao diện 320–1440 px, dán nội dung, tiến trình, đồng ý chia sẻ dữ liệu, lỗi và XSS. Đây là kiểm tra hành vi giao diện, không phải phép đo chất lượng mô hình.
 
 Đã bổ sung kiểm thử với trọng số `models/inference_XGBoost_d6_s42` thật và API FPT thật. Model được đánh giá trên tập test PhishVN chính thức; hai cấu hình LLM được so sánh trên cùng 100 URL test. Xem [báo cáo PhishVN](../evaluation/PHISHVN.md) để đọc phương pháp, ngưỡng, số đo và giới hạn. Khi cài trên máy khác, vẫn cần đặt gói model và cấu hình API key riêng.
 

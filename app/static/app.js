@@ -1,6 +1,6 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
-const state = {mode: "text", busy: false, pending: null, result: null, hasKey: false, mlReady: false, ragReady: false, drafts: {text: "", url: ""}};
+const state = {mode: "text", phase: "input", busy: false, pending: null, result: null, hasKey: false, mlReady: false, ragReady: false, drafts: {text: "", url: ""}};
 const labels = {HIGH: "Nguy cơ cao", WARNING: "Cần kiểm tra thêm", LOW: "Chưa thấy dấu hiệu rõ ràng", UNKNOWN: "Chưa đủ thông tin"};
 // These are examples of input, never precomputed model results or clickable links.
 const samples = {
@@ -18,6 +18,25 @@ function node(tag, className, text) {
   return el;
 }
 function errorBox(id, message = "") { $(id).textContent = message; $(id).hidden = !message; }
+function icon(name) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+  use.setAttribute("href", "#i-" + name);
+  svg.setAttribute("aria-hidden", "true"); svg.append(use);
+  return svg;
+}
+function updateWorkflow(phase = state.phase) {
+  state.phase = phase;
+  const current = phase === "input" ? 0 : phase === "review" ? 1 : 2;
+  document.querySelectorAll(".workflow li").forEach((step, index) => {
+    step.classList.toggle("current", index === current);
+    step.classList.toggle("complete", index < current);
+    if (index === current) step.setAttribute("aria-current", "step");
+    else step.removeAttribute("aria-current");
+    if (index === 1) step.lastElementChild.textContent = $("use-llm").checked ? "Xác nhận chia sẻ" : "Kiểm tra tại máy";
+    if (index === 2) step.lastElementChild.textContent = phase === "loading" ? "Đang kiểm tra" : "Đọc kết quả";
+  });
+}
 function updateCount() {
   $("char-count").textContent = $("input-text").value.length.toLocaleString("vi-VN");
   $("clear-button").disabled = state.busy || !$("input-text").value;
@@ -32,9 +51,9 @@ function updateOptions() {
   ["endpoint", "llm-model", "api-key", "show-key"].forEach(id => { $(id).disabled = !ai || state.busy; });
   document.querySelector(".privacy-note").hidden = !ai;
   $("local-only-note").hidden = ai || state.mode === "url";
-  $("ai-label").textContent = state.mode === "url" ? "Nhờ AI giải thích thêm" : "Giải thích và gợi ý bằng AI";
-  $("ai-description").textContent = state.mode === "url" ? "Thêm nhận xét từ chuỗi đường dẫn. Không truy cập trang đích." : "Hiểu dấu hiệu đáng ngờ, kể cả khi tin nhắn không có đường dẫn.";
-  updateCount();
+  $("ai-label").textContent = state.mode === "url" ? "Nhờ AI giải thích thêm" : "Thêm góc nhìn từ AI";
+  $("ai-description").textContent = state.mode === "url" ? "Nhận xét từ chuỗi đường dẫn, không truy cập trang đích." : "Giải thích dấu hiệu và gợi ý cách xử lý bằng tiếng Việt.";
+  updateCount(); updateWorkflow();
 }
 function busy(value) {
   state.busy = value;
@@ -78,7 +97,8 @@ async function init() {
     $("api-status").textContent = state.hasKey ? "Máy chủ đã cấu hình key · Chưa kiểm tra kết nối nhà cung cấp" : "Cần nhập API key để dùng AI";
     $("api-dot").classList.toggle("ready", state.hasKey);
     state.ragReady = Boolean(status.rag && status.rag.ready);
-    $("use-rag").checked = state.ragReady;
+    // Keep the default aligned with the validated v4 pilot; RAG remains opt-in.
+    $("use-rag").checked = false;
     $("rag-status").textContent = state.ragReady ? `${status.rag.documents} nguồn · Dùng cho tin nhắn / email, không xác minh tên miền.` : "Kho tài liệu chưa sẵn sàng. Bạn vẫn có thể phân tích bằng AI.";
     updateOptions(); keyStatus(); errorBox("connection-error");
   } catch (err) {
@@ -99,16 +119,17 @@ function setMode(mode) {
     $("tab-" + kind).classList.toggle("active", mode === kind);
     $("tab-" + kind).setAttribute("aria-pressed", String(mode === kind));
   }
-  $("input-label").textContent = mode === "url" ? "Đường dẫn cần kiểm tra" : "Nội dung email hoặc tin nhắn";
-  $("input-hint").textContent = mode === "url" ? "Dán một đường dẫn đầy đủ, bắt đầu bằng http:// hoặc https://" : "Có thể kiểm tra cả tin nhắn không có đường dẫn";
-  $("input-text").placeholder = mode === "url" ? "https://example.org/\n\nChỉ dán đường dẫn. Bạn không cần mở trang đó." : "Ví dụ: “Tài khoản của bạn sắp bị khóa. Hãy xác minh ngay…”\n\nDán toàn bộ nội dung để có thêm ngữ cảnh kiểm tra.";
+  $("input-label").textContent = mode === "url" ? "Đường dẫn cần kiểm tra" : "Nội dung cần kiểm tra";
+  $("input-hint").textContent = mode === "url" ? "Dán URL đầy đủ, gồm http:// hoặc https://" : "Kiểm tra được cả nội dung không có đường dẫn";
+  $("input-text").placeholder = mode === "url" ? "https://example.org/\n\nChỉ dán đường dẫn. Bạn không cần mở trang đó." : "Dán tin nhắn hoặc email bạn nhận được…\n\nGiữ cả lời yêu cầu và đường dẫn để có đủ ngữ cảnh kiểm tra.";
+  $("input-text").setAttribute("inputmode", mode === "url" ? "url" : "text");
   $("input-text").value = state.drafts[mode];
   document.querySelectorAll("[data-sample]").forEach(button => {
-    const name = mode === "url" ? button.dataset.sample === "suspicious" ? "URL minh họa có dấu hiệu lạ" : "URL minh họa đơn giản" : button.dataset.sample === "suspicious" ? "Tin nhắn đáng ngờ" : "Tin nhắn thông thường";
-    button.replaceChildren(document.createTextNode(name + " "), node("span", "", "↗"));
-    button.lastChild.setAttribute("aria-hidden", "true");
+    const name = mode === "url" ? button.dataset.sample === "suspicious" ? "URL minh họa đáng ngờ" : "URL minh họa đơn giản" : button.dataset.sample === "suspicious" ? "Tin nhắn đáng ngờ" : "Tin nhắn thông thường";
+    const dot = node("span", "sample-dot " + button.dataset.sample); dot.setAttribute("aria-hidden", "true");
+    button.replaceChildren(dot, node("span", "", name));
   });
-  resetResult(); errorBox("form-error"); updateOptions();
+  resetResult(); errorBox("form-error"); errorBox("clipboard-status"); updateOptions();
 }
 function resetResult() {
   state.result = null;
@@ -117,6 +138,7 @@ function resetResult() {
   $("result-content").replaceChildren();
   $("loading-state").hidden = true;
   $("result-announcement").textContent = "";
+  updateWorkflow("input");
 }
 function revealResult() {
   $("results-panel").hidden = false;
@@ -194,10 +216,12 @@ function render(data) {
       // Detected URLs stay plain text; checking them must never require visiting them.
       card.append(head, node("code", "url-text", item.url));
       if (item.status === "ok") {
-        card.append(node("p", "url-guidance", item.risk_level === "LOW" ? "Điểm dưới ngưỡng cảnh báo. Chưa kiểm tra trang đích hoặc chủ sở hữu." : "Chuỗi đường dẫn có điểm vượt ngưỡng cảnh báo; cần xác minh trước khi sử dụng."));
+        card.append(node("p", "url-guidance", item.risk_level === "UNKNOWN" ? (item.message || "Mô hình chưa đủ căn cứ kết luận về đường dẫn này; cần kiểm tra thêm.") : item.risk_level === "LOW" ? "Chưa thấy dấu hiệu rõ qua điểm URL. Chưa kiểm tra trang đích hoặc chủ sở hữu." : "Chuỗi đường dẫn có điểm vượt ngưỡng cảnh báo; cần xác minh trước khi sử dụng."));
         const details = node("details", "url-score"); details.append(node("summary", "", "Xem điểm kiểm tra đường dẫn"));
         const row = node("div", "score-row"); row.append(node("span", "", "Điểm phân loại mô hình"), node("strong", "", Number(item.score).toFixed(4)));
-        details.append(row, node("p", "threshold-note", `Ngưỡng cảnh báo ${Number(item.warning_threshold).toFixed(4)} · Ngưỡng cao ${item.high_threshold == null ? "chưa thiết lập" : Number(item.high_threshold).toFixed(4)}`), node("p", "threshold-note", "Điểm này không phải xác suất lừa đảo đã hiệu chỉnh.")); card.append(details);
+        details.append(row, node("p", "threshold-note", `Ngưỡng cảnh báo ${item.warning_threshold == null ? "chưa thiết lập" : Number(item.warning_threshold).toFixed(4)} · Ngưỡng cao ${item.high_threshold == null ? "chưa thiết lập" : Number(item.high_threshold).toFixed(4)}`), node("p", "threshold-note", "Điểm này không phải xác suất lừa đảo đã hiệu chỉnh."));
+        if (item.low_threshold != null) details.append(node("p", "threshold-note", `Vùng chưa đủ thông tin: từ ${Number(item.low_threshold).toFixed(4)} đến dưới ${item.warning_threshold == null ? "ngưỡng cảnh báo chưa xác định" : Number(item.warning_threshold).toFixed(4)}. Không coi vùng này là an toàn.`));
+        card.append(details);
       } else card.append(node("p", "inline-warning", item.message));
       urls.append(card);
     }
@@ -245,14 +269,16 @@ function render(data) {
     const sent = node("details", "payload-details"); sent.append(node("summary", "", "Xem bản nội dung đã gửi tới AI"), node("pre", "", llm.input_used)); technical.append(sent);
     if (llm.usage && llm.usage.total_tokens) technical.append(node("p", "result-subtle", `${llm.usage.total_tokens.toLocaleString("vi-VN")} token · ${llm.prompt_version}`));
   }
-  const download = node("button", "text-button", "Tải dữ liệu kết quả (.json) ↓"); download.type = "button"; download.id = "download-result";
+  const download = node("button", "text-button"); download.append(icon("download"), node("span", "", "Tải dữ liệu kết quả (.json)")); download.type = "button"; download.id = "download-result";
   download.addEventListener("click", downloadResult); technical.append(download); target.append(technical);
   target.append(node("div", "result-note", data.notice));
   $("loading-state").hidden = true; target.hidden = false;
+  updateWorkflow("result");
   $("result-announcement").textContent = `Đã kiểm tra. ${data.final.label}.${urlAlarm ? " Đường dẫn: " + labels[urlAssessment.risk_level] + "." : ""}`;
 }
 async function analyze(payload) {
   busy(true); errorBox("form-error"); state.result = null;
+  updateWorkflow("loading");
   $("result-content").hidden = true; $("result-content").replaceChildren(); $("loading-state").hidden = false;
   $("result-announcement").textContent = "";
   $("loading-message").textContent = payload.use_llm ? "Đang kiểm tra đường dẫn và chờ giải thích từ dịch vụ AI…" : "Đang kiểm tra chuỗi đường dẫn tại máy chạy ứng dụng…";
@@ -283,6 +309,7 @@ $("analysis-form").addEventListener("submit", async event => {
     $("preview-ml-note").textContent = payload.include_ml ? "AI chỉ được xem điểm của các đường dẫn còn trong bản bạn xác nhận. Đường dẫn từ bản gốc vẫn được kiểm tra riêng tại máy." : "Không gửi điểm hoặc kết luận mô hình đường dẫn cho AI.";
     if (payload.use_rag) $("preview-ml-note").textContent += " Tối đa 3 tóm lược công khai có nguồn sẽ được tìm theo bản đã sửa và gửi kèm để tham khảo.";
     $("consent").checked = false; $("confirm-send").disabled = true; errorBox("preview-error");
+    updateWorkflow("review");
     $("privacy-dialog").showModal();
   } catch (err) { errorBox("form-error", err.message); }
   finally { busy(false); }
@@ -296,19 +323,38 @@ $("confirm-send").addEventListener("click", async () => {
 $("consent").addEventListener("change", () => { $("confirm-send").disabled = !$("consent").checked; });
 // Editing the approved text requires confirming consent again.
 $("preview-text").addEventListener("input", () => { $("consent").checked = false; $("confirm-send").disabled = true; });
-$("privacy-dialog").addEventListener("close", () => { state.pending = null; });
+$("privacy-dialog").addEventListener("close", () => { state.pending = null; if (state.phase === "review") updateWorkflow("input"); });
 $("cancel-preview").addEventListener("click", () => $("privacy-dialog").close());
 $("tab-text").addEventListener("click", () => setMode("text"));
 $("tab-url").addEventListener("click", () => setMode("url"));
-$("input-text").addEventListener("input", () => { updateCount(); resetResult(); errorBox("form-error"); });
+$("input-text").addEventListener("input", () => { updateCount(); resetResult(); errorBox("form-error"); errorBox("clipboard-status"); });
 $("input-text").addEventListener("keydown", event => { if ((event.ctrlKey || event.metaKey) && event.key === "Enter") { event.preventDefault(); $("analysis-form").requestSubmit(); } });
-$("clear-button").addEventListener("click", () => { $("input-text").value = ""; updateCount(); resetResult(); errorBox("form-error"); $("input-text").focus(); });
-$("new-check").addEventListener("click", () => { $("input-text").focus(); $("input-text").select(); $("analysis-form").scrollIntoView({block: "start"}); });
+$("clear-button").addEventListener("click", () => { $("input-text").value = ""; updateCount(); resetResult(); errorBox("form-error"); errorBox("clipboard-status"); $("input-text").focus(); });
+$("paste-button").addEventListener("click", async () => {
+  if (state.busy) return;
+  const mode = state.mode, original = $("input-text").value;
+  $("paste-button").disabled = true;
+  try {
+    if (!navigator.clipboard?.readText) throw new Error("unavailable");
+    const text = await navigator.clipboard.readText();
+    // A slow permission prompt must not overwrite edits or a different input mode.
+    if (state.busy || mode !== state.mode || original !== $("input-text").value) return;
+    if (!text.trim()) { errorBox("clipboard-status", "Bộ nhớ tạm chưa có nội dung văn bản. Hãy sao chép tin nhắn hoặc đường dẫn trước."); return; }
+    if (text.length > $("input-text").maxLength) { errorBox("clipboard-status", "Nội dung vượt 8.000 ký tự. Hãy rút gọn và giữ lại lời yêu cầu cùng đường dẫn cần kiểm tra."); return; }
+    $("input-text").value = text; updateCount(); resetResult(); errorBox("form-error");
+    errorBox("clipboard-status", "Đã dán nội dung. Bạn có thể sửa trước khi kiểm tra.");
+    $("input-text").focus();
+  } catch {
+    errorBox("clipboard-status", "Trình duyệt chưa cho phép đọc bộ nhớ tạm. Dùng Ctrl / ⌘ + V hoặc nhấn giữ ô nhập và chọn Dán.");
+    $("input-text").focus();
+  } finally { $("paste-button").disabled = state.busy; }
+});
+$("new-check").addEventListener("click", () => { resetResult(); $("input-text").focus(); $("input-text").select(); $("analysis-form").scrollIntoView({block: "start"}); });
 $("use-llm").addEventListener("change", () => { updateOptions(); resetResult(); });
 ["use-rag", "include-ml"].forEach(id => $(id).addEventListener("change", resetResult));
 $("api-key").addEventListener("input", keyStatus);
 $("show-key").addEventListener("click", () => { const hidden = $("api-key").type === "password"; $("api-key").type = hidden ? "text" : "password"; $("show-key").textContent = hidden ? "Ẩn" : "Hiện"; $("show-key").setAttribute("aria-label", hidden ? "Ẩn API key" : "Hiện API key"); });
-document.querySelectorAll("[data-sample]").forEach(button => button.addEventListener("click", () => { $("input-text").value = samples[state.mode][button.dataset.sample]; updateCount(); resetResult(); errorBox("form-error"); $("input-text").focus(); }));
+document.querySelectorAll("[data-sample]").forEach(button => button.addEventListener("click", () => { $("input-text").value = samples[state.mode][button.dataset.sample]; updateCount(); resetResult(); errorBox("form-error"); errorBox("clipboard-status"); $("input-text").focus(); }));
 $("reload-model").addEventListener("click", async () => { $("reload-model").disabled = true; try { modelStatus(await api("/api/model/reload", {}, 30000)); errorBox("connection-error"); } catch (err) { errorBox("connection-error", err.message); } finally { $("reload-model").disabled = false; } });
 $("settings-button").addEventListener("click", () => $("settings-dialog").showModal());
 function closeSettings() {
@@ -318,6 +364,7 @@ $("settings-dialog").addEventListener("close", closeSettings);
 ["close-settings", "done-settings"].forEach(id => $(id).addEventListener("click", () => $("settings-dialog").close()));
 $("how-button").addEventListener("click", () => $("how-dialog").showModal());
 $("close-how").addEventListener("click", () => $("how-dialog").close());
+document.querySelectorAll("[data-close-dialog]").forEach(button => button.addEventListener("click", () => $(button.dataset.closeDialog).close()));
 function downloadResult() {
   if (!state.result) return;
   const url = URL.createObjectURL(new Blob([JSON.stringify(state.result, null, 2)], {type: "application/json"}));

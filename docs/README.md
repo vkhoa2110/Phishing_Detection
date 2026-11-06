@@ -1,27 +1,48 @@
 # Tài liệu dự án
 
+Bắt đầu với các tài liệu hiện hành dưới đây. Các nghiên cứu trước được giữ để đối chiếu phương pháp và tái lập kết quả.
+
+## Sử dụng và phát triển
+
 | Nội dung | Tài liệu |
 |---|---|
-| Embedding, truy xuất, ngưỡng và nguồn dẫn RAG | [RAG.md](guides/RAG.md) |
-| Cài đặt, API, cấu hình và sử dụng | [USAGE.md](guides/USAGE.md) |
-| Quy ước thư mục, chuyển đổi đường dẫn | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) |
-| Phạm vi kiến trúc baseline | [BASELINE.md](architecture/BASELINE.md) |
-| Thiết kế v3, kiểm tra bằng chứng và ưu tiên cải tiến chất lượng | [QUALITY_V3.md](architecture/QUALITY_V3.md) |
-| Dữ liệu và phương pháp đánh giá | [METHODS.md](evaluation/METHODS.md) |
-| Bộ đánh giá cố định, 200 SMS + 72 ca khó và nhãn AI ghi rõ giới hạn | [OBJECTIVE_V1.md](evaluation/OBJECTIVE_V1.md) |
-| Kết quả 364 lượt dev: bốn cấu hình, báo nhầm và giới hạn nhãn AI | [OBJECTIVE_DEV_RESULTS_V1.md](evaluation/OBJECTIVE_DEV_RESULTS_V1.md) |
-| Bộ đánh giá URL/ngữ cảnh: 160 URL thực, 200 ca đối chiếu và ba nhãn riêng | [URL_CONTEXT_V1.md](evaluation/URL_CONTEXT_V1.md) |
-| Kết quả 720 lượt dev URL/ngữ cảnh: F1, báo nhầm, coverage và độ bất định | [URL_CONTEXT_DEV_RESULTS_V1.md](evaluation/URL_CONTEXT_DEV_RESULTS_V1.md) |
-| Kết quả URL PhishVN | [PHISHVN.md](evaluation/PHISHVN.md) |
-| Phân tích bộ thông điệp mô phỏng | [SYNTHETIC.md](evaluation/SYNTHETIC.md) |
-| So sánh bốn cấu hình LLM/URL/RAG và phương pháp truy xuất | [RAG_ABLATION.md](evaluation/RAG_ABLATION.md) |
-| Phạm vi kết luận v2, prompt và benchmark chờ review | [CONTEXT_V2.md](evaluation/CONTEXT_V2.md) |
-| Kho RAG v2: 37 nguồn, 100 truy vấn mới và kết quả BM25/E5/Hybrid | [RAG_RETRIEVAL_V2.md](evaluation/RAG_RETRIEVAL_V2.md) |
-| Thử nghiệm bỏ dấu: dev tăng cường và hồi quy đã xem | [RETRIEVAL_ROBUSTNESS.md](evaluation/RETRIEVAL_ROBUSTNESS.md) |
-| Hai phiếu gán nhãn 200 SMS và hướng dẫn | [vn_sms_v2/](../data/annotation/vn_sms_v2/README.md) |
-| Nhãn AI sơ bộ cho 200 SMS, checkpoint và giới hạn | [AI_PRELABELS.md](evaluation/AI_PRELABELS.md) |
-| Đề xuất đa dạng hóa RAG, 12 nguồn ứng viên cho 8 nhóm | [RAG_V2_PROPOSAL.md](architecture/RAG_V2_PROPOSAL.md) |
-| Biên bản kiểm tra baseline ban đầu, ngày 24/10 | [VERIFICATION.md](evaluation/VERIFICATION.md) |
-| Kho tài liệu chuẩn bị RAG | [data/knowledge/](../data/knowledge/README.md) |
+| Cài đặt, cấu hình, API và cách dùng | [USAGE.md](guides/USAGE.md) |
+| Chuẩn bị embedding, chỉ mục và nguồn RAG | [RAG.md](guides/RAG.md) |
+| Kiến trúc hiện hành, kiểm chứng v4 và giới hạn | [QUALITY_V4.md](architecture/QUALITY_V4.md) |
+| Cấu trúc thư mục và dọn cache | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) |
+| Lệnh thu thập, kiểm tra và đánh giá | [scripts/README.md](../scripts/README.md) |
+| Kết quả và ảnh kiểm tra giao diện | [artifacts/README.md](../artifacts/README.md) |
 
-Các biên bản và báo cáo ghi rõ ngày/phạm vi. Biên bản kiểm tra ban đầu không thay thế kết quả thực nghiệm PhishVN được bổ sung sau đó.
+## Đánh giá và dữ liệu
+
+| Nội dung | Tài liệu |
+|---|---|
+| Phương pháp và lệnh đánh giá | [METHODS.md](evaluation/METHODS.md) |
+| Tái lập baseline PhishVN, kiểm tra bronze/nguồn và độ nhạy ngưỡng | [URL_SOURCE_AUDIT_V1.md](evaluation/URL_SOURCE_AUDIT_V1.md) |
+| Báo nhầm theo ngưỡng, cross-fit theo miền và kế hoạch validation mới | [URL_CALIBRATION_V1.md](evaluation/URL_CALIBRATION_V1.md) |
+| So sánh LLM / URL / RAG trên dev | [COMPONENTS_DEV_V1.md](evaluation/COMPONENTS_DEV_V1.md) |
+| Bộ đánh giá cố định và giới hạn nhãn AI | [OBJECTIVE_V1.md](evaluation/OBJECTIVE_V1.md) |
+| Kết quả 364 lượt dev SMS/ngữ cảnh | [OBJECTIVE_DEV_RESULTS_V1.md](evaluation/OBJECTIVE_DEV_RESULTS_V1.md) |
+| 160 URL nguồn thực, 200 ca ngữ cảnh | [URL_CONTEXT_V1.md](evaluation/URL_CONTEXT_V1.md) |
+| Kết quả 720 lượt dev URL/ngữ cảnh | [URL_CONTEXT_DEV_RESULTS_V1.md](evaluation/URL_CONTEXT_DEV_RESULTS_V1.md) |
+| Thử nghiệm kho uy tín URL | [REPUTATION_V1.md](evaluation/REPUTATION_V1.md) |
+| Kho RAG v2 và so sánh BM25/E5/Hybrid | [RAG_RETRIEVAL_V2.md](evaluation/RAG_RETRIEVAL_V2.md) |
+| Truy xuất tiếng Việt không dấu | [RETRIEVAL_ROBUSTNESS.md](evaluation/RETRIEVAL_ROBUSTNESS.md) |
+| Phiếu gán nhãn 200 SMS | [vn_sms_v2/](../data/annotation/vn_sms_v2/README.md) |
+| Nhãn AI sơ bộ và cách rà soát | [AI_PRELABELS.md](evaluation/AI_PRELABELS.md) |
+| Nguồn và snapshot tài liệu RAG | [data/knowledge/](../data/knowledge/README.md) |
+
+## Các mốc thiết kế và thực nghiệm trước
+
+| Phạm vi | Tài liệu |
+|---|---|
+| Baseline ứng dụng ban đầu | [BASELINE.md](architecture/BASELINE.md) |
+| Thiết kế v3 và kiểm tra bằng chứng | [QUALITY_V3.md](architecture/QUALITY_V3.md) |
+| Hai phạm vi kết luận và đánh giá v2 | [CONTEXT_V2.md](evaluation/CONTEXT_V2.md) |
+| Đề xuất mở rộng nguồn RAG | [RAG_V2_PROPOSAL.md](architecture/RAG_V2_PROPOSAL.md) |
+| URL trên PhishVN | [PHISHVN.md](evaluation/PHISHVN.md) |
+| Chẩn đoán thông điệp mô phỏng | [SYNTHETIC.md](evaluation/SYNTHETIC.md) |
+| So sánh các thành phần và truy xuất v1 | [RAG_ABLATION.md](evaluation/RAG_ABLATION.md) |
+| Biên bản kiểm tra ngày 24/10/2026 | [VERIFICATION.md](evaluation/VERIFICATION.md) |
+
+Các tài liệu ghi rõ thời điểm và phạm vi. Kết quả lịch sử không tự mô tả chất lượng của phiên bản ứng dụng hiện hành. Báo cáo học thuật trong `reports/` chỉ giữ trên máy cục bộ.

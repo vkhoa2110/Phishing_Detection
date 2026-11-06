@@ -2,6 +2,8 @@
 
 > Đây là mốc tham chiếu v1. Từ 28/10/2026, ứng dụng dùng [hai đánh giá riêng](../evaluation/CONTEXT_V2.md); từ 02/11 bổ sung [prompt message-v3 và kiểm tra đầu ra](QUALITY_V3.md). `fuse_legacy`, `baseline-1.0`, `rag-1.0` và message-v2 vẫn được giữ cho các công cụ thực nghiệm cũ. Xem [RAG](../guides/RAG.md) cho phần truy xuất.
 
+> Từ 04/11, `python run.py` mặc định chọn [v4 và chính sách URL thận trọng](QUALITY_V4.md). `app.main:app` và các công cụ đã đăng ký vẫn giữ baseline v3 để tái lập. Pilot v4 dùng nhãn dev AI, chưa chứng minh chất lượng trên test độc lập.
+
 ## Mục đích
 
 Nối mô hình URL đã có với luồng phân tích văn bản và giao diện sử dụng được, làm mốc triển khai trước khi bổ sung RAG và đánh giá trên bộ dữ liệu tiếng Việt.
@@ -18,6 +20,7 @@ Nối mô hình URL đã có với luồng phân tích văn bản và giao diệ
 
 ## Chưa triển khai
 
+- Kho uy tín URL trong luồng ứng dụng mặc định. Đã có [prototype và thử nghiệm offline](../evaluation/REPUTATION_V1.md) với bằng chứng lịch sử, hết hạn và chuyển URL chưa biết qua model; cần nguồn cập nhật trước khi tích hợp.
 - Giao diện quản trị/cập nhật tự động kho RAG. Hiện đã có embedding, chỉ mục cục bộ và truy xuất tùy chọn; snapshot mới vẫn được dựng và chọn ngưỡng bằng công cụ dòng lệnh.
 - Nhãn độc lập và đánh giá trên test set ngoài thực tế. Đã chuẩn bị [200 SMS nguồn công khai chờ hai người review](../../data/annotation/vn_sms_v2/README.md); chưa có nhãn phishing chuẩn cho các mẫu này. Bộ 60/100 mẫu tự soạn trước đó chỉ dùng chẩn đoán.
 - Đánh giá prompt injection có hệ thống và chấm độ đúng của lập luận. Kiểm tra quote chỉ xác nhận trích đoạn có thật, không xác nhận suy luận của LLM đúng.

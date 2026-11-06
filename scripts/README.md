@@ -8,8 +8,8 @@ Chạy từ thư mục gốc repository bằng `.venv/bin/python`.
 | Đánh giá | `evaluation/plot_evaluation.py RUN_DIR` | Tạo biểu đồ từ lần chạy hoàn chỉnh |
 | Đánh giá RAG | `evaluation/verify_rag_ablation.py RUN_DIR` | Kiểm chứng độc lập bốn arm, fusion, checkpoint và nguồn dẫn |
 | Đánh giá RAG | `evaluation/plot_rag_ablation.py RUN_DIR` | Biểu đồ toàn bộ và nhóm có/không URL |
-| Giao diện v2 | `evaluation/check_context_ui.py` | Replay phản hồi diagnostic tại desktop/mobile; không gọi thêm LLM |
-| Giao diện người dùng | `evaluation/check_consumer_ui.py` | Kiểm tra desktop/tablet/mobile, đồng ý gửi API, cảnh báo mâu thuẫn, lỗi và XSS; replay AI, URL chạy thật cục bộ; kết quả ở thư mục mới |
+| Bảo trì | `maintenance/clean.py` | Xem trước cache có thể xóa; thêm `--apply` để dọn. Không xóa môi trường, model, dữ liệu hoặc kết quả |
+| Giao diện người dùng | `evaluation/check_consumer_ui.py --out NEW_DIR` | Kiểm tra bốn cỡ màn hình 320–1440 px, dán nội dung, tiến trình, đồng ý gửi API, cảnh báo mâu thuẫn, lỗi và XSS; replay AI, URL chạy thật cục bộ; lưu ảnh và biên bản kiểm tra |
 | Dữ liệu SMS | `data/prepare_vn_sms.py --out NEW_DIR` | Tải revision nguồn cố định, khử trùng/nhóm/chọn 200 SMS chờ review |
 | RAG | `rag/prepare_index.py --download` | Tải model E5-small đã ghim revision và dựng chỉ mục mới |
 | RAG | `rag/collect_rag_sources.py --out NEW_DIR` | Tải các nguồn đã duyệt vào snapshot mới |
@@ -22,9 +22,19 @@ Chạy từ thư mục gốc repository bằng `.venv/bin/python`.
 
 Package chạy thí nghiệm nằm riêng ở `evaluation/`: `python -m evaluation.run` cho bộ thông điệp mô phỏng và `python -m evaluation.phishvn` cho PhishVN. Mặc định các công cụ này không gọi LLM; `--live` mới phát sinh gọi API. [Phương pháp đánh giá](../docs/evaluation/METHODS.md).
 
+`python -m evaluation.url_source_audit prepare|run|report|verify --out RUN` khóa/chạy/kiểm tra baseline PhishVN và ba nhóm train core/all/bronze cùng cỡ mẫu. `evaluation/reproduce_phishvn_baseline.py --out RUN` chạy riêng LR/RF trong môi trường tham chiếu đã ghim thư viện. Không gọi API, không thay model ứng dụng. [Kết quả, đầu vào và lệnh tái lập](../docs/evaluation/URL_SOURCE_AUDIT_V1.md).
+
+`python -m evaluation.url_calibration run|verify --out RUN` kiểm tra 7 chính sách cảnh báo trên score validation của model hiện hành, chọn ngưỡng bằng URL âm và giữ ngoài từng nhóm miền. Không đọc dự đoán test, huấn luyện, gọi API hoặc thay ngưỡng app. [Kết quả, giới hạn và kế hoạch validation mới](../docs/evaluation/URL_CALIBRATION_V1.md).
+
 `python -m evaluation.url_context_pack prepare|verify --out PACK` dựng/kiểm tra bộ 160 URL nguồn thực và 200 ca ngữ cảnh, không đọc dự đoán để chọn mẫu. `python -m evaluation.url_context_score` chấm dự đoán nhập theo ba mục tiêu, giữ kết quả chưa đủ ở trạng thái pending; không gọi API và không xác thực nguồn gốc provider của file dự đoán. [Schema, phương pháp và giới hạn](../docs/evaluation/URL_CONTEXT_V1.md).
 
 `python -m evaluation.url_context_run --split dev --repetitions 3 --out NEW_RUN` đăng ký lượt chạy và tính URL cục bộ; thêm `--live` mới gọi API (720 yêu cầu trên 120 ca dev nếu chạy đủ ba lượt). Journal ngăn gửi lại yêu cầu đã thử, lỗi được giữ trong kết quả. `scripts/evaluation/report_url_context.py --run RUN --out NEW_REPORT` kiểm chứng số học và payload rồi tạo báo cáo/biểu đồ khi đã đủ lượt.
+
+`python -m evaluation.reputation prepare --out NEW_RUN` dựng kho từ PhishVN train và khóa cấu hình; `python -m evaluation.reputation run --out NEW_RUN` so sánh tra cứu/model/kết hợp trên URL truy cập lại và 40 URL dev chưa biết, có kịch bản hết hạn. Chỉ suy luận URL cục bộ, không gọi API hoặc chọn lại ngưỡng. [Kết quả và giới hạn](../docs/evaluation/REPUTATION_V1.md).
+
+`python -m evaluation.component_ablation --out NEW_RUN` khóa và chuẩn bị 80 SMS + 80 ngữ cảnh dev cho bốn cấu hình LLM/URL/RAG; thêm `--live` để chạy 640 lần thử API. `scripts/evaluation/report_components.py --run RUN --out NEW_REPORT` kiểm chứng và tạo bảng/biểu đồ sau khi đủ lượt. [Phương pháp và kết quả](../docs/evaluation/COMPONENTS_DEV_V1.md).
+
+`python -m evaluation.quality_pilot --out NEW_RUN` đăng ký đối chiếu v3/v4 trên toàn bộ 80 SMS dev và 40 ca hồi quy chọn theo miền; thêm `--live` để chạy 240 lần thử API. `scripts/evaluation/report_quality_pilot.py --run RUN --out NEW_REPORT` kiểm chứng độc lập. `python -m evaluation.url_operating_policy --out NEW_REPORT` chấm chính sách URL thận trọng trên score dev/validation đã lưu, không gọi API hoặc học ngưỡng mới. [Kết quả, điều kiện chấp nhận và giới hạn](../docs/architecture/QUALITY_V4.md).
 
 Chọn ngưỡng và kiểm tra retrieval bằng `python -m evaluation.retrieval`. Không gọi LLM, không đưa nhãn hay score ML vào truy vấn. [Hướng dẫn RAG](../docs/guides/RAG.md).
 

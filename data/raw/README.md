@@ -9,3 +9,5 @@ Nguồn: Thai Nguyen Vu, [PhishVN phiên bản 4 — Mendeley Data](https://data
 ```
 
 Archive được Git bỏ qua. Các CSV dự đoán trích từ bộ dữ liệu đã công bố nằm ở `artifacts/evaluations/phishvn_official_v1/`, kèm `DATA_LICENSE.txt` và nguồn ghi công.
+
+Để đối chiếu baseline, đã cài thêm `PhishVN_v3.0.0_results_bundle.zip` từ cùng DOI phiên bản 4. SHA-256: `e190d7e668b60f6117dadb8cb13c06d492896f395b5eb782133333b7d64b97cc`. Gói có dự đoán theo ID, số đo từng seed và metadata môi trường của tác giả. [Protocol tái lập và kết quả](../../docs/evaluation/URL_SOURCE_AUDIT_V1.md).

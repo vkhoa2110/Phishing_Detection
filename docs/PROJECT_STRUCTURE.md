@@ -14,6 +14,7 @@ Tổ chức lại ngày **27/10/2026**. Git repository và môi trường `.venv
 | `models/` | Gói model xuất từ notebook | Cài cục bộ; không commit trọng số |
 | `notebooks/` | Huấn luyện và xuất model | Nguồn có thể kiểm tra, không chứa khóa bí mật |
 | `artifacts/evaluations/` | Dự đoán, checkpoint, chỉ số và biểu đồ | Mỗi thí nghiệm một thư mục; không sửa snapshot đã chốt |
+| `artifacts/ui/consumer/` | Ảnh và biên bản kiểm tra giao diện hiện hành | Không trộn với đánh giá model; cập nhật qua `check_consumer_ui.py` |
 | `artifacts/report-builds/` | Bản dựng báo cáo mới | Đầu ra cục bộ, được Git bỏ qua |
 | `docs/` | Hướng dẫn, thiết kế và đánh giá | Báo cáo Word/PDF trong `docs/reports/` chỉ giữ cục bộ |
 | `scripts/` | Công cụ dòng lệnh theo nhóm | `evaluation/`, `rag/`; công cụ biên soạn báo cáo chỉ giữ cục bộ |
@@ -21,6 +22,20 @@ Tổ chức lại ngày **27/10/2026**. Git repository và môi trường `.venv
 | `tests/` | Test tự động | Chạy từ gốc bằng `python -m pytest` |
 
 `requirements.txt` ở gốc giữ lệnh cài ứng dụng quen thuộc và dẫn tới `requirements/base.txt`. Trạng thái thuật toán, prompt và ngưỡng không được đổi để tổ chức thư mục.
+
+## Dọn file phát sinh
+
+Ngày 05/11/2026 đã gom kết quả UI hiện hành về `artifacts/ui/consumer/`, bỏ bản chụp lặp, file `before`/`preview`, các đầu ra smoke không còn dùng và công cụ UI v2 đã được thay bằng `scripts/evaluation/check_consumer_ui.py`. Các file đưa ra khỏi dự án có bản lưu cục bộ trong thư mục `.phishlens-cleanup/` cạnh repository. Bằng chứng thực nghiệm, nhãn, model và các bản báo cáo được giữ nguyên.
+
+```bash
+make clean
+# Hoặc xem trước danh sách mà chưa xóa:
+.venv/bin/python -B scripts/maintenance/clean.py
+```
+
+Lệnh chỉ dọn `__pycache__`, `.pytest_cache`, `.mypy_cache` và `.ruff_cache`. Không đi vào Git, môi trường Python, `models/`, `data/` hoặc `artifacts/`; không xóa notebook checkpoint có thể chứa nội dung chưa lưu. `make test` cũng chạy mà không ghi thêm bytecode hoặc pytest cache.
+
+Không đánh giá file chỉ dựa vào tên: `artifacts/evaluations/layout_smoke/selected_ids.csv` vẫn nằm trong protocol bộ URL/ngữ cảnh. Không xóa các snapshot nguồn hoặc checkpoint sửa nhãn chỉ vì đã có bản tổng hợp mới hơn.
 
 ## Đối chiếu đường dẫn cũ–mới
 
