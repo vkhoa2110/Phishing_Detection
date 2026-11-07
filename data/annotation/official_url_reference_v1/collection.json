@@ -1,0 +1,55 @@
+{
+  "version": "official-url-reference-1.0",
+  "locked_selection_sha256": "f7b10637de9a4f28c0fa3c815cba06eaec03af9ef969a637b80f862197390352",
+  "finished_at": "2026-11-07T10:17:09.121976+00:00",
+  "selected": 36,
+  "collected": 29,
+  "failed": 7,
+  "domains": 16,
+  "regions": {
+    "VN": 7,
+    "international": 22
+  },
+  "tags": {
+    "homepage": 12,
+    "bank": 2,
+    "login": 4,
+    "university": 3,
+    "utility": 2,
+    "article": 10,
+    "long_path": 5,
+    "government": 9,
+    "query": 3,
+    "password_reset": 5,
+    "support": 7,
+    "payment": 5
+  },
+  "domain_list": [
+    "amazon.com",
+    "apple.com",
+    "cloudflare.com",
+    "dichvucong.gov.vn",
+    "evn.com.vn",
+    "github.com",
+    "google.com",
+    "hust.edu.vn",
+    "irs.gov",
+    "microsoft.com",
+    "mit.edu",
+    "paypal.com",
+    "stanford.edu",
+    "vietcombank.com.vn",
+    "www.gov.uk",
+    "www.nhs.uk"
+  ],
+  "pools": {
+    "regression": 24,
+    "new_origin_reference_review_only": 5
+  },
+  "missing_route_tags": [],
+  "coverage_met": true,
+  "risk_labels": 0,
+  "model_calls": 0,
+  "LLM_calls": 0,
+  "limitation": "Assistant-curated official-origin references, not independently benign gold or a prospective test. Source identity is curated; a served page/link does not establish current website safety or URL content legitimacy."
+}

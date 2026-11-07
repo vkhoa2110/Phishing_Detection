@@ -26,6 +26,22 @@ Package chạy thí nghiệm nằm riêng ở `evaluation/`: `python -m evaluati
 
 `python -m evaluation.url_calibration run|verify --out RUN` kiểm tra 7 chính sách cảnh báo trên score validation của model hiện hành, chọn ngưỡng bằng URL âm và giữ ngoài từng nhóm miền. Không đọc dự đoán test, huấn luyện, gọi API hoặc thay ngưỡng app. [Kết quả, giới hạn và kế hoạch validation mới](../docs/evaluation/URL_CALIBRATION_V1.md).
 
+`python -m evaluation.url_char_baseline prepare|run|verify --out RUN` thử một cấu hình TF-IDF ký tự + Logistic Regression, chỉ fit train và chọn ngưỡng bằng validation. `python -m app.url_char_service export --audit-dir RUN` đóng gói JSON/NPZ sau khi kiểm tra phát lại đúng hash/score; không thay gói XGBoost. [Kết quả và giới hạn](../docs/evaluation/URL_CHAR_BASELINE_V1.md).
+
+`python -m evaluation.improvement_pilot prepare|run|report|verify --out RUN` chuẩn bị/chạy pilot v4/v5 cùng schema và chẩn đoán RAG trước/sau phân loại. **`run` gọi API**, tối đa 280 yêu cầu theo protocol; `prepare`, `report`, `verify` không gọi. [Profile thử nghiệm và điều kiện](../docs/architecture/QUALITY_V5_TRIAL.md).
+
+`python -m evaluation.url_representation_v2 prepare|run|verify --out RUN` đối chứng chỉ bỏ marker URL, giữ cấu hình học. Một fit train-only, chỉ chấm validation; [kết quả âm](../docs/evaluation/URL_REPRESENTATION_V2.md) được giữ, không thay model.
+
+`python -m evaluation.rag_evidence_audit --out NEW_DIR` kiểm tra phép chiếu contract trên raw cũ, không gọi API. `python -m evaluation.rag_evidence_pilot prepare|run|verify|report --out RUN` so sánh hai hợp đồng RAG sau verdict đã khóa. **Chỉ `run --live` gọi API**, tối đa 32 yêu cầu; `verify` đối chiếu raw/hash, `report` giữ phiếu review đã có. [Phương pháp và kết quả](../docs/architecture/RESEARCH_NEXT_V1.md).
+
+`python -m evaluation.prospective_url_benchmark register|prepare|verify|report ...` khóa dữ liệu/model/chính sách trước test tương lai; kiểm tra bằng chứng, nguồn, miền/campaign, thời gian và nhãn. Không tải URL, chạy model hoặc tự tạo nhãn người. [Schema và lệnh đầy đủ](../docs/evaluation/PROSPECTIVE_URL_V1.md).
+
+`python -m evaluation.url_source_shift_v2 prepare|run|verify --out RUN` kiểm tra source classifier/leave-one-source-out; `python -m evaluation.url_source_robust_v3 prepare|run|verify --out RUN` đối chứng ba can thiệp nguồn/www; `python -m evaluation.url_probability_audit_v2 prepare|run|verify --out RUN` chẩn đoán calibration. Chỉ validation lịch sử, không API, không tự thay app. Dùng `verify` cho snapshot đã hoàn tất; không chạy lại `run` trong cùng thư mục.
+
+`python -m evaluation.official_url_references ...` thu các tuyến chính thức đã khóa trước, không gán benign; `python scripts/data/render_official_review.py --out NEW.html` tạo trang review từ metadata đã verify. `python -m evaluation.official_url_diagnostic_v1 prepare|run|verify --out RUN` chấm toàn bộ tham chiếu, chỉ báo số cảnh báo.
+
+`python -m evaluation.openphish_candidates_v1 ...` thu snapshot theo điều kiện nguồn đã kiểm tra; raw/URL chỉ giữ cục bộ. `python -m evaluation.openphish_model_diagnostic_v1 prepare|run|verify --out RUN` chấm 5 model trên đúng 200 ứng viên nguồn dương, không fit hoặc HTTP/API. [Kết quả và giới hạn](../docs/architecture/SOURCE_AND_DATA_V2.md).
+
 `python -m evaluation.url_context_pack prepare|verify --out PACK` dựng/kiểm tra bộ 160 URL nguồn thực và 200 ca ngữ cảnh, không đọc dự đoán để chọn mẫu. `python -m evaluation.url_context_score` chấm dự đoán nhập theo ba mục tiêu, giữ kết quả chưa đủ ở trạng thái pending; không gọi API và không xác thực nguồn gốc provider của file dự đoán. [Schema, phương pháp và giới hạn](../docs/evaluation/URL_CONTEXT_V1.md).
 
 `python -m evaluation.url_context_run --split dev --repetitions 3 --out NEW_RUN` đăng ký lượt chạy và tính URL cục bộ; thêm `--live` mới gọi API (720 yêu cầu trên 120 ca dev nếu chạy đủ ba lượt). Journal ngăn gửi lại yêu cầu đã thử, lỗi được giữ trong kết quả. `scripts/evaluation/report_url_context.py --run RUN --out NEW_REPORT` kiểm chứng số học và payload rồi tạo báo cáo/biểu đồ khi đã đủ lượt.

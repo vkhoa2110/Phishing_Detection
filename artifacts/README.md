@@ -8,6 +8,16 @@
 |---|---|
 | `evaluations/url_source_audit_v1/` | 39 lượt huấn luyện; [baseline PhishVN, ảnh hưởng bronze/nguồn và calibration](../docs/evaluation/URL_SOURCE_AUDIT_V1.md) |
 | `evaluations/url_calibration_v1/` | 7 chính sách trên score URL hiện hành; [cross-fit ngưỡng theo miền và đánh đổi FPR/Recall](../docs/evaluation/URL_CALIBRATION_V1.md) |
+| `evaluations/url_char_baseline_v1/` | [TF-IDF ký tự + LR](../docs/evaluation/URL_CHAR_BASELINE_V1.md), điểm từng URL, biểu đồ và export candidate JSON/NPZ |
+| `evaluations/improvement_pilot_v1/` | Pilot v4/v5 và RAG trước/sau phân loại; [phạm vi và trạng thái](../docs/architecture/QUALITY_V5_TRIAL.md) |
+| `evaluations/url_representation_v2/` | [Đối chứng bỏ marker](../docs/evaluation/URL_REPRESENTATION_V2.md), kết quả âm, không thay model |
+| `evaluations/rag_evidence_contract_v3/` và `rag_evidence_pilot_v1/` | Audit offline và 32 yêu cầu đối chứng mới; [RAG chọn đoạn trích và giới hạn](../docs/architecture/RESEARCH_NEXT_V1.md) |
+| `evaluations/research_next_v1/` | Khoảng bất định và kịch bản tỷ lệ lớp, tính từ số đếm đã lưu |
+| `evaluations/prospective_url_inputs_v1/`, `prospective_url_registration_v1/`, `prospective_url_pack_v1/` | [Đăng ký trước và khóa dữ liệu](../docs/evaluation/PROSPECTIVE_URL_V1.md); 0 mẫu mới, chưa có số đo test |
+| `evaluations/url_source_shift_v2/`, `url_source_robust_v3/`, `url_probability_audit_v2/` | [Chuyển nguồn, ba model đối chứng và calibration](../docs/architecture/SOURCE_AND_DATA_V2.md), không thay app |
+| `evaluations/official_url_reference_v1/` và `official_url_diagnostic_v1/` | Snapshot tham chiếu, [trang review cục bộ](evaluations/official_url_reference_v1/review/index.html) và score 29 URL, chưa có nhãn rủi ro |
+| `evaluations/openphish_candidates_v1/` và `openphish_model_diagnostic_v1/` | Snapshot nguồn hạn chế phân phối và 200 ứng viên sơ bộ; mọi URL/raw/CSV giữ cục bộ, không đưa lên Git |
+| `evaluations/prospective_url_inputs_v2/`, `prospective_url_registration_v2/`, `prospective_url_pack_v2/` | Đăng ký hiện hành bổ sung 236 dòng exposure mới, giữ v1 nguyên; pack vẫn chưa sẵn sàng |
 | `evaluations/quality_v4_pilot_v1/` | 240 lần thử v3/v4; [chất lượng v4 và giới hạn](../docs/architecture/QUALITY_V4.md) |
 | `evaluations/quality_v4_pilot_results_v1/` | Báo cáo, kiểm chứng và biểu đồ của pilot v4 |
 | `evaluations/quality_v4_url_policy_v2/` | Chính sách URL thận trọng trên điểm dev/validation đã lưu |

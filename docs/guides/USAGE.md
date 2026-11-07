@@ -4,6 +4,10 @@ Bản cơ bản cho dự án của **Lê Văn Khoa**: giao diện tiếng Việt
 
 Ứng dụng gồm FastAPI và giao diện HTML/CSS/JavaScript, chạy cùng một địa chỉ. Không cần Node.js, npm, GPU hoặc cơ sở dữ liệu. Các tệp giao diện và biểu tượng nằm sẵn trong dự án, không dùng CDN.
 
+Profile thử nghiệm ngày 06/11 với model URL ký tự, prompt v5 và RAG giải thích sau phân loại có hướng dẫn riêng tại [QUALITY_V5_TRIAL.md](../architecture/QUALITY_V5_TRIAL.md). Lệnh `python run.py` bên dưới vẫn chạy bản v4 mặc định.
+
+Chế độ RAG chọn đoạn trích ngày 07/11 bật riêng bằng `PHISHLENS_CANDIDATE_RAG_MODE=span_selection` khi chạy candidate. AI chỉ chọn đoạn có sẵn; phần nguồn không sinh thêm hành động hoặc thay kết luận. [Lệnh chạy, kết quả và giới hạn](../architecture/RESEARCH_NEXT_V1.md).
+
 ## 1. Đặt thư mục mô hình
 
 Giải nén dự án, sau đó giải nén **inference_XGBoost_d6_s42.zip** bạn đã tải từ Colab. Đặt thư mục con đó trong **`models/`** ở thư mục gốc repository. Các đường dẫn phải có dạng:
@@ -74,7 +78,7 @@ Tài liệu đối chiếu:
 
 1. Chọn **Tin nhắn / email** hoặc **Đường dẫn**, dán dữ liệu. Giới hạn 8.000 ký tự và 5 URL khác nhau mỗi lượt. Đổi tab giữ riêng bản nháp của từng loại trong phiên đang mở.
 2. Nếu chỉ muốn kiểm tra URL tại máy, tắt **Giải thích và gợi ý bằng AI** (ở tab URL là **Nhờ AI giải thích thêm**). Tin nhắn không có URL và không bật AI sẽ được ghi nhận là chưa đủ thông tin.
-3. Mở **Thiết lập** nếu cần thay kết nối AI, bật/tắt đối chiếu tài liệu hoặc cho AI tham khảo thêm điểm URL. Mặc định AI không nhận điểm URL; tài liệu tự bật khi kho sẵn sàng, chỉ áp dụng cho tin nhắn / email.
+3. Mở **Thiết lập** nếu cần thay kết nối AI, bật/tắt đối chiếu tài liệu hoặc cho AI tham khảo thêm điểm URL. Mặc định AI không nhận điểm URL; RAG cần bật chủ động và chỉ áp dụng cho tin nhắn / email.
 4. Bấm **Kiểm tra ngay** hoặc Ctrl/⌘ + Enter. Khi dùng AI, ứng dụng mở bản xem trước đã che một số thông tin, ghi rõ máy chủ nhận. Kiểm tra, sửa thêm nếu cần, đánh dấu đồng ý rồi gửi. Sửa bản xem trước sẽ yêu cầu đánh dấu đồng ý lại; hủy hoặc nhấn Escape không gửi phân tích.
 5. Đọc kết luận, **Bạn nên làm gì tiếp theo?**, dấu hiệu và nguồn tham khảo. Cảnh báo URL được hiển thị riêng; nếu URL đáng ngờ nhưng nội dung LOW/UNKNOWN thì cảnh báo URL đứng trước kết luận nội dung. Các URL cần kiểm tra hiển thị dưới dạng văn bản, không phải liên kết để mở.
 6. Mở **Xem điểm kiểm tra đường dẫn** hoặc **Chi tiết phân tích và tải kết quả** khi cần điểm số, thông số mô hình, bản nội dung đã gửi hoặc tệp JSON. **Kiểm tra nội dung khác** đưa con trỏ về ô nhập; **Xóa** xóa nội dung của tab hiện tại và kết quả đang hiển thị.

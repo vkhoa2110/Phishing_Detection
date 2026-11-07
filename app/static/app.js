@@ -1,6 +1,6 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
-const state = {mode: "text", phase: "input", busy: false, pending: null, result: null, hasKey: false, mlReady: false, ragReady: false, drafts: {text: "", url: ""}};
+const state = {mode: "text", phase: "input", busy: false, pending: null, result: null, hasKey: false, mlReady: false, ragReady: false, experimental: false, llmTimeoutSeconds: 60, drafts: {text: "", url: ""}};
 const labels = {HIGH: "Nguy cơ cao", WARNING: "Cần kiểm tra thêm", LOW: "Chưa thấy dấu hiệu rõ ràng", UNKNOWN: "Chưa đủ thông tin"};
 // These are examples of input, never precomputed model results or clickable links.
 const samples = {
@@ -82,13 +82,16 @@ function modelStatus(ml) {
   state.mlReady = Boolean(ml.ready);
   $("model-status").textContent = ml.ready ? `${ml.run_id || ml.kind} · ${ml.feature_count} đặc trưng` : ml.message;
   $("model-status").title = ml.message || "";
-  $("service-status").textContent = state.mlReady ? "Sẵn sàng kiểm tra đường dẫn" : "Kiểm tra đường dẫn chưa sẵn sàng";
+  $("service-status").textContent = (state.mlReady ? "Sẵn sàng kiểm tra đường dẫn" : "Kiểm tra đường dẫn chưa sẵn sàng") + (state.experimental ? " · Bản thử nghiệm" : "");
   $("service-dot").classList.toggle("ready", state.mlReady);
   $("service-dot").classList.toggle("warning", !state.mlReady);
 }
 async function init() {
   try {
     const status = await api("/api/status", undefined, 30000);
+    state.experimental = status.analysis_policy?.experimental === true;
+    const timeout = Number(status.limits?.llm_timeout_seconds);
+    state.llmTimeoutSeconds = Number.isFinite(timeout) && timeout > 0 ? timeout : 90;
     modelStatus(status.ml);
     $("endpoint").value = status.llm.endpoint;
     $("llm-model").value = status.llm.model;
@@ -157,6 +160,44 @@ function component(name, title, detail) {
   el.append(node("div", "component-name", name), node("h4", "", title), node("p", "", detail));
   return el;
 }
+function analysisTimeout(payload) {
+  if (!state.experimental || !payload.use_llm) return 65000;
+  const stages = payload.mode === "text" && payload.use_rag ? 2 : 1;
+  return Math.min(195000, Math.max(65000, stages * state.llmTimeoutSeconds * 1000 + 15000));
+}
+function postExplanation(post, main) {
+  if (!post || post.status === "disabled") return;
+  const extra = section("Bổ sung nguồn sau phân loại"); extra.classList.add("post-explanation");
+  extra.append(node("p", "result-subtle", "Phần này bổ sung tài liệu, không thay đổi kết luận nội dung hoặc cảnh báo đường dẫn."));
+  const support = Array.isArray(post.explanation?.support) ? post.explanation.support : [];
+  if (post.status === "ok" && support.length) {
+    extra.append(node("p", "inline-warning", "Các đoạn nguồn là bản tóm lược biên tập, không phải trích nguyên văn bài gốc. Đã đối chiếu mã và chuỗi trích dẫn; mức hỗ trợ cho lập luận chưa được đánh giá độc lập."));
+    for (const claim of support) {
+      const item = node("div", "evidence-item post-support");
+      item.append(node("strong", "", claim.document_id), node("p", "post-claim", claim.claim),
+        node("p", "source-meta", "Đoạn trong nội dung bạn xác nhận:"), node("blockquote", "post-input-quote", claim.input_quote),
+        node("p", "source-meta", "Đoạn trong tóm lược nguồn:"), node("blockquote", "post-source-quote", claim.source_quote),
+        node("p", "post-scope result-subtle", "Giới hạn áp dụng: " + claim.scope_note));
+      extra.append(item);
+    }
+    const actions = Array.isArray(post.explanation?.actions) ? post.explanation.actions : [];
+    if (actions.length) {
+      extra.append(node("h4", "", "Gợi ý xử lý có nguồn tham khảo"));
+      const list = node("ol", "actions-list post-actions");
+      for (const action of actions) {
+        const item = node("li", "", action.text);
+        item.append(node("p", "source-meta", "Nguồn: " + (action.supporting_document_ids || []).join(", ")));
+        list.append(item);
+      }
+      extra.append(list);
+    }
+  } else {
+    extra.append(node("p", "result-subtle post-status", post.status === "error"
+      ? "Chưa bổ sung được nguồn giải thích. Kết luận nội dung và kết quả đường dẫn được giữ nguyên."
+      : "Chưa có nguồn đủ phù hợp để bổ sung giải thích. Kết luận nội dung và kết quả đường dẫn được giữ nguyên."));
+  }
+  main.append(extra);
+}
 function render(data) {
   state.result = data;
   const target = $("result-content"); target.replaceChildren();
@@ -208,6 +249,7 @@ function render(data) {
     }
     main.append(evidence);
   }
+  postExplanation(data.post_explanation, main);
   if (data.urls.length) {
     const urls = section("Đường dẫn được phát hiện", data.urls.length);
     for (const item of data.urls) {
@@ -240,7 +282,9 @@ function render(data) {
   if (retrieval && retrieval.status !== "disabled") {
     const sources = section("Nguồn tham khảo", retrieval.sources.length);
     sources.append(node("p", "result-subtle", retrieval.reason));
-    const support = llm.status === "ok" ? (llm.verdict.knowledge_support || []) : [];
+    const support = data.post_explanation
+      ? (data.post_explanation.status === "ok" ? (data.post_explanation.explanation?.support || []) : [])
+      : (llm.status === "ok" ? (llm.verdict.knowledge_support || []) : []);
     for (const source of retrieval.sources) {
       const card = node("div", "source-card"), cited = support.find(item => item.document_id === source.document_id);
       card.append(node("strong", "", source.title), node("p", "source-meta", `${source.publisher} · ${source.published_at || "Chưa xác minh ngày công bố"}`));
@@ -281,9 +325,11 @@ async function analyze(payload) {
   updateWorkflow("loading");
   $("result-content").hidden = true; $("result-content").replaceChildren(); $("loading-state").hidden = false;
   $("result-announcement").textContent = "";
-  $("loading-message").textContent = payload.use_llm ? "Đang kiểm tra đường dẫn và chờ giải thích từ dịch vụ AI…" : "Đang kiểm tra chuỗi đường dẫn tại máy chạy ứng dụng…";
+  $("loading-message").textContent = state.experimental && payload.use_llm && payload.use_rag && payload.mode === "text"
+    ? "Đang phân tích nội dung, sau đó bổ sung nguồn giải thích bằng lượt AI riêng…"
+    : payload.use_llm ? "Đang kiểm tra đường dẫn và chờ giải thích từ dịch vụ AI…" : "Đang kiểm tra chuỗi đường dẫn tại máy chạy ứng dụng…";
   revealResult();
-  try { render(await api("/api/analyze", payload)); }
+  try { render(await api("/api/analyze", payload, analysisTimeout(payload))); }
   catch (err) { resetResult(); errorBox("form-error", err.message); $("form-error").scrollIntoView({block: "center"}); }
   finally { busy(false); if (!$("form-error").hidden) $("input-text").focus({preventScroll: true}); }
 }
@@ -307,7 +353,9 @@ $("analysis-form").addEventListener("submit", async event => {
     $("preview-provider").textContent = `Bản bên dưới sẽ được gửi tới ${destination}. Ứng dụng đã che một số thông tin theo quy tắc; bạn cần kiểm tra và sửa thêm trước khi gửi.`;
     $("masked-fields").textContent = preview.masked_fields.length ? "Đã che theo quy tắc: " + preview.masked_fields.join(" · ") : "Quy tắc hiện tại chưa phát hiện thông tin cần che. Hãy tự kiểm tra để bỏ dữ liệu riêng tư trước khi gửi.";
     $("preview-ml-note").textContent = payload.include_ml ? "AI chỉ được xem điểm của các đường dẫn còn trong bản bạn xác nhận. Đường dẫn từ bản gốc vẫn được kiểm tra riêng tại máy." : "Không gửi điểm hoặc kết luận mô hình đường dẫn cho AI.";
-    if (payload.use_rag) $("preview-ml-note").textContent += " Tối đa 3 tóm lược công khai có nguồn sẽ được tìm theo bản đã sửa và gửi kèm để tham khảo.";
+    if (payload.use_rag) $("preview-ml-note").textContent += state.experimental
+      ? " Sau bước phân loại, bản bạn xác nhận cùng tối đa 3 tóm lược công khai có thể được gửi thêm một lượt AI để bổ sung giải thích. Lượt này giữ nguyên kết luận nội dung."
+      : " Tối đa 3 tóm lược công khai có nguồn sẽ được tìm theo bản đã sửa và gửi kèm để tham khảo.";
     $("consent").checked = false; $("confirm-send").disabled = true; errorBox("preview-error");
     updateWorkflow("review");
     $("privacy-dialog").showModal();

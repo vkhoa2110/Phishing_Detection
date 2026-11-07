@@ -42,6 +42,21 @@ def main():
             "timing": {"total_ms": case["llm_rag"]["elapsed_ms"]},
             "notice": "Nhận định nội dung và cảnh báo đường dẫn được đánh giá riêng. Kết quả không bảo đảm an toàn."}
 
+    def post_fixture(post_status="ok"):
+        body = fixture()
+        source = body["retrieval"]["sources"][0]
+        # These are UI-only fixtures, not new provider output or semantic labels.
+        body["llm"]["verdict"]["knowledge_support"] = []
+        body["post_explanation"] = {"status": post_status, "explanation": {
+            "support": [{"document_id": source["document_id"], "source_quote": source["text"][:240],
+                         "input_quote": rows["N26"]["text"][:120], "claim": "Nguồn bổ sung bước xác minh.",
+                         "relation": "verification_step", "scope_note": "Không xác minh danh tính người gửi."}],
+            "actions": [{"text": "Đối chiếu qua kênh liên hệ bạn đã biết.",
+                         "supporting_document_ids": [source["document_id"]]}]},
+            "validation": {"structural_only": True, "semantic_support_verified": False,
+                           "classification_changed": False}}
+        return body
+
     records = []
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -110,6 +125,10 @@ def main():
             page.goto(args.base_url, wait_until="networkidle")
             expect(page.locator("#results-panel")).to_be_hidden()
             expect(page.locator("#service-status")).to_contain_text("Sẵn sàng")
+            if status.get("analysis_policy", {}).get("experimental") is True:
+                expect(page.locator("#service-status")).to_contain_text("Bản thử nghiệm")
+            else:
+                expect(page.locator("#service-status")).not_to_contain_text("Bản thử nghiệm")
             no_overflow()
             screenshot("initial")
 
@@ -224,6 +243,49 @@ def main():
                 expect(page.locator(".verdict." + level)).to_be_visible()
                 no_overflow()
 
+            # Post-classification RAG has its own status and never reclassifies.
+            for post_status in ("ok", "no_support", "error"):
+                replay["body"] = post_fixture(post_status)
+                submit()
+                expect(page.locator(".verdict.LOW")).to_be_visible()
+                expect(page.locator(".url-assessment.HIGH")).to_be_visible()
+                expect(page.locator(".post-explanation")).to_be_visible()
+                expect(page.locator(".post-explanation")).to_contain_text("không thay đổi kết luận")
+                if post_status == "ok":
+                    expect(page.locator(".post-support")).to_have_count(1)
+                    expect(page.locator(".post-explanation")).to_contain_text("mức hỗ trợ cho lập luận chưa được đánh giá độc lập")
+                    expect(page.locator(".post-input-quote")).to_have_text(rows["N26"]["text"][:120])
+                    expect(page.locator(".post-scope")).to_contain_text("Không xác minh danh tính")
+                    expect(page.locator(".post-actions")).to_contain_text("Đối chiếu qua kênh")
+                    source_details = page.locator(".source-details").first
+                    source_details.locator("summary").click()
+                    expect(source_details).to_contain_text("Nguồn bổ sung bước xác minh.")
+                    screenshot("post-explanation", result=True)
+                else:
+                    expect(page.locator(".post-support")).to_have_count(0)
+                    expect(page.locator(".post-actions")).to_have_count(0)
+                    expect(page.locator(".post-status")).to_contain_text("được giữ nguyên")
+                no_overflow()
+
+            # Selection-only RAG uses the same quote display and no new actions.
+            replay["body"] = post_fixture()
+            selected = replay["body"]["post_explanation"]
+            selected["prompt_profile"] = "rag-evidence-selection-v3"
+            selected["validation"].update(selection_only=True, claims_generated_by_model=False,
+                                            actions_generated_by_model=False)
+            selected["explanation"]["actions"] = []
+            selected["explanation"]["support"][0].update(
+                source_span_id="VN-RAG-001:S001", input_span_id="M001",
+                claim="AI chọn cặp trích đoạn để tham khảo; cần kiểm tra mức liên quan.")
+            submit()
+            expect(page.locator(".verdict.LOW")).to_be_visible()
+            expect(page.locator(".url-assessment.HIGH")).to_be_visible()
+            expect(page.locator(".post-support")).to_have_count(1)
+            expect(page.locator(".post-actions")).to_have_count(0)
+            expect(page.locator(".post-claim")).to_contain_text("cần kiểm tra mức liên quan")
+            no_overflow()
+            screenshot("post-evidence-selection", result=True)
+
             # Untrusted result strings and malformed source links stay inert.
             attack = '<img src=x onerror="window.uiInjected=true">'
             replay["body"] = fixture()
@@ -232,8 +294,16 @@ def main():
             replay["body"]["urls"][0]["url"] = "https://example.org/" + "a" * 600
             replay["body"]["retrieval"]["sources"][0]["source_url"] = "javascript:alert(1)"
             replay["body"]["retrieval"]["sources"][0]["title"] = attack
+            replay["body"]["post_explanation"] = post_fixture()["post_explanation"]
+            injected_claim = replay["body"]["post_explanation"]["explanation"]["support"][0]
+            injected_claim.update(claim=attack, input_quote=attack, source_quote=attack, scope_note=attack)
+            replay["body"]["post_explanation"]["explanation"]["actions"][0]["text"] = attack
             submit()
             expect(page.locator(".analysis-summary")).to_have_text(attack)
+            expect(page.locator(".post-claim")).to_have_text(attack)
+            expect(page.locator(".post-input-quote")).to_have_text(attack)
+            expect(page.locator(".post-source-quote")).to_have_text(attack)
+            expect(page.locator(".verdict.LOW")).to_be_visible()
             assert page.locator("#result-content img, #result-content script").count() == 0
             assert page.locator('#result-content a[href^="javascript:"]').count() == 0
             assert page.evaluate("window.uiInjected !== true")
@@ -273,7 +343,8 @@ def main():
             assert errors == [], errors
             records.append({"viewport": viewport, "size": [width, height], "passed": True,
                 "replayed_ai_requests": len(requests), "real_local_requests": len(local_requests),
-                "provider_requests": 0, "page_errors": errors})
+                "provider_requests": 0, "post_explanation_statuses": ["ok", "no_support", "error"],
+                "post_explanation_xss": "passed", "selection_only_no_new_actions": "passed", "page_errors": errors})
             page.close()
 
         # Unconfigured and disconnected states need actionable UI, not a permanent spinner.
@@ -295,8 +366,31 @@ def main():
         expect(page.locator("#connection-error")).to_be_visible()
         expect(page.locator("#service-status")).to_contain_text("Chưa kết nối")
         page.close()
+
+        # Only the opt-in candidate gets the two-stage timeout and experiment label.
+        timing_checks = []
+        for experimental in (False, True):
+            page = browser.new_page(viewport={"width": 390, "height": 844})
+            timing_status = deepcopy(status)
+            timing_status["analysis_policy"] = {**timing_status.get("analysis_policy", {}), "experimental": experimental}
+            timing_status["limits"] = {**timing_status.get("limits", {}), "llm_timeout_seconds": 90}
+            page.route("**/api/status", lambda route: route.fulfill(json=timing_status))
+            page.route("**/api/analyze", lambda route: route.abort())
+            page.goto(args.base_url, wait_until="networkidle")
+            expected_timeout = 195000 if experimental else 65000
+            timeout = page.evaluate("analysisTimeout({mode: 'text', use_llm: true, use_rag: true})")
+            assert timeout == expected_timeout, (experimental, timeout)
+            assert page.evaluate("analysisTimeout({mode: 'text', use_llm: false, use_rag: true})") == 65000
+            if experimental:
+                expect(page.locator("#service-status")).to_contain_text("Bản thử nghiệm")
+                assert page.evaluate("analysisTimeout({mode: 'url', use_llm: true, use_rag: true})") == 105000
+            else:
+                expect(page.locator("#service-status")).not_to_contain_text("Bản thử nghiệm")
+            timing_checks.append({"experimental": experimental, "two_stage_timeout_ms": timeout})
+            page.close()
         browser.close()
     report = {"checks": records, "missing_key_and_disconnected_states": "passed", "provider_requests": 0,
+        "candidate_timeout_checks": timing_checks,
         "note": "UI behavior checks; recorded/simulated AI output is not a model-quality benchmark."}
     (args.out / "verification.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     print(json.dumps(report, ensure_ascii=False))
