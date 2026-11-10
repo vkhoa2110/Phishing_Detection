@@ -1,6 +1,6 @@
 # Kho tài liệu tiếng Việt cho RAG — bản đầu
 
-**Cập nhật 28/10/2026:** đã bàn giao [corpus v2 gồm 37 nguồn](corpus_v2/README.md), thêm 12 tài liệu cho 8 nhóm kịch bản. [Kết quả 100 truy vấn BM25/E5/Hybrid](../../docs/evaluation/RAG_RETRIEVAL_V2.md). Ứng dụng mặc định vẫn dùng v1. Phần dưới ghi nguồn gốc và trạng thái bản v1.
+**Cập nhật 28/10/2026:** đã bàn giao [corpus v2 gồm 37 nguồn](corpus_v2/README.md), thêm 12 tài liệu cho 8 nhóm kịch bản. [Kết quả 100 truy vấn BM25/E5/Hybrid](../../docs/results.md#rag). Ứng dụng mặc định vẫn dùng v1. Phần dưới ghi nguồn gốc và trạng thái bản v1.
 
 Đã thu thập và rà soát **25 nguồn nội dung riêng biệt từ 11 đơn vị**, chốt ngày **26/10/2026**. Đầu vào ban đầu có 26 URL; một URL Microsoft trả về cùng nội dung với nguồn đã có nên được loại trùng. Tất cả nguồn được giữ trong corpus đã tải thành công bằng HTTPS, trích được nội dung và kiểm tra chủ đề. Robots.txt được kiểm tra trước khi thu thập.
 
@@ -77,6 +77,6 @@ Collector chỉ tải các URL trong danh mục đã duyệt và từ chối red
 
 ## Nguồn đề xuất mở rộng
 
-Ngày 28/10/2026 đã lập [12 nguồn ứng viên cho 8 nhóm kịch bản](proposals/rag_v2_sources.json), kèm [đề xuất tổ chức và đánh giá](../../docs/architecture/RAG_V2_PROPOSAL.md). Đây là danh mục tìm kiếm để biên tập/kiểm định tiếp, không phải corpus đã nhập chỉ mục. ID `CANDIDATE-*` không dùng làm nguồn dẫn trong ứng dụng. Ưu tiên Zalo QR, device code, email doanh nghiệp, điện lực, đặt vé/phòng; ghép cảnh báo với quy trình hợp lệ và hướng dẫn xử lý.
+Ngày 28/10/2026 đã lập [12 nguồn ứng viên cho 8 nhóm kịch bản](proposals/rag_v2_sources.json), kèm [đề xuất tổ chức và đánh giá](../../docs/architecture.md). Đây là danh mục tìm kiếm để biên tập/kiểm định tiếp, không phải corpus đã nhập chỉ mục. ID `CANDIDATE-*` không dùng làm nguồn dẫn trong ứng dụng. Ưu tiên Zalo QR, device code, email doanh nghiệp, điện lực, đặt vé/phòng; ghép cảnh báo với quy trình hợp lệ và hướng dẫn xử lý.
 
 Đợt triển khai sau đề xuất đã thu thập đủ 12 nguồn; [bảng ánh xạ](corpus_v2/ingestion_map.json) nối ID ứng viên với `VN-RAG-101–112`. Danh mục đề xuất giữ nguyên như tài liệu lịch sử, trạng thái thực nghiệm mới xem ở corpus v2.

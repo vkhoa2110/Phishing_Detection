@@ -65,7 +65,7 @@ also adaptive development references and cannot become an untouched test.
 Verify saved hashes and evidence locally without making network/model/API calls:
 
 ```bash
-.venv/bin/python -B -m evaluation.official_url_references verify \
+.venv/bin/python -B -m evaluation.data.official_urls verify \
   --out data/annotation/official_url_reference_v1
 ```
 

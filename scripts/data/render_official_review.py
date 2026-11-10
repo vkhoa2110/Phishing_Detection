@@ -11,8 +11,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from evaluation.message_data import read_jsonl, sha
-from evaluation.official_url_references import REVIEW_FIELDS, verify
+from evaluation.data.sms import read_jsonl, sha
+from evaluation.data.official_urls import REVIEW_FIELDS, verify
 
 
 def blind_records(rows):

@@ -12,10 +12,10 @@ from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_f
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from evaluation.message_data import read_jsonl, sha, write_json
-from evaluation.url_context_pack import TARGETS, verify as verify_pack
-from evaluation.url_context_run import canonical_sha, parse_content, payload_for
-from evaluation.url_context_score import expected_keys, level, validate_records
+from evaluation.data.sms import read_jsonl, sha, write_json
+from evaluation.data.url_context import TARGETS, verify as verify_pack
+from evaluation.messages.url_context import canonical_sha, parse_content, payload_for
+from evaluation.messages.url_context_score import expected_keys, level, validate_records
 
 NAMES = {"url_model": "Model URL", "llm_only": "LLM", "llm_url": "LLM + URL"}
 

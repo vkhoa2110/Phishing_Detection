@@ -7,7 +7,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from app.rag_service import MODEL_ID, MODEL_REVISION, E5Encoder, build_index, sha_file, write_json
+from app.services.rag.retrieval import MODEL_ID, MODEL_REVISION, E5Encoder, build_index, sha_file, write_json
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
                    "packages": {n: importlib.metadata.version(n) for n in ("torch", "transformers", "huggingface-hub")}})
     manifest = build_index(args.corpus, args.out, E5Encoder(args.model_dir))
     print(json.dumps(manifest, ensure_ascii=False, indent=2))
-    print("Next: calibrate using python -m evaluation.retrieval; no threshold is guessed during building.")
+    print("Next: calibrate using python -m evaluation.rag.metrics; no threshold is guessed during building.")
 
 
 if __name__ == "__main__":

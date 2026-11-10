@@ -1,6 +1,6 @@
 # Bộ SMS để hai người gán nhãn độc lập
 
-Ngày 28/10/2026 người dùng chọn tạo nhãn AI sơ bộ trước. Đầu ra đặt riêng ở `artifacts/annotations/`, không điền các phiếu trống tại đây và không phải gold. [Phương pháp và giới hạn](../../../docs/evaluation/AI_PRELABELS.md). Người gán nhãn mù độc lập không xem gợi ý AI trước.
+Ngày 28/10/2026 người dùng chọn tạo nhãn AI sơ bộ trước. Đầu ra đặt riêng ở `artifacts/annotations/`, không điền các phiếu trống tại đây và không phải gold. [Phương pháp và giới hạn](../../../docs/evaluation.md). Người gán nhãn mù độc lập không xem gợi ý AI trước.
 
 **Trạng thái: đã chọn 200 bản ghi; CHƯA có nhãn phishing chuẩn.** Nguồn là [Vietnamese SMS Dataset](https://huggingface.co/datasets/trannguyenthaituan/vietnamese_sms_dataset), revision `a90e2bd7e8df2376939658075ba8094dcee488ad`, CC BY 4.0. Xem [ghi công và thay đổi dữ liệu](ATTRIBUTION.md). Tác giả nguồn mô tả SMS thực có sự đồng thuận; dự án chưa xác minh độc lập tuyên bố đó.
 
@@ -57,14 +57,14 @@ OTP, thanh toán, thời hạn gấp, đường dẫn hoặc câu “không thu 
 Từ thư mục gốc dự án:
 
 ```bash
-.venv/bin/python -m evaluation.review status
-.venv/bin/python -m evaluation.review adjudicate
+.venv/bin/python -m evaluation.data.review status
+.venv/bin/python -m evaluation.data.review adjudicate
 ```
 
 Lệnh đầu từ chối khi còn ô bắt buộc bỏ trống hoặc quote sai. Lệnh sau chỉ chạy khi cả hai phiếu hoàn tất và tạo `adjudication.csv` cho các ca khác nhãn; không ghi đè phiếu đã có. Người thứ ba điền nhãn, category, quote, notes và mã người phân xử khác hai mã ban đầu. Nếu hai người cùng chọn UNKNOWN, giữ UNKNOWN, không ép thành nhãn nhị phân.
 
 ```bash
-.venv/bin/python -m evaluation.review finalize --out data/evaluation/vn_sms_v2
+.venv/bin/python -m evaluation.data.review finalize --out data/evaluation/vn_sms_v2
 ```
 
 Chỉ sau khi đủ review/phân xử, lệnh mới xuất `dev.jsonl`, `test.jsonl`, hai tệp `*_unknown.jsonl`, `agreement.json` và manifest khóa bằng SHA-256. Công cụ ghi raw agreement và Cohen's kappa cho ba nhãn; chỉ ghi nhận mã người dùng khai báo, không xác thực danh tính hoặc chứng minh độc lập của con người. Không điền phiếu giả để vượt bước này.

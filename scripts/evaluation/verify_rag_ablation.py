@@ -12,7 +12,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_f
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from app.urls import extract_urls
+from app.services.url.parsing import extract_urls
 ARMS = ("llm_only", "llm_url", "llm_rag", "llm_url_rag")
 
 

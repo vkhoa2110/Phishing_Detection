@@ -10,7 +10,7 @@ import httpx
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from evaluation.message_data import REPOSITORY, REVISION, prepare
+from evaluation.data.sms import REPOSITORY, REVISION, prepare
 
 
 def download(directory):

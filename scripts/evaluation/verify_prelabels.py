@@ -9,9 +9,9 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from app.privacy import redact
-from evaluation.message_data import read_jsonl, spreadsheet_cell
-from evaluation.review import CATEGORIES, validate_gold, workspace_items
+from app.core.privacy import redact
+from evaluation.data.sms import read_jsonl, spreadsheet_cell
+from evaluation.data.review import CATEGORIES, validate_gold, workspace_items
 
 
 def verify(directory, workspace):

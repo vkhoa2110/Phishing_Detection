@@ -15,4 +15,4 @@ Nguồn mới bao gồm Zalo QR, device code Microsoft (cả cảnh báo lẫn l
 
 Đã dựng 37 đoạn E5-small và calibration riêng ở `artifacts/rag/e5-small-v2-r1/`. Trường `indexed: false` trong biên bản validator chỉ nói validator không tạo index; xem manifest index và báo cáo thực nghiệm để biết trạng thái dựng sau đó. **Ứng dụng vẫn mặc định v1**, v2 sẵn để chạy ở phiên thử nghiệm riêng.
 
-[Phương pháp, kết quả 100 truy vấn và lệnh chạy lại](../../../docs/evaluation/RAG_RETRIEVAL_V2.md). Các truy vấn là stress test do trợ lý viết, không phải gold phishing. Không có SMS người dùng, nhãn hoặc đáp án test trong chỉ mục.
+[Phương pháp, kết quả 100 truy vấn và lệnh chạy lại](../../../docs/results.md#rag). Các truy vấn là stress test do trợ lý viết, không phải gold phishing. Không có SMS người dùng, nhãn hoặc đáp án test trong chỉ mục.

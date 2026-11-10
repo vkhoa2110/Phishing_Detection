@@ -7,11 +7,11 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from app.message_service import payload_for
-from app.llm_service import _parse_verdict_with_validation, LLMFailure
-from evaluation.message_data import read_jsonl, sha, write_json
-from evaluation.quality_pilot import ARMS, score, level
-from evaluation.url_context_run import canonical_sha
+from app.services.llm.message import payload_for
+from app.services.llm.client import _parse_verdict_with_validation, LLMFailure
+from evaluation.data.sms import read_jsonl, sha, write_json
+from evaluation.messages.quality_pilot import ARMS, score, level
+from evaluation.messages.url_context import canonical_sha
 from scripts.evaluation.report_components import paired_bootstrap
 from scripts.evaluation.report_url_context import check_metrics
 

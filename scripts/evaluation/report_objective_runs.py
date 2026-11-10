@@ -14,7 +14,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.evaluation.verify_rag_ablation import verify
-from evaluation.metrics import measure
+from evaluation.common.metrics import measure
 
 ARMS = ("llm_only", "llm_url", "llm_rag", "llm_url_rag")
 NAMES = {"llm_only": "LLM", "llm_url": "LLM + URL", "llm_rag": "LLM + RAG", "llm_url_rag": "LLM + URL + RAG"}

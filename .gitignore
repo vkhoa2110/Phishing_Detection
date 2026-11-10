@@ -36,6 +36,7 @@ inference_*/
 /artifacts/rag-evaluation/
 /artifacts/annotations/
 /artifacts/ui/
+/artifacts/maintenance/
 # Academic reports, their assets, and report-generation sources stay local.
 /docs/reports/
 /scripts/reporting/

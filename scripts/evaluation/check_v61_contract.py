@@ -8,10 +8,10 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from app.llm_service import LLMFailure
-from app.message_policy_v61 import parse_turn_contract, payload_for
-from evaluation.message_data import read_jsonl, sha, write_json, write_jsonl
-from evaluation.v6_pilot import verify
+from app.services.llm.client import LLMFailure
+from app.services.llm.compact import parse_turn_contract, payload_for
+from evaluation.data.sms import read_jsonl, sha, write_json, write_jsonl
+from evaluation.messages.interaction_pilot import verify
 
 
 def audit(pilot: Path, out: Path):
@@ -49,8 +49,8 @@ def audit(pilot: Path, out: Path):
         replayed.append(item)
     old_chars = sum(row["old_request_chars"] for row in sizes)
     new_chars = sum(row["new_request_chars"] for row in sizes)
-    files = [Path(__file__), ROOT / "app/message_policy_v61.py", ROOT / "app/message_policy_v6.py",
-             ROOT / "app/candidate_v6.py", pilot / "execution.json", pilot / "responses.jsonl",
+    files = [Path(__file__), ROOT / "app/services/llm/compact.py", ROOT / "app/services/llm/policy_v6.py",
+             ROOT / "app/api/interaction.py", pilot / "execution.json", pilot / "responses.jsonl",
              pilot / "packs/conversation_paired/requests.jsonl", pilot / "result_hashes.json"]
     result = {"scope": "offline diagnostic; no substitution into original pilot results", "API_calls": 0,
         "old_v6_records": len(old), "old_statuses": dict(Counter(row["parsed"]["status"] for row in old)),

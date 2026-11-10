@@ -10,10 +10,9 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from evaluation.component_ablation import (ARMS, TARGETS, canonical_sha, expected_keys, load_cases,
-    lookup_records, metric, parse_content, payload_for)
-from evaluation.message_data import read_jsonl, sha, write_json
-from evaluation.metrics import measure, paired_comparison, prediction
+from evaluation.messages.components import ARMS, TARGETS, canonical_sha, expected_keys, load_cases, lookup_records, metric, parse_content, payload_for
+from evaluation.data.sms import read_jsonl, sha, write_json
+from evaluation.common.metrics import measure, paired_comparison, prediction
 from scripts.evaluation.report_url_context import check_metrics
 
 NAMES = {"llm_only": "LLM", "llm_url": "LLM + URL", "llm_rag": "LLM + RAG", "llm_url_rag": "LLM + URL + RAG"}

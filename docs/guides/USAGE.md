@@ -1,172 +1,73 @@
-# PhishLens — Phishing Detection & Analysis
+# Sử dụng PhishLens
 
-Bản cơ bản cho dự án của **Lê Văn Khoa**: giao diện tiếng Việt kiểm tra URL, email và tin nhắn, kết hợp mô hình ML đã huấn luyện với DeepSeek-V4-Flash qua API FPT. Có thể bật **Thiết lập → Đối chiếu với tài liệu có nguồn** sau khi [chuẩn bị chỉ mục cục bộ](RAG.md).
+## Cài đặt
 
-Ứng dụng gồm FastAPI và giao diện HTML/CSS/JavaScript, chạy cùng một địa chỉ. Không cần Node.js, npm, GPU hoặc cơ sở dữ liệu. Các tệp giao diện và biểu tượng nằm sẵn trong dự án, không dùng CDN.
-
-Profile thử nghiệm ngày 06/11 với model URL ký tự, prompt v5 và RAG giải thích sau phân loại có hướng dẫn riêng tại [QUALITY_V5_TRIAL.md](../architecture/QUALITY_V5_TRIAL.md). Lệnh `python run.py` bên dưới vẫn chạy bản v4 mặc định.
-
-Chế độ RAG chọn đoạn trích ngày 07/11 bật riêng bằng `PHISHLENS_CANDIDATE_RAG_MODE=span_selection` khi chạy candidate. AI chỉ chọn đoạn có sẵn; phần nguồn không sinh thêm hành động hoặc thay kết luận. [Lệnh chạy, kết quả và giới hạn](../architecture/RESEARCH_NEXT_V1.md).
-
-Candidate v6.1 cập nhật 09/11 đã sửa nối RAG, chuẩn hóa authority/IDNA, hợp đồng một lượt và rút gọn đầu ra; nhận diện thêm một số URL viết che dấu và trả cấu trúc vai trò/hành động trong hội thoại. Chạy riêng bằng `.venv/bin/uvicorn app.candidate_v6:app --host 127.0.0.1 --port 8000`. Candidate vẫn là thử nghiệm; [phạm vi, audit và điều kiện thay v4](../architecture/QUALITY_V6_TRIAL.md).
-
-## 1. Đặt thư mục mô hình
-
-Giải nén dự án, sau đó giải nén **inference_XGBoost_d6_s42.zip** bạn đã tải từ Colab. Đặt thư mục con đó trong **`models/`** ở thư mục gốc repository. Các đường dẫn phải có dạng:
-
-```text
-Phishing_Detection/run.py
-Phishing_Detection/models/inference_XGBoost_d6_s42/model.ubj
-Phishing_Detection/models/inference_XGBoost_d6_s42/config.json
-Phishing_Detection/models/inference_XGBoost_d6_s42/predict_url.py
-Phishing_Detection/models/inference_XGBoost_d6_s42/url_features.py
-Phishing_Detection/models/inference_XGBoost_d6_s42/url_preprocessing.py
-```
-
-Gói bạn xuất ở cell trước đã có đủ các tệp này. Nếu giải nén thêm một tầng thư mục, hãy đưa thư mục chứa trực tiếp `config.json` về vị trí trên. Ứng dụng cũng nhận gói cũ dùng `run.json` nếu `predict_url.py` đi kèm đọc đúng tệp đó.
-
-Muốn dùng nơi khác: chép `.env.example` thành `.env`, sửa `MODEL_DIR` thành đường dẫn thư mục model. Sau khi thêm hoặc thay model, mở **Thiết lập → Trạng thái kỹ thuật → Nạp lại**. Tên lượt huấn luyện, số feature và ngưỡng được đọc từ gói thật; ứng dụng không giả lập dự đoán khi thiếu model.
-
-Chỉ nạp gói mô hình do bạn tự xuất hoặc đã kiểm tra: các tệp Python trong gói sẽ được import. Mô hình XGBoost chạy inference trên CPU. Bản này không nạp BERT; gói Random Forest/Logistic Regression được hỗ trợ nếu dùng cùng định dạng. Nếu dùng LightGBM, cài thêm `lightgbm==4.6.0`.
-
-## 2. Cài đặt và chạy
-
-Khuyến nghị **Python 3.11 hoặc 3.12**, môi trường mới, không cài chung với môi trường Colab cũ. Mở terminal tại thư mục gốc repository, nơi có `run.py`.
-
-**Windows / PowerShell:**
-
-```powershell
-py -3.12 -m venv .venv
-.venv\Scripts\python -m pip install -r requirements/base.txt
-.venv\Scripts\python run.py
-```
-
-**Linux / macOS:**
+Dùng Python 3.11/3.12, mở terminal tại thư mục có `run.py`:
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements/base.txt
+.venv/bin/python -m pip install -r requirements.txt
+cp .env.example .env
 .venv/bin/python run.py
 ```
 
-Mở **http://127.0.0.1:8000**. Có thể dùng `localhost:8000`. Trên Linux x86_64, dự án cài `xgboost-cpu` cùng phiên bản 3.0.5 để tránh tải thư viện GPU. Các nền tảng khác dùng gói `xgboost` tiêu chuẩn. Không cần cài lại `requirements.txt` bên trong thư mục model.
+Mở **http://127.0.0.1:8000**. Windows dùng `.venv\Scripts\python.exe` và `Copy-Item .env.example .env`. Không cần npm, GPU hoặc cơ sở dữ liệu.
 
-Ứng dụng chỉ lắng nghe tại máy cục bộ. Bản này chưa có tài khoản, phân quyền hay giới hạn kinh phí theo người dùng; chưa được thiết kế để đưa công khai lên Internet.
+Đặt XGBoost export có `model.ubj`, `config.json`, `predict_url.py`, `url_features.py`, `url_preprocessing.py` trong `models/inference_XGBoost_d6_s42/`. Có thể đổi `MODEL_DIR` trong `.env`. Chỉ nạp gói đã kiểm tra vì mã Python trong gói được import. [Các gói model](../../models/README.md).
 
-## 3. Kết nối LLM theo hướng dẫn FPT
+LLM dùng `FPT_ENDPOINT`, `FPT_MODEL`, `FPT_API_KEY`; có thể nhập kết nối trong thiết lập giao diện. Endpoint mặc định được khai báo trong `.env.example`; dùng model mà tài khoản thực sự có quyền truy cập. Đổi host cần cập nhật `LLM_ALLOWED_HOSTS` và khởi động lại. Không ghi key vào Git.
 
-Trong giao diện, mở **Thiết lập → Kết nối dịch vụ AI**:
+`PORT` mặc định 8000, chỉ bind máy cục bộ. `LLM_TIMEOUT_SECONDS` và `LLM_MAX_TOKENS` kiểm soát ngân sách, app chặn cap vượt 8.192; không tự retry khi lỗi. `FPT_API_KEY` được đọc phía server, không hiển thị ngược lên giao diện.
 
-| Trường | Giá trị mặc định theo ảnh bạn cung cấp |
-|---|---|
-| API endpoint | `https://mkp-api.fptcloud.com/v1/chat/completions` |
-| Tên model | `DeepSeek-V4-Flash` |
-| API key | Key của tài khoản FPT được cấp quyền sử dụng model |
+## Kiểm tra nội dung
 
-Có thể nhập endpoint đầy đủ hoặc URL gốc `https://mkp-api.fptcloud.com`; ứng dụng tự bổ sung đường dẫn. Không dán đường dẫn trang giới thiệu model vào ô endpoint. Nếu tài khoản cung cấp endpoint khác, sửa cả `FPT_ENDPOINT` và `LLM_ALLOWED_HOSTS` trong `.env` rồi khởi động lại.
+1. Chọn tin nhắn/email hoặc URL, dán tối đa 8.000 ký tự và năm URL khác nhau.
+2. Bật AI nếu muốn phân tích hành vi; bật đối chiếu tài liệu nếu đã [chuẩn bị RAG](RAG.md). Metadata URL cho AI là tùy chọn, mặc định tắt.
+3. Trước khi gọi AI, kiểm tra/sửa bản xem trước đã che thông tin và xác nhận đồng ý gửi tới máy chủ hiển thị. Che tự động có thể chưa hết dữ liệu cá nhân.
+4. Đọc nhận định nội dung, cảnh báo URL, dấu hiệu, bước xử lý và giới hạn. LOW chỉ nói chưa thấy dấu hiệu rõ theo phép kiểm tra, không bảo đảm an toàn. UNKNOWN là chưa đủ căn cứ.
+5. Chi tiết có score và thông tin thực thi; có thể tải kết quả JSON. URL nghi vấn được hiển thị như văn bản.
 
-Nếu không muốn nhập key mỗi lần tải lại trang, tạo `.env` từ `.env.example` và đặt `FPT_API_KEY`. Đừng commit `.env` lên GitHub. Key nhập trên giao diện được giữ trong phiên đang mở, không lưu xuống tệp hay lịch sử trình duyệt; key trong `.env` không được trả về giao diện.
+Tắt AI để chỉ suy luận URL tại máy. Nội dung không có URL và không dùng AI sẽ không có đủ thông tin để kết luận. Dịch vụ AI lỗi vẫn giữ kết quả URL nếu có; không tạo nhận định giả.
 
-Request gửi `Authorization: Bearer ...`, `model`, `messages`, `temperature=0.1`, `top_p=1`, `top_k=40`, `max_tokens=1024`. Dùng **`stream=false`** để nhận một JSON hoàn chỉnh rồi kiểm tra cấu trúc. Đây là chế độ không streaming của API chat completions; không cần OpenAI SDK.
-
-Giới hạn chờ mặc định 45 giây cho toàn bộ lượt LLM, tối đa hai lượt đồng thời. Không tự động gọi lại khi lỗi để tránh phát sinh phí ngoài ý muốn. Có thể chỉnh `LLM_TIMEOUT_SECONDS`, `LLM_MAX_TOKENS` trong `.env`; ứng dụng chưa tự kiểm tra được số dư hoặc trừ chi phí theo USD. Nếu model dùng hết token trước khi hoàn tất JSON, giao diện thông báo rõ thay vì chấp nhận kết luận dang dở.
-
-Tài liệu đối chiếu:
-
-- [FPT: Call the Inference API](https://docs.fptcloud.com/docs/fpt-ai-factory/services/serverless-inference/tutorials/call-the-api/)
-- [FPT: ví dụ tích hợp API, gồm chế độ không streaming](https://github.com/fpt-corp/ai-marketplace/blob/main/API%20Integration%20-%20Large%20Language%20Model.md)
-
-## 4. Cách sử dụng
-
-1. Chọn **Tin nhắn / email** hoặc **Đường dẫn**, dán dữ liệu. Giới hạn 8.000 ký tự và 5 URL khác nhau mỗi lượt. Đổi tab giữ riêng bản nháp của từng loại trong phiên đang mở.
-2. Nếu chỉ muốn kiểm tra URL tại máy, tắt **Giải thích và gợi ý bằng AI** (ở tab URL là **Nhờ AI giải thích thêm**). Tin nhắn không có URL và không bật AI sẽ được ghi nhận là chưa đủ thông tin.
-3. Mở **Thiết lập** nếu cần thay kết nối AI, bật/tắt đối chiếu tài liệu hoặc cho AI tham khảo thêm điểm URL. Mặc định AI không nhận điểm URL; RAG cần bật chủ động và chỉ áp dụng cho tin nhắn / email.
-4. Bấm **Kiểm tra ngay** hoặc Ctrl/⌘ + Enter. Khi dùng AI, ứng dụng mở bản xem trước đã che một số thông tin, ghi rõ máy chủ nhận. Kiểm tra, sửa thêm nếu cần, đánh dấu đồng ý rồi gửi. Sửa bản xem trước sẽ yêu cầu đánh dấu đồng ý lại; hủy hoặc nhấn Escape không gửi phân tích.
-5. Đọc kết luận, **Bạn nên làm gì tiếp theo?**, dấu hiệu và nguồn tham khảo. Cảnh báo URL được hiển thị riêng; nếu URL đáng ngờ nhưng nội dung LOW/UNKNOWN thì cảnh báo URL đứng trước kết luận nội dung. Các URL cần kiểm tra hiển thị dưới dạng văn bản, không phải liên kết để mở.
-6. Mở **Xem điểm kiểm tra đường dẫn** hoặc **Chi tiết phân tích và tải kết quả** khi cần điểm số, thông số mô hình, bản nội dung đã gửi hoặc tệp JSON. **Kiểm tra nội dung khác** đưa con trỏ về ô nhập; **Xóa** xóa nội dung của tab hiện tại và kết quả đang hiển thị.
-
-Giao diện thích ứng với màn hình máy tính và điện thoại. Phần hướng dẫn **Đã lỡ làm theo tin nhắn?** có gợi ý xử lý sự cố; **Hướng dẫn** giải thích cách dùng và giới hạn của công cụ. Không lưu bản nháp hay API key vào localStorage.
-
-Việc che dữ liệu dùng quy tắc cho email, số điện thoại, mã xác thực/thông tin truy cập, dãy số dài, giá trị query, fragment và tài khoản trong URL. Quy tắc có thể bỏ sót hoặc che thừa; bản xem trước để bạn kiểm tra. Không có bước bảo đảm tự động che hết tên, địa chỉ hoặc mọi thông tin cá nhân. Khi bạn sửa bản gửi, LLM phân tích **bản đã sửa**; metadata ML chỉ kèm URL còn xuất hiện trong bản đó. ML vẫn phân loại các URL trong bản gốc tại máy chạy ứng dụng. RAG truy xuất từ bản đã sửa, đã che và không dùng score ML; tối đa ba tóm lược công khai được gửi cùng nội dung khi bạn bật tùy chọn này.
-
-Ứng dụng không lưu lịch sử nội dung vào cơ sở dữ liệu hoặc tệp log. Dữ liệu tồn tại tạm thời trong bộ nhớ để xử lý và trên giao diện cho đến khi bạn xóa/đóng trang. File JSON bạn chủ động tải có thể chứa URL gốc của lượt kiểm tra. Chính sách lưu dữ liệu tại FPT phụ thuộc dịch vụ và tài khoản của bạn.
-
-## 5. Luồng xử lý và baseline hiện tại
-
-- Trích xuất URL → sinh feature bằng đúng mã trong gói → mô hình ML → điểm và ngưỡng từ `config.json`.
-- Che dữ liệu → người dùng xác nhận → LLM đọc văn bản và, nếu được bật, kết quả ML. Không gửi nguyên tham số nhạy cảm trong URL qua phần metadata ML.
-- Kiểm tra JSON, giá trị cảnh báo, trích đoạn bằng chứng. Quote không xuất hiện trong bản đã gửi bị loại. Nhận định HIGH/WARNING thiếu bằng chứng hợp lệ chuyển thành UNKNOWN.
-- Đối chiếu theo `separate-assessments-2.0`: hành vi trong tin nhắn và rủi ro URL là hai kết quả riêng. Mặc định không gửi điểm ML cho LLM; ML vẫn kiểm tra URL tại máy.
-
-Prompt và dữ liệu được tách thành system/user message. LLM không có công cụ mở URL, tra WHOIS, thực thi lệnh hay tải tệp. Prompt injection được giảm thiểu bằng chỉ dẫn và kiểm tra đầu ra, chưa thể xem là đã giải quyết hoàn toàn. RAG tùy chọn bổ sung tóm lược và URL nguồn đã duyệt. Ứng dụng vẫn chưa tra blacklist thời gian thực, phân tích HTML hay xác minh tên miền ngân hàng.
-
-| Tình huống | Hành vi trong tin nhắn / rủi ro URL |
-|---|---|
-| LLM LOW, ML HIGH | Hành vi LOW; URL HIGH vẫn hiện rõ, yêu cầu xác minh |
-| LLM HIGH có bằng chứng hợp lệ, ML LOW | Hành vi HIGH; URL LOW, nêu rõ hai mức khác nhau |
-| LLM WARNING hợp lệ | Hành vi WARNING; URL được đánh giá riêng |
-| Có URL lỗi nhưng LLM hợp lệ | Giữ nhận định hành vi; URL UNKNOWN/partial và cần kiểm tra |
-| URL riêng lẻ có ML LOW | Headline LOW cho chuỗi URL đó, kèm lưu ý phạm vi |
-| LLM tắt/lỗi/UNKNOWN | Hành vi UNKNOWN; không xóa cảnh báo URL |
-| Không có URL, LLM hợp lệ | Hành vi theo LLM; URL ghi không có |
-
-**LOW** nghĩa là chưa phát hiện dấu hiệu rõ ràng qua phần đã phân tích; không đồng nghĩa chắc chắn an toàn. Điểm ML chưa được hiệu chỉnh thành xác suất. Không thay đổi ngưỡng hoặc tự huấn luyện lại khi khởi động ứng dụng.
-
-Prompt text hiện dùng `message-2.0`/`message-rag-2.0`. Headline text chỉ áp dụng cho bản người dùng đã xác nhận gửi LLM; giao diện ghi rõ nếu bạn sửa bản này. [Thiết kế và kiểm tra v2](../evaluation/CONTEXT_V2.md). Quy tắc max-alarm cũ được giữ riêng cho các thí nghiệm v1.
-
-## 6. Cấu trúc mã nguồn
-
-| Vị trí | Vai trò |
-|---|---|
-| `run.py` | Chạy ứng dụng tại 127.0.0.1:8000 |
-| `app/main.py` | API, phối hợp xử lý và phản hồi lỗi |
-| `app/ml_service.py` | Tìm, nạp gói model, suy luận URL |
-| `app/llm_service.py` | Prompt, API FPT, kiểm tra JSON và quote |
-| `app/privacy.py` | Che dữ liệu trước khi gửi API |
-| `app/urls.py` | Nhận diện, kiểm tra và gộp URL trùng |
-| `app/fusion.py` | Quy tắc cảnh báo cuối |
-| `app/static/` | Giao diện; không có bước build frontend |
-| `tests/` | Kiểm thử quy tắc và API với phản hồi giả lập |
-| `docs/architecture/BASELINE.md` | Phạm vi hiện tại, điểm cần đánh giá tiếp |
-
-API chính: `GET /api/status`, `POST /api/model/reload`, `POST /api/preview`, `POST /api/analyze`. Tài liệu tương tác tự sinh tại `/docs` nếu cần thử bằng tay. Lưu ý không nhập key thật vào ảnh chụp hoặc commit kết quả request lên Git.
-
-## 7. Kiểm thử và giới hạn xác minh
+## Profile thử nghiệm
 
 ```bash
-python -m pip install -r requirements/dev.txt
-python -m pytest -q
+# v4 ổn định
+.venv/bin/python run.py
+
+# v6.1: URL ký tự, cấu trúc tương tác, RAG sau phân loại
+PHISHLENS_PROFILE=candidate .venv/bin/python run.py
+
+# v6.1 với giải thích bằng lựa chọn đoạn
+PHISHLENS_PROFILE=candidate PHISHLENS_CANDIDATE_RAG_MODE=span_selection .venv/bin/python run.py
 ```
 
-Các test không gọi FPT thật và không phát sinh phí. Chúng kiểm tra tách URL, che dữ liệu, sự đồng ý gửi API, cấu trúc LLM, quy tắc kết hợp và giữ kết quả ML khi API lỗi. Giao diện được kiểm tra riêng ở kích thước máy tính và điện thoại.
+Có thể dùng `make run-candidate`. Candidate cần `models/url_character/`, chưa được thay bản mặc định. Các profile đối chứng `candidate-v5` và `legacy` xem [kiến trúc](../architecture.md). Khi chạy uvicorn trực tiếp, dùng `app.main:app` cho stable và `app.api.interaction:app` cho v6.1.
 
-Kiểm tra luồng giao diện bằng Chromium khi ứng dụng đang chạy (cần cài Playwright/Chromium và có snapshot diagnostic `context_regression_v2` cục bộ):
+## API cục bộ
+
+`GET /api/status` xem trạng thái; `POST /api/model/reload` nạp lại model; `POST /api/preview` tạo bản che; `POST /api/analyze` phân tích. Schema đầy đủ ở **http://127.0.0.1:8000/docs**.
+
+Ví dụ chỉ chạy URL cục bộ, không gọi LLM:
 
 ```bash
-.venv/bin/python scripts/evaluation/check_consumer_ui.py
+curl -s http://127.0.0.1:8000/api/analyze \
+  -H 'Content-Type: application/json' \
+  -d '{"mode":"url","text":"https://example.org/","use_llm":false}'
 ```
 
-Script chặn các yêu cầu AI bằng phản hồi đã ghi hoặc fixture trạng thái/lỗi, chỉ gọi API thật cho nhánh URL cục bộ. Ảnh chụp và biên bản lưu ở `artifacts/ui/consumer/`; dùng `--out` để chọn vị trí khác. Công cụ này kiểm tra cả giao diện 320–1440 px, dán nội dung, tiến trình, đồng ý chia sẻ dữ liệu, lỗi và XSS. Đây là kiểm tra hành vi giao diện, không phải phép đo chất lượng mô hình.
+`example.org` là ví dụ đầu vào, không phải khẳng định model sẽ kết luận LOW. API dùng AI cần đúng `llm_text` đã duyệt và `consent=true`; nên thử qua giao diện để giữ luồng xác nhận.
 
-Đã bổ sung kiểm thử với trọng số `models/inference_XGBoost_d6_s42` thật và API FPT thật. Model được đánh giá trên tập test PhishVN chính thức; hai cấu hình LLM được so sánh trên cùng 100 URL test. Xem [báo cáo PhishVN](../evaluation/PHISHVN.md) để đọc phương pháp, ngưỡng, số đo và giới hạn. Khi cài trên máy khác, vẫn cần đặt gói model và cấu hình API key riêng.
+## Xử lý lỗi
 
-## 8. Xử lý lỗi thường gặp
+| Hiện tượng | Kiểm tra |
+|---|---|
+| Model unavailable | Vị trí export, phụ thuộc và hash; không đổi tên file trong gói |
+| Candidate URL unavailable | Gói `models/url_character/` phải tương thích mã/phiên bản thư viện; [chuyển gói sau refactor](../development.md) |
+| RAG unavailable | Corpus/index/embedding/calibration cùng phiên bản; [hướng dẫn RAG](RAG.md) |
+| 401/403 hoặc 404 | Quyền key, endpoint và model được cấp |
+| 429 / output bị cắt | Kiểm hạn mức/budget trên dev, giữ lỗi trong kết quả đánh giá |
+| Cổng bận | Đổi `PORT`, khởi động lại và mở đúng URL |
+| Mạng bắt buộc proxy | Transport nằm trong `app/api`, mặc định `trust_env=False`; cấu hình phù hợp, không tắt HTTPS |
 
-- **Chưa tìm thấy model:** kiểm tra vị trí `config.json`/`predict_url.py`, sửa `MODEL_DIR`, bấm nạp lại. Không đổi tên tệp trong gói.
-- **Thiếu thư viện khi nạp:** chạy lại `python -m pip install -r requirements/base.txt` bằng đúng Python đang chạy `run.py`. Nếu model khác loại, xem mục 1.
-- **401/403:** key chưa hợp lệ hoặc chưa có quyền dùng model. **402:** kiểm tra số dư. **404:** kiểm tra chính xác endpoint/model trong tài khoản. **429:** đang giới hạn lượt gọi hoặc hạn mức.
-- **JSON không hoàn chỉnh/hết token:** tăng `LLM_MAX_TOKENS` có kiểm soát rồi khởi động lại; không hạ mức cảnh báo dựa vào phản hồi lỗi.
-- **Máy công ty bắt buộc proxy:** `httpx.AsyncClient` đang đặt `trust_env=False` trong `app/main.py`. Cấu hình proxy phù hợp môi trường của bạn trước khi gọi API; không tắt kiểm tra HTTPS.
-- **Cổng 8000 bận:** đặt `PORT=8001` trong `.env` rồi mở đúng cổng. Mặc định không bind `0.0.0.0`.
-
-## 9. Đánh giá có và không có model URL
-
-**Đánh giá URL trên PhishVN:** xem [kết quả trên tập test chính thức](../evaluation/PHISHVN.md). Lượt này kiểm tra đúng phiên bản dữ liệu, fingerprint và feature của notebook; chạy ML trên toàn bộ 8.941 URL test và so sánh hai cấu hình LLM trên cùng 100 URL test có nhãn.
-
-Đã có bộ chẩn đoán **60 email/tin nhắn tiếng Việt có URL**, cân bằng 30 phishing / 30 thông thường, và công cụ chạy hai cấu hình LLM thật với cùng prompt. Kết quả model URL, nhận định LLM và quy tắc fusion được đo riêng để phân biệt tác động của từng thành phần.
-
-Xem [đánh giá và diễn giải kết quả](../evaluation/SYNTHETIC.md), [phương pháp và cách chạy](../evaluation/METHODS.md), [kết quả từng mẫu](../../artifacts/evaluations/url_model_ablation_v1/comparison.csv) và [báo cáo lần chạy](../../artifacts/evaluations/url_model_ablation_v1/report.md). Đây là dữ liệu mô phỏng tự gán nhãn, phục vụ chẩn đoán; không phải số đo Accuracy/F1 trên dữ liệu ngoài thực tế. Chạy `--live` sử dụng API key và token tài khoản FPT.
-
-## 10. Kho tài liệu chuẩn bị cho RAG
-
-Đã thu thập **25 nguồn riêng biệt từ 11 đơn vị**, gồm 15 cảnh báo thủ đoạn, 7 hướng dẫn/quy trình hợp lệ, 2 hướng dẫn xử lý sự cố và 1 tài liệu kết hợp. [Hướng dẫn kho tài liệu](../../data/knowledge/README.md), [danh mục nguồn CSV](../../data/knowledge/corpus_v1/sources.csv) và [corpus tóm lược có provenance](../../data/knowledge/corpus_v1/documents.jsonl) được lưu trong dự án. Nội dung là bản tóm lược biên tập có nguồn dẫn; 14 nguồn có ngày công bố được xác minh, các nguồn còn lại để trống thay vì đoán. Đã tích hợp truy xuất bằng E5-small, lựa chọn ngưỡng trên tập dev và kiểm tra nguồn dẫn. Xem [hướng dẫn RAG](RAG.md). Hiệu quả phân loại và rubric vẫn cần đánh giá độc lập.
+Ứng dụng hiện phục vụ thử nghiệm cục bộ; chưa có tài khoản, quản lý chi phí nhiều người hoặc cấu hình triển khai công khai. [Kết quả và hạn chế](../results.md).

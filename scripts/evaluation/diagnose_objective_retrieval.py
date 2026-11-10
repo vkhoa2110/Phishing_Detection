@@ -10,12 +10,12 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from app.privacy import redact
-from app.rag_service import RAGService
-from app.settings import Settings
-from evaluation.benchmark_pack import verify
-from evaluation.message_data import read_jsonl
-from evaluation.retrieval import metrics as independent_metrics
+from app.core.privacy import redact
+from app.services.rag.retrieval import RAGService
+from app.core.settings import Settings
+from evaluation.data.benchmark import verify
+from evaluation.data.sms import read_jsonl
+from evaluation.rag.metrics import metrics as independent_metrics
 
 
 def sha(path):
