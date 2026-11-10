@@ -8,6 +8,8 @@ Profile thử nghiệm ngày 06/11 với model URL ký tự, prompt v5 và RAG g
 
 Chế độ RAG chọn đoạn trích ngày 07/11 bật riêng bằng `PHISHLENS_CANDIDATE_RAG_MODE=span_selection` khi chạy candidate. AI chỉ chọn đoạn có sẵn; phần nguồn không sinh thêm hành động hoặc thay kết luận. [Lệnh chạy, kết quả và giới hạn](../architecture/RESEARCH_NEXT_V1.md).
 
+Candidate v6.1 cập nhật 09/11 đã sửa nối RAG, chuẩn hóa authority/IDNA, hợp đồng một lượt và rút gọn đầu ra; nhận diện thêm một số URL viết che dấu và trả cấu trúc vai trò/hành động trong hội thoại. Chạy riêng bằng `.venv/bin/uvicorn app.candidate_v6:app --host 127.0.0.1 --port 8000`. Candidate vẫn là thử nghiệm; [phạm vi, audit và điều kiện thay v4](../architecture/QUALITY_V6_TRIAL.md).
+
 ## 1. Đặt thư mục mô hình
 
 Giải nén dự án, sau đó giải nén **inference_XGBoost_d6_s42.zip** bạn đã tải từ Colab. Đặt thư mục con đó trong **`models/`** ở thư mục gốc repository. Các đường dẫn phải có dạng:

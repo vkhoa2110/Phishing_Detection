@@ -1,0 +1,19 @@
+{
+  "source_messages": 200,
+  "source_groups": 200,
+  "source_messages_with_url": 100,
+  "split_counts": {
+    "development_review": 80,
+    "reserve_review": 120
+  },
+  "upstream_sampling_labels": {
+    "0": 100,
+    "1": 100
+  },
+  "old_message_overlap": 0,
+  "old_group_overlap": 0,
+  "authored_stress_cases": 40,
+  "authored_injection_cases": 16,
+  "human_phishing_labels": 0,
+  "provider_calls": 0
+}

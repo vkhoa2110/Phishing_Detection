@@ -110,3 +110,10 @@ def test_prediction_or_popularity_cannot_be_promoted_to_trusted_and_evidence_req
         Evidence(**record(observed_at="2026-07-16T00:00:00"))
     with pytest.raises(ValueError, match="Duplicate"):
         ReputationStore([record(), record()])
+
+
+def test_idna2008_distinct_hosts_never_inherit_each_others_reputation():
+    store = ReputationStore([record(url="https://fass.de/")])
+    assert canonical_url("https://faß.de/") == "https://xn--fa-hia.de/"
+    assert store.lookup("https://faß.de/", as_of=NOW)["state"] == "miss"
+    assert canonical_url("https://bücher.de/A?x=ß#Ａ") == "https://xn--bcher-kva.de/A?x=ß#Ａ"

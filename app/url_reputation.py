@@ -6,12 +6,12 @@ This component is not enabled in the production analysis pipeline.
 """
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-import ipaddress
-import re
 from urllib.parse import urlsplit, urlunsplit
 
+from .url_authority import inspect_authority
 
-VERSION = "exact-url-reputation-1.0"
+
+VERSION = "exact-url-reputation-1.1"
 
 
 def utc(value):
@@ -36,14 +36,8 @@ def canonical_url(value):
     if (parsed.scheme not in {"", "http", "https"} or not parsed.hostname
             or parsed.username is not None or parsed.password is not None):
         raise ValueError("Unsupported URL scheme/authority.")
-    host = parsed.hostname.encode("idna").decode("ascii").lower().removesuffix(".")
-    try:
-        address = ipaddress.ip_address(host)
-        host = "[" + address.compressed + "]" if address.version == 6 else address.compressed
-    except ValueError:
-        if len(host) > 253 or not all(re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label)
-                                     for label in host.split(".")):
-            raise ValueError("Invalid hostname.")
+    _, host = inspect_authority(value)
+    host = host.removesuffix(".")
     port = parsed.port
     if port is not None and port not in ({80} if parsed.scheme == "http" else {443} if parsed.scheme == "https" else set()):
         host += ":" + str(port)

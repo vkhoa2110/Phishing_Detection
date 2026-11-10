@@ -2,7 +2,7 @@
 
 Ứng dụng web tiếng Việt giúp kiểm tra dấu hiệu lừa đảo trong tin nhắn, email và đường dẫn. FastAPI phục vụ giao diện HTML/CSS/JavaScript; XGBoost kiểm tra URL cục bộ, LLM giải thích nội dung và RAG cung cấp tài liệu tham khảo khi được bật.
 
-Ứng dụng hiện dùng **chính sách v4**: đánh giá riêng hành vi trong nội dung và rủi ro URL, giữ mức “chưa đủ thông tin” khi thiếu căn cứ. [Thiết kế và giới hạn chất lượng](docs/architecture/QUALITY_V4.md).
+Ứng dụng hiện dùng **chính sách v4**: đánh giá riêng hành vi trong nội dung và rủi ro URL, giữ mức “chưa đủ thông tin” khi thiếu căn cứ. [Thiết kế và giới hạn chất lượng](docs/architecture/QUALITY_V4.md). Candidate v6 về URL che dấu, hội thoại và audit RAG được bật riêng theo [QUALITY_V6_TRIAL.md](docs/architecture/QUALITY_V6_TRIAL.md).
 
 ## Chạy ứng dụng
 

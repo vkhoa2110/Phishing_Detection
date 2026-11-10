@@ -10,6 +10,7 @@ Bắt đầu với các tài liệu hiện hành dưới đây. Các nghiên c�
 | Chuẩn bị embedding, chỉ mục và nguồn RAG | [RAG.md](guides/RAG.md) |
 | Kiến trúc hiện hành, kiểm chứng v4 và giới hạn | [QUALITY_V4.md](architecture/QUALITY_V4.md) |
 | Profile v5 thử nghiệm: URL ký tự, phân biệt injection và RAG sau phân loại | [QUALITY_V5_TRIAL.md](architecture/QUALITY_V5_TRIAL.md) |
+| Candidate v6: URL che dấu, cấu trúc hội thoại và kiểm tra RAG có kiểm soát | [QUALITY_V6_TRIAL.md](architecture/QUALITY_V6_TRIAL.md) |
 | Nghiên cứu tiếp: đối chứng URL, RAG chọn bằng chứng, dữ liệu tương lai | [RESEARCH_NEXT_V1.md](architecture/RESEARCH_NEXT_V1.md) |
 | Lượt mới: chuyển nguồn, 229 ứng viên/tham chiếu và trang review | [SOURCE_AND_DATA_V2.md](architecture/SOURCE_AND_DATA_V2.md) |
 | Cấu trúc thư mục và dọn cache | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) |
@@ -34,6 +35,7 @@ Bắt đầu với các tài liệu hiện hành dưới đây. Các nghiên c�
 | Năm model trên toàn bộ 200 ứng viên nguồn dương | [OPENPHISH_MODEL_DIAGNOSTIC_V1.md](evaluation/OPENPHISH_MODEL_DIAGNOSTIC_V1.md) |
 | Khóa nguồn, nhãn và thời gian trước bộ URL mới | [PROSPECTIVE_URL_V1.md](evaluation/PROSPECTIVE_URL_V1.md) |
 | So sánh LLM / URL / RAG trên dev | [COMPONENTS_DEV_V1.md](evaluation/COMPONENTS_DEV_V1.md) |
+| Pilot v6: RAG, lịch sử hội thoại và bộ SMS bổ sung | [V6_PILOT_V1.md](evaluation/V6_PILOT_V1.md) |
 | Bộ đánh giá cố định và giới hạn nhãn AI | [OBJECTIVE_V1.md](evaluation/OBJECTIVE_V1.md) |
 | Kết quả 364 lượt dev SMS/ngữ cảnh | [OBJECTIVE_DEV_RESULTS_V1.md](evaluation/OBJECTIVE_DEV_RESULTS_V1.md) |
 | 160 URL nguồn thực, 200 ca ngữ cảnh | [URL_CONTEXT_V1.md](evaluation/URL_CONTEXT_V1.md) |

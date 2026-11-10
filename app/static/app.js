@@ -202,6 +202,19 @@ function render(data) {
   state.result = data;
   const target = $("result-content"); target.replaceChildren();
   const grid = node("div", "result-grid"), main = node("div", "result-main"), aside = node("div", "result-aside");
+  const intakeFindings = Array.isArray(data.url_intake?.findings) ? data.url_intake.findings : [];
+  if (intakeFindings.length) {
+    const intake = section("URL được đọc lại từ cách viết che dấu", intakeFindings.length);
+    intake.append(node("p", "inline-warning", "Đây là cách đọc phục vụ chấm cục bộ. Ứng dụng không mở URL; hãy đối chiếu chuỗi gốc trước khi hành động."));
+    for (const finding of intakeFindings) {
+      const item = node("div", "evidence-item");
+      item.append(node("p", "source-meta", "Chuỗi gốc"), node("code", "url-text", finding.original),
+        node("p", "source-meta", "Cách đọc để phân tích"), node("code", "url-text", finding.analysis_url),
+        node("p", "result-subtle", "Biến đổi: " + (finding.transformations || []).join(", ")));
+      intake.append(item);
+    }
+    main.append(intake);
+  }
   grid.append(main, aside); target.append(grid);
   const llm = data.llm, urlAssessment = data.assessments.url;
   const urlAlarm = ["HIGH", "WARNING"].includes(urlAssessment.risk_level);
@@ -248,6 +261,22 @@ function render(data) {
       const el = node("div", "evidence-item"); el.append(node("blockquote", "", `“${item.quote}”`), node("p", "", item.reason)); evidence.append(el);
     }
     main.append(evidence);
+    if (llm.verdict.interaction) {
+      const interaction = section("Cấu trúc yêu cầu trong hội thoại");
+      const rows = [
+        ["Bên đưa ra yêu cầu", llm.verdict.interaction.requester],
+        ["Người được yêu cầu", llm.verdict.interaction.recipient],
+        ["Hành động được yêu cầu", llm.verdict.interaction.requested_action],
+        ["Tài sản hoặc quyền truy cập", llm.verdict.interaction.asset_or_access],
+        ["Bên nhận lợi ích", llm.verdict.interaction.beneficiary],
+        ["Giai đoạn", llm.verdict.interaction.stage],
+      ];
+      for (const [label, value] of rows) if (value) {
+        const row = node("p", "source-meta"); row.append(node("strong", "", label + ": "), document.createTextNode(value)); interaction.append(row);
+      }
+      if (llm.verdict.interaction.persuasion?.length) interaction.append(node("p", "result-subtle", "Cơ chế thuyết phục được mô tả: " + llm.verdict.interaction.persuasion.join(", ")));
+      main.append(interaction);
+    }
   }
   postExplanation(data.post_explanation, main);
   if (data.urls.length) {

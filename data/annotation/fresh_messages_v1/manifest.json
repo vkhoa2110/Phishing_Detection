@@ -1,0 +1,58 @@
+{
+  "version": "fresh-message-pack-1.0",
+  "created_at": "2026-11-09T13:53:15.817054+00:00",
+  "source_url": "https://huggingface.co/datasets/trannguyenthaituan/vietnamese_sms_dataset",
+  "source_revision": "a90e2bd7e8df2376939658075ba8094dcee488ad",
+  "seed": 20261109,
+  "source_reused": true,
+  "new_external_source": false,
+  "source_labels_are_gold": false,
+  "phishing_labels": "blank; upstream spam labels used for sampling only",
+  "exclusions_scope": "Previous 200 selected SMS and their entire connected groups; other historical exposure is not exhaustively proven absent.",
+  "sampling": "100 per upstream label, one per source group, alternate available URL/no-URL strata; 80 development/120 reserve.",
+  "split_policy": "Group-disjoint random sampling; no chronological, campaign verification or real population prior claim.",
+  "grouping": {
+    "groups": 1322,
+    "largest_group": 448,
+    "method": "connected components: identical template, token-set Jaccard >=0.85, or shared registrable domain; bundled PSL, no network"
+  },
+  "metrics": {
+    "source_messages": 200,
+    "source_groups": 200,
+    "source_messages_with_url": 100,
+    "split_counts": {
+      "development_review": 80,
+      "reserve_review": 120
+    },
+    "upstream_sampling_labels": {
+      "0": 100,
+      "1": 100
+    },
+    "old_message_overlap": 0,
+    "old_group_overlap": 0,
+    "authored_stress_cases": 40,
+    "authored_injection_cases": 16,
+    "human_phishing_labels": 0,
+    "provider_calls": 0
+  },
+  "files_sha256": {
+    "authored_review.csv": "5f381460dce74269945c0ecf33698f840726a8d397d46f68228effb338afa5a9",
+    "authored_stress.jsonl": "02c8d1051af22a1976d2f5a4b47d14abe6331402aa1b61c07b7e9895d8e1a54b",
+    "source_sampling_labels.jsonl": "8cb99660c19799af71b059e0e9ab20c43cb3d9e634ad840e19f107662dc5ad0f",
+    "items.jsonl": "81c55887a257f9ad2b721a0682b80a62d7f858e3a3d5336228f9ea3b88af5937",
+    "selection_audit.json": "e19e031409d1955231603a2b20acdea3d790616a2c5d25cda1dfac1a564c196a",
+    "authored_design_references.jsonl": "9feeac1ea179a8b5603f9d10273c76125664394344e209b0975c32995e24cac4",
+    "annotator_b.csv": "333657f4c99403026978b4adbd3582d05c2bfa5619e04909c92e86cd814d5405",
+    "ATTRIBUTION.md": "968f12fc990005c952212f12cde4930e1edcfdd2b24355b04451f7de3f8ae068",
+    "annotator_a.csv": "333657f4c99403026978b4adbd3582d05c2bfa5619e04909c92e86cd814d5405"
+  },
+  "input_hashes": {
+    "/home/khoa/BCTT/Phishing_Baseline_ML_LLM/evaluation/fresh_message_pack.py": "efb01c91db925ed40f7d18297c2701d305d313cf37bac94254ec996f4c15c749",
+    "/home/khoa/BCTT/Phishing_Baseline_ML_LLM/evaluation/message_data.py": "8480588715a736d3b8b13d3bf8dcbec716fc15452d93dc4dd6c8a6c61721ad33",
+    "/home/khoa/BCTT/Phishing_Baseline_ML_LLM/app/privacy.py": "2ec22e1c77aec6018b4df7a9debcf690a5c133a6703ff8403af1e61de93c5d4a",
+    "/home/khoa/BCTT/Phishing_Baseline_ML_LLM/data/raw/vietnamese_sms_a90e2bd7/download.json": "7b3f2774e380a1149fb0f2ead7f30baedcd48b70d28950b24ff469b87b188fcd",
+    "/home/khoa/BCTT/Phishing_Baseline_ML_LLM/data/raw/vietnamese_sms_a90e2bd7/full_dataset.csv": "8a29d50a6335c8938b8beef0a3daf57d276e880244394da453bc656f5a4c7847",
+    "/home/khoa/BCTT/Phishing_Baseline_ML_LLM/data/annotation/vn_sms_v2/items.jsonl": "b2c4d77269daf201e5d6ea6ab52146d1a352b20614f4cb2a099ac12f1caf65f1"
+  },
+  "limitations": "Source-authenticity not independently verified. Rules do not guarantee complete PII removal. Reserve is a prospective review reserve within an existing public source, not certified untouched external test. Authored stress cases and design labels stay separate; no URL-risk gold and no pooled F1."
+}
