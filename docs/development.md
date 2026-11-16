@@ -65,4 +65,24 @@ Cài đúng môi trường và cung cấp bản sao các asset cục bộ theo m
 
 Để tái sử dụng dữ liệu trong thí nghiệm mới, vẫn kiểm hash toàn bộ input, nhãn và split rồi đăng ký runtime mới. `evaluation.data.benchmark.verify(..., check_runtime=False)` chỉ xác nhận dữ liệu/artifact của gói; không xác nhận phát lại pipeline lịch sử. Runner component khóa runtime của riêng nó sau bước này. Mặc định `verify` vẫn kiểm source hash.
 
+Với hai lượt tuần 4 (212 request) và core quality (199 request), sửa privacy/metadata ngày 16/11 làm source hiện tại khác source đã đăng ký. Checkpoint `27156b143c68b8923a354856ae03aaa8bca01766` còn giữ các module Python đúng phiên bản trước sửa:
+
+```bash
+git worktree add --detach ../phishlens-before-privacy-fix 27156b143c68b8923a354856ae03aaa8bca01766
+```
+
+Trên máy nghiên cứu, bản sao 106 tệp đã đối chiếu hash nằm trong `artifacts/evaluations/privacy_metadata_fix_20261116/historical_source_snapshot/`. Từ thư mục này, dùng đường dẫn tuyệt đối tới Python của môi trường dự án và `--out` tuyệt đối tới run gốc:
+
+```bash
+/home/khoa/BCTT/Phishing_Baseline_ML_LLM/.venv/bin/python -B \
+  -m evaluation.messages.fresh_ablation verify \
+  --out /home/khoa/BCTT/Phishing_Baseline_ML_LLM/artifacts/evaluations/week4_dev_20261111/classification_results
+
+/home/khoa/BCTT/Phishing_Baseline_ML_LLM/.venv/bin/python -B \
+  -m evaluation.messages.core_quality verify \
+  --out /home/khoa/BCTT/Phishing_Baseline_ML_LLM/artifacts/evaluations/recovery_20261113/combined
+```
+
+Đổi đường dẫn nếu di chuyển dự án và cung cấp đúng các asset được manifest tham chiếu. Snapshot cục bộ chỉ phục vụ kiểm parser/journal, có thư mục `app/static/` rỗng để import ASGI; không chứa giao diện, model hay môi trường triển khai lịch sử. `verify` không gọi provider hoặc gửi lại request lỗi. Các phiếu/output cũ vẫn giữ nguyên.
+
 Ghi kết quả mới vào `--out` mới. Không sửa báo cáo cũ, đổi nhãn AI thành gold, bỏ lỗi hoặc chọn seed theo test để có bảng đẹp.

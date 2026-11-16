@@ -206,4 +206,14 @@ Parity gọi đúng API preview và analyze của focused runtime với model UR
 
 Injection replay lại parser/checkpoint và đối chiếu decision từng mẫu trước khi ghép cặp. Có 16 biến thể trên 8 nhóm tình huống tự soạn, 64 cặp×arm nhưng chỉ 61 request vật lý cho 128 ô ở hai vế. URL minh họa trong stress không được model chấm nên LLM và +URL dùng chung phản hồi. Báo riêng đúng→sai hợp lệ, đúng→UNKNOWN ngữ nghĩa và đúng→lỗi kỹ thuật. Chưa chấm tuân chỉ dẫn thì ASR phải N/A; không suy từ không có flip hợp lệ rằng chống injection thành công.
 
-[Kết quả và các lỗi còn tồn tại](../artifacts/evaluations/evaluation_audit_20261116/README.md).
+[Kết quả audit trước sửa runtime](../artifacts/evaluations/evaluation_audit_20261116/README.md).
+
+### Sửa che dữ liệu và metadata sau audit
+
+`app/services/url/approved_metadata.py` ghép score cục bộ với URL còn nhìn thấy trong bản được duyệt. Chỉ coi hoa/thường của scheme/hostname và IDNA theo policy authority là tương đương; giữ nguyên việc có scheme, cách viết port, path, query và fragment. Không phục dựng URL defang, ký tự ẩn hoặc authority cần NFKC. Nhiều URL gốc khác nhau bị gộp sau che dữ liệu, hoặc các dòng metadata mâu thuẫn, sẽ không được đưa vào context. URL gửi AI luôn dùng đúng cách viết trong bản đã duyệt, không dùng URL gốc có giá trị riêng tư. Ghép metadata không thay score, đặc trưng hoặc ngưỡng model.
+
+Quy tắc OTP giữ scheme/domain và từ tiếng Việt đầy đủ, thay vì nhận nhầm tiền tố ASCII làm mã. Thông tin đăng nhập trong URL được che bằng userinfo `***@`, giữ hostname và không làm hỏng URL khi che lại. Kiểm regression bao gồm che mã thật, dữ liệu người dùng thêm sau preview, URL bị xóa, collision sau che và nội dung hướng dẫn có phủ định. Che theo quy tắc vẫn có giới hạn; người dùng cần xem lại nội dung gửi.
+
+Lượt sau sửa dùng nguyên bộ 16 ca của audit trước và chạy model URL thật; response AI và retrieval vẫn là fixture. Manifest mới khóa toàn bộ source app/static, cấu hình runtime, model/preprocessing và đầu ra. Bảng 80 SMS chỉ kiểm intake/metadata trên dev đã biết, không chạy lại LLM hoặc tạo Accuracy/F1. [Minh chứng sau sửa](../artifacts/evaluations/privacy_metadata_fix_20261116/README.md).
+
+Hai journal lịch sử 212 và 199 request khóa phiên bản privacy/client cũ. Sau thay source, phải chạy `verify` từ source snapshot hoặc checkout đúng checkpoint; xem [tái lập lịch sử](development.md#tai-lap-lich-su). Không sửa hash cũ để chấp nhận source mới.

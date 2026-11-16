@@ -222,15 +222,16 @@ def run(out, cases_path=DEFAULT_CASES, *, pack=None, model=None):
     out.mkdir(parents=True)
     write_json(out / "summary.json", summary); write_jsonl(out / "per_run.jsonl", rows)
     write_jsonl(out / "historical_dev_intake.jsonl", historical)
-    sources = ["evaluation/messages/runtime_parity.py", "app/api/runtime.py", "app/core/privacy.py",
-               "app/services/interaction_analysis.py", "app/services/llm/core.py", "app/services/llm/client.py",
-               "app/services/url/intake.py", "app/services/url/character.py", "app/services/url/policy.py"]
+    sources = [str(p.relative_to(ROOT)) for p in sorted((ROOT / "app").rglob("*.py"))]
+    sources += [str(p.relative_to(ROOT)) for p in sorted((ROOT / "app/static").glob("*")) if p.is_file()]
+    sources += ["evaluation/messages/runtime_parity.py", "evaluation/data/sms.py"]
     manifest = {"source_sha256": {n: sha(ROOT / n) for n in sources}, "cases_sha256": sha(cases_path),
-        "runtime": status["runtime"], "model_files_sha256": {p.name: sha(p) for p in model.path.iterdir() if p.is_file()} if isinstance(model, CharURLService) else {},
+        "runtime": status["runtime"], "runtime_configuration": status.get("runtime_manifest", {}),
+        "model_files_sha256": {p.name: sha(p) for p in model.path.iterdir() if p.is_file()} if isinstance(model, CharURLService) else {},
+        "model_preprocessing_sha256": sha(model.preprocessing_path) if isinstance(model, CharURLService) else None,
         "data_scope": f"{len(cases)} authored contract cases; optional exact eighty known dev SMS. No reserve or gold labels.",
         "artifacts_sha256": {p.name: sha(p) for p in out.iterdir() if p.is_file()}}
     if pack: manifest["dev_pack_sha256"] = {n: sha(Path(pack) / n) for n in ("manifest.json", "sms.jsonl")}
-    write_json(out / "manifest.json", manifest)
     (out / "report.md").write_text(f"""# Kiểm tra app và đường chạy đánh giá
 
 {len(cases)} ca tự soạn × bốn cấu hình = {len(rows)} lượt. Model URL {'thật' if summary['model_is_real'] else 'fixture'}; phản hồi LLM và retriever đều là fixture kiểm soát. Không gọi provider, không đo Accuracy/F1 hoặc chất lượng E5. Adapter gọi đúng `/api/preview` rồi `/api/analyze`, không chép lại pipeline xử lý input.
@@ -241,8 +242,10 @@ def run(out, cases_path=DEFAULT_CASES, *, pack=None, model=None):
 
 Chẩn đoán 80 SMS dev cũ chỉ đối chiếu intake và khả năng cấp metadata hiện tại, không sửa score/input/journal tuần 4, không tính F1 lại và không mở 120 reserve. Khác hoa/thường, URL sát ký tự trang trí hoặc cách đọc IDN có thể làm khác inventory. Những khác biệt này cần review; không coi tất cả là lợi ích của intake mới.
 
-Các lỗi runtime được tái hiện và ghi lại để sửa ở bước riêng có snapshot/replay phù hợp; lượt này không sửa module đã khóa hash. Pilot provider với đầu vào dài và RAG vẫn chưa được thực hiện.
+Trạng thái check phản ánh mã hiện hành và được khóa cùng hash nguồn; các lượt trước giữ nguyên tại thư mục riêng. Khi module lịch sử thay đổi, replay lượt cũ bằng source snapshot đúng hash, không sửa manifest để bỏ qua kiểm tra. Pilot provider với đầu vào dài và RAG vẫn chưa được thực hiện.
 """, encoding="utf-8")
+    manifest["artifacts_sha256"] = {p.name: sha(p) for p in out.iterdir() if p.is_file()}
+    write_json(out / "manifest.json", manifest)
     return summary
 
 

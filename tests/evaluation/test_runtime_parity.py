@@ -33,18 +33,16 @@ def matrix():
     return evaluate_cases(load_cases(DEFAULT_CASES), ContractModel())[0]
 
 
-def test_contract_audit_exposes_existing_bugs_instead_of_calling_them_passed(matrix):
+def test_contract_audit_prevents_the_two_recorded_regressions(matrix):
     failed = [r for r in matrix if not all(r["checks"].values())]
-    assert len(matrix) == 64 and len(failed) == 6
-    assert {r["case_id"] for r in failed} == {"PARITY-06", "PARITY-07"}
-    for row in matrix:
-        assert all(ok for name, ok in row["checks"].items() if name not in {
-            "expected_approved_URL_metadata", "approved_text_preserves_required_fragments"})
-    uppercase = next(r for r in failed if r["case_id"] == "PARITY-06")
-    assert uppercase["metadata_sent"] == []
+    assert len(matrix) == 64 and failed == []
+    uppercase = next(r for r in matrix if r["case_id"] == "PARITY-06" and r["arm"] == "llm_url")
+    assert [u["url"] for u in uppercase["metadata_sent"]] == ["https://EXAMPLE.org/orders"]
     assert "https://EXAMPLE.org/orders" in uppercase["approved_text"]
-    otp = next(r for r in failed if r["case_id"] == "PARITY-07")
-    assert "[SECRET]://example.org" in otp["approved_text"]
+    otp = next(r for r in matrix if r["case_id"] == "PARITY-07" and r["arm"] == "llm_url")
+    assert "https://example.org/pay" in otp["approved_text"]
+    assert "[SECRET]://" not in otp["approved_text"]
+    assert len(otp["metadata_sent"]) == 1
 
 
 @pytest.mark.parametrize("case_id", ["PARITY-03", "PARITY-04", "PARITY-05", "PARITY-08", "PARITY-09", "PARITY-10"])
@@ -86,7 +84,7 @@ def test_changed_final_preview_requires_another_approval_before_any_processing()
         return len(approvals) == 1
     with TestClient(app) as client:
         result = preview_and_analyze(client,
-            {"text": "Tra cứu https://demo:synthetic-pass@example.org/path"},
+            {"text": "Tra cứu thông báo.", "approved_edit": "Liên hệ fresh@example.org để xác minh."},
             include_ml=True, use_rag=True, approve=approve)
     assert result["status_code"] == 428 and result["result"]["requires_confirmation"]
     assert len(approvals) == 2 and approvals[0] != approvals[1]

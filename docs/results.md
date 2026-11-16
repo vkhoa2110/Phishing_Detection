@@ -202,7 +202,21 @@ Mức kết luận, quote, context, mã lý do gốc và trạng thái kỹ thu�
 - **Dữ liệu dev đã biết:** cùng 80 SMS có URL ở 39 mẫu theo extractor tuần 4, 36 mẫu theo intake hiện tại; chỉ 30 mẫu được cấp metadata nếu bật model URL. Có 10 mẫu khác intake, gồm cả khác chính tả tên miền và cách đọc ký tự trang trí/IDN, không coi tất cả là cải tiến. Không sửa score hoặc input tuần 4 theo kết quả này.
 - **Injection:** 16 cặp/8 nhóm. LLM và +URL có bản nền đúng 15/16, bản chèn đúng 14/16 và 2 lỗi; +RAG và +URL+RAG lần lượt 14/16, 10/16 và 6 lỗi. Không có đúng→sai hợp lệ trong những cặp hai vế đều hợp lệ; tỷ lệ làm theo chỉ dẫn vẫn N/A. Lỗi kỹ thuật không được tính là phòng vệ thành công; URL stress không được chấm model, nên các arm chia sẻ phản hồi.
 
-Suite offline mới nhất: 769 test đạt, một cảnh báo deprecation đã có. Các test mới xác nhận công cụ phát hiện đúng lỗi/giữ mẫu số; không phải 769 ca phân loại đúng hoặc parity đã đạt toàn bộ. [Chi tiết, phiếu review và các hash](../artifacts/evaluations/evaluation_audit_20261116/README.md).
+Suite offline tại mốc audit: 769 test đạt, một cảnh báo deprecation đã có. Các test mới xác nhận công cụ phát hiện đúng lỗi/giữ mẫu số; không phải 769 ca phân loại đúng hoặc parity đã đạt toàn bộ. [Chi tiết, phiếu review và các hash](../artifacts/evaluations/evaluation_audit_20261116/README.md).
+
+### Sửa runtime sau audit ngày 16/11
+
+Đã sửa metadata cho hostname hoa/thường và IDNA hợp lệ còn trong bản duyệt; không đưa URL bị xóa trở lại hoặc gửi URL gốc chứa giá trị đã che. OTP không còn làm hỏng scheme `https`; che userinfo URL có thể lặp lại mà vẫn giữ hostname. Kiểm tra bổ sung giữ nguyên từ phủ định trong lời hướng dẫn và che mật khẩu Unicode khi có cú pháp giá trị rõ (`:`, `=` hoặc `là/is`). Giá trị Unicode đứng trần vẫn có thể không được quy tắc nhận diện; bản gửi cần người dùng rà lại.
+
+| Kiểm chứng cùng bộ ca | Trước sửa | Sau sửa |
+|---|---:|---:|
+| Lượt hợp đồng chưa đạt / 64 | 6 | 0 |
+| SMS dev được cấp metadata / 80 | 30 | 35 |
+| SMS dev có URL theo intake / 80 | 36 | 36 |
+
+44 lượt có model call và 20 lượt còn lại giữ nguyên toàn bộ model call, score và hash đặc trưng so với audit trước. Năm SMS nhận thêm metadata vẫn cần review extractor: các chuỗi như `QK.Tu`, `P.Hiep`, `Q.Tan` có thể là viết tắt địa danh. Tăng metadata không chứng minh trích URL đúng hơn hoặc tăng F1. Không đổi model, ngưỡng, prompt hoặc corpus; RAG focused vẫn nằm sau verdict.
+
+**848 test offline đạt**, một cảnh báo Starlette/httpx; cùng 16 ca × 4 cấu hình đạt 64/64 kiểm hợp đồng. URL model thật, phản hồi LLM/retrieval giả lập; không có Accuracy/F1, nhãn người hoặc API mới. Hai journal lịch sử 212 và 199 request đã kiểm lại bằng snapshot 106 tệp đúng hash, giữ nguyên đầu ra. [Trước/sau, manifest và giới hạn](../artifacts/evaluations/privacy_metadata_fix_20261116/README.md).
 
 ## Cách đọc kết quả
 
