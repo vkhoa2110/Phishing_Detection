@@ -1,6 +1,6 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
-const state = {mode: "text", phase: "input", busy: false, pending: null, result: null, hasKey: false, mlReady: false, ragReady: false, experimental: false, llmTimeoutSeconds: 60, drafts: {text: "", url: ""}};
+const state = {mode: "text", phase: "input", busy: false, pending: null, result: null, hasKey: false, mlReady: false, ragReady: false, experimental: false, serverManaged: true, serverEndpoint: "", llmBudgetSeconds: null, llmTimeoutSeconds: 60, drafts: {text: "", url: ""}};
 const labels = {HIGH: "Nguy cơ cao", WARNING: "Cần kiểm tra thêm", LOW: "Chưa thấy dấu hiệu rõ ràng", UNKNOWN: "Chưa đủ thông tin"};
 // These are examples of input, never precomputed model results or clickable links.
 const samples = {
@@ -42,13 +42,13 @@ function updateCount() {
   $("clear-button").disabled = state.busy || !$("input-text").value;
 }
 function keyStatus() {
-  $("key-status").textContent = $("api-key").value.trim() ? "Dùng key cho phiên hiện tại" : state.hasKey ? "Máy chủ đã cấu hình" : "Cần bổ sung API key để dùng AI";
+  $("key-status").textContent = state.serverManaged ? "Dịch vụ do máy chủ quản lý" : $("api-key").value.trim() ? "Dùng key cho phiên hiện tại" : state.hasKey ? "Máy chủ đã cấu hình" : "Cần bổ sung API key để dùng AI";
 }
 function updateOptions() {
   const ai = $("use-llm").checked;
   $("use-rag").disabled = !ai || !state.ragReady || state.mode === "url" || state.busy;
   $("include-ml").disabled = !ai || state.busy;
-  ["endpoint", "llm-model", "api-key", "show-key"].forEach(id => { $(id).disabled = !ai || state.busy; });
+  ["endpoint", "llm-model", "api-key", "show-key"].forEach(id => { $(id).disabled = state.serverManaged || !ai || state.busy; });
   document.querySelector(".privacy-note").hidden = !ai;
   $("local-only-note").hidden = ai || state.mode === "url";
   $("ai-label").textContent = state.mode === "url" ? "Nhờ AI giải thích thêm" : "Thêm góc nhìn từ AI";
@@ -90,6 +90,10 @@ async function init() {
   try {
     const status = await api("/api/status", undefined, 30000);
     state.experimental = status.analysis_policy?.experimental === true;
+    state.serverManaged = status.runtime?.connection_mode === "server_managed";
+    state.serverEndpoint = status.llm.endpoint;
+    const totalBudget = Number(status.limits?.llm_request_budget_seconds);
+    state.llmBudgetSeconds = Number.isFinite(totalBudget) && totalBudget > 0 ? totalBudget : null;
     const timeout = Number(status.limits?.llm_timeout_seconds);
     state.llmTimeoutSeconds = Number.isFinite(timeout) && timeout > 0 ? timeout : 90;
     modelStatus(status.ml);
@@ -97,7 +101,15 @@ async function init() {
     $("llm-model").value = status.llm.model;
     $("llm-name").textContent = status.llm.model;
     state.hasKey = status.llm.has_api_key;
-    $("api-status").textContent = state.hasKey ? "Máy chủ đã cấu hình key · Chưa kiểm tra kết nối nhà cung cấp" : "Cần nhập API key để dùng AI";
+    $("connection-fields").hidden = state.serverManaged;
+    $("server-connection-summary").hidden = !state.serverManaged;
+    if (state.serverManaged) {
+      $("api-key").value = "";
+      let host = "dịch vụ AI đã cấu hình";
+      try { host = new URL(state.serverEndpoint).hostname; } catch { /* Keep a neutral destination. */ }
+      $("server-connection-summary").textContent = `${status.llm.model} · ${host}. Kết nối do người triển khai quản lý; bạn chỉ cần xem và xác nhận nội dung trước khi gửi.`;
+    }
+    $("api-status").textContent = state.hasKey ? "Máy chủ đã cấu hình dịch vụ · Chưa kiểm tra kết nối nhà cung cấp" : state.serverManaged ? "Dịch vụ AI chưa được cấu hình" : "Cần nhập API key để dùng AI";
     $("api-dot").classList.toggle("ready", state.hasKey);
     state.ragReady = Boolean(status.rag && status.rag.ready);
     // Keep the default aligned with the validated v4 pilot; RAG remains opt-in.
@@ -161,6 +173,7 @@ function component(name, title, detail) {
   return el;
 }
 function analysisTimeout(payload) {
+  if (payload.use_llm && state.llmBudgetSeconds !== null) return state.llmBudgetSeconds * 1000 + 15000;
   if (!state.experimental || !payload.use_llm) return 65000;
   const stages = payload.mode === "text" && payload.use_rag ? 2 : 1;
   return Math.min(195000, Math.max(65000, stages * state.llmTimeoutSeconds * 1000 + 15000));
@@ -198,6 +211,45 @@ function postExplanation(post, main) {
   }
   main.append(extra);
 }
+function renderClarification(main, data) {
+  const clarification = data.clarification;
+  if (clarification?.status !== "available" || !clarification.questions?.length || !data.llm?.input_used) return;
+  const panel = section("Bổ sung ngữ cảnh để kiểm tra rõ hơn");
+  panel.id = "clarification-panel";
+  panel.append(node("p", "result-subtle", clarification.notice));
+  const fields = [];
+  for (const question of clarification.questions.slice(0, 2)) {
+    const label = node("label", "clarification-question", question.text);
+    const select = node("select", "clarification-select");
+    select.setAttribute("aria-label", question.text);
+    const placeholder = node("option", "", "Chọn thông tin bạn biết…"); placeholder.value = ""; select.append(placeholder);
+    for (const choice of question.choices || []) {
+      const option = node("option", "", choice.label); option.value = choice.value; select.append(option);
+    }
+    label.append(select); panel.append(label); fields.push({code: question.code, select});
+  }
+  const message = node("p", "inline-warning"); message.hidden = true; message.setAttribute("role", "status");
+  const button = node("button", "text-button", "Bổ sung và xem trước khi gửi");
+  button.type = "button"; button.id = "clarification-continue";
+  button.addEventListener("click", async () => {
+    if (state.busy || state.result !== data) return;
+    const answers = fields.filter(f => f.select.value).map(f => ({code: f.code, value: f.select.value}));
+    if (!answers.length) { message.textContent = "Hãy chọn ít nhất một thông tin, hoặc giữ nguyên kết quả hiện tại."; message.hidden = false; return; }
+    busy(true); button.disabled = true; message.hidden = true;
+    let ready = false;
+    try {
+      const preview = await api("/api/clarify/preview", {text: data.llm.input_used, answers}, 15000);
+      $("input-text").value = preview.text;
+      state.drafts.text = preview.text;
+      resetResult(); updateCount(); ready = true;
+    } catch (err) { message.textContent = err.message; message.hidden = false; }
+    finally { busy(false); button.disabled = false; }
+    // Use the normal review/consent dialog; this button never calls the provider.
+    if (ready) $("analysis-form").requestSubmit();
+  });
+  panel.append(message, button); main.append(panel);
+}
+
 function render(data) {
   state.result = data;
   const target = $("result-content"); target.replaceChildren();
@@ -244,6 +296,7 @@ function render(data) {
   if (llm.status === "ok" && llm.input_modified) main.append(node("p", "inline-warning", "Bạn đã sửa bản gửi AI. Nhận định nội dung chỉ áp dụng cho bản đã sửa; đường dẫn từ bản gốc vẫn được kiểm tra riêng."));
   if (llm.status === "error") main.append(node("p", "inline-warning", "Chưa nhận được giải thích từ AI. " + llm.message));
   if (llm.status === "disabled" && data.mode === "text") main.append(node("p", "inline-warning", "AI đang tắt nên hành vi trong tin nhắn chưa được đánh giá. Bạn có thể bật AI rồi kiểm tra lại."));
+  renderClarification(main, data);
   const actions = section("Bạn nên làm gì tiếp theo?"); actions.classList.add("actions-section");
   const list = node("ol", "actions-list");
   const recommendations = llm.status === "ok" ? [...llm.verdict.recommended_actions] : [];
@@ -366,9 +419,11 @@ $("analysis-form").addEventListener("submit", async event => {
   event.preventDefault(); if (state.busy) return;
   const text = $("input-text").value.trim(); errorBox("form-error");
   if (!text) { errorBox("form-error", "Bạn chưa nhập nội dung cần kiểm tra."); $("input-text").focus(); return; }
-  const payload = {mode: state.mode, text, use_llm: $("use-llm").checked, include_ml: $("include-ml").checked, use_rag: $("use-rag").checked && !$("use-rag").disabled, endpoint: $("endpoint").value.trim(), model: $("llm-model").value.trim(), api_key: $("api-key").value.trim(), consent: false};
+  const payload = {mode: state.mode, text, use_llm: $("use-llm").checked, include_ml: $("include-ml").checked, use_rag: $("use-rag").checked && !$("use-rag").disabled, consent: false};
+  if (!state.serverManaged) Object.assign(payload, {endpoint: $("endpoint").value.trim(), model: $("llm-model").value.trim(), api_key: $("api-key").value.trim()});
   if (!payload.use_llm) { await analyze(payload); return; }
   if (!payload.api_key && !state.hasKey) {
+    if (state.serverManaged) { errorBox("form-error", "Dịch vụ AI chưa sẵn sàng. Bạn có thể kiểm tra đường dẫn tại máy hoặc liên hệ người triển khai."); return; }
     $("settings-dialog").showModal(); document.querySelector(".api-settings").open = true;
     errorBox("form-error", "Chưa có kết nối AI. Bổ sung API key trong Thiết lập, hoặc tắt AI để chỉ kiểm tra đường dẫn."); $("api-key").focus(); return;
   }
@@ -378,7 +433,7 @@ $("analysis-form").addEventListener("submit", async event => {
     state.pending = payload;
     $("preview-text").value = preview.text;
     let destination = "dịch vụ AI bên ngoài";
-    try { destination = new URL(payload.endpoint).hostname; } catch { /* The API validates the endpoint on submission. */ }
+    try { destination = new URL(state.serverManaged ? state.serverEndpoint : payload.endpoint).hostname; } catch { /* The API validates the endpoint on submission. */ }
     $("preview-provider").textContent = `Bản bên dưới sẽ được gửi tới ${destination}. Ứng dụng đã che một số thông tin theo quy tắc; bạn cần kiểm tra và sửa thêm trước khi gửi.`;
     $("masked-fields").textContent = preview.masked_fields.length ? "Đã che theo quy tắc: " + preview.masked_fields.join(" · ") : "Quy tắc hiện tại chưa phát hiện thông tin cần che. Hãy tự kiểm tra để bỏ dữ liệu riêng tư trước khi gửi.";
     $("preview-ml-note").textContent = payload.include_ml ? "AI chỉ được xem điểm của các đường dẫn còn trong bản bạn xác nhận. Đường dẫn từ bản gốc vẫn được kiểm tra riêng tại máy." : "Không gửi điểm hoặc kết luận mô hình đường dẫn cho AI.";
@@ -394,7 +449,22 @@ $("analysis-form").addEventListener("submit", async event => {
 $("confirm-send").addEventListener("click", async () => {
   if (!state.pending || !$("consent").checked || state.busy) return;
   if (!$("preview-text").value.trim()) { errorBox("preview-error", "Bản gửi không được để trống."); return; }
-  const payload = {...state.pending, consent: true, llm_text: $("preview-text").value};
+  const pending = state.pending, edited = $("preview-text").value;
+  let checked;
+  busy(true);
+  try {
+    checked = await api("/api/preview", {mode: "text", text: edited}, 15000);
+  } catch (err) { errorBox("preview-error", err.message); return; }
+  finally { busy(false); }
+  if (state.pending !== pending || $("preview-text").value !== edited || !$("consent").checked) return;
+  if (checked.text !== edited) {
+    $("preview-text").value = checked.text;
+    $("consent").checked = false; $("confirm-send").disabled = true;
+    $("masked-fields").textContent = checked.masked_fields.length ? "Đã che theo quy tắc: " + checked.masked_fields.join(" · ") : "Đã chuẩn hóa bản nội dung.";
+    errorBox("preview-error", "Bản vừa sửa đã được che thông tin và chuẩn hóa thêm. Hãy xem lại rồi xác nhận bản đang hiển thị.");
+    return;
+  }
+  const payload = {...pending, consent: true, llm_text: checked.text};
   state.pending = null; $("privacy-dialog").close(); await analyze(payload);
 });
 $("consent").addEventListener("change", () => { $("confirm-send").disabled = !$("consent").checked; });

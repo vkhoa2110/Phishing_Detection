@@ -1,0 +1,28 @@
+{
+  "snapshot": "vi-phishing-knowledge-gap-additions-20261113",
+  "started_at": "2026-11-12T17:03:43.995717+00:00",
+  "completed_at": "2026-11-12T17:03:45.169327+00:00",
+  "candidates": 4,
+  "documents": 4,
+  "deferred": 0,
+  "by_kind": {
+    "scam_warning": 2,
+    "mixed_guidance": 1,
+    "legitimate_workflow": 1
+  },
+  "by_publisher": {
+    "Bộ Công an": 2,
+    "Microsoft Learn": 2
+  },
+  "by_topic": {
+    "prize_advance_fee": 1,
+    "cic_impersonation": 1,
+    "credential_theft": 1,
+    "oauth_consent": 2,
+    "legitimate_authorization": 1
+  },
+  "verified_publication_dates": 2,
+  "unknown_publication_dates": 2,
+  "full_source_articles_redistributed": false,
+  "indexed": false
+}

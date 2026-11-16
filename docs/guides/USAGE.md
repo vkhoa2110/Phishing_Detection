@@ -15,9 +15,9 @@ Mở **http://127.0.0.1:8000**. Windows dùng `.venv\Scripts\python.exe` và `Co
 
 Đặt XGBoost export có `model.ubj`, `config.json`, `predict_url.py`, `url_features.py`, `url_preprocessing.py` trong `models/inference_XGBoost_d6_s42/`. Có thể đổi `MODEL_DIR` trong `.env`. Chỉ nạp gói đã kiểm tra vì mã Python trong gói được import. [Các gói model](../../models/README.md).
 
-LLM dùng `FPT_ENDPOINT`, `FPT_MODEL`, `FPT_API_KEY`; có thể nhập kết nối trong thiết lập giao diện. Endpoint mặc định được khai báo trong `.env.example`; dùng model mà tài khoản thực sự có quyền truy cập. Đổi host cần cập nhật `LLM_ALLOWED_HOSTS` và khởi động lại. Không ghi key vào Git.
+Người triển khai cấu hình `FPT_ENDPOINT`, `FPT_MODEL`, `FPT_API_KEY` trong môi trường máy chủ. Khi chạy bằng `run.py`, người dùng không phải nhập key và không được thay endpoint/model từ trình duyệt. Thiết lập chỉ hiển thị nơi nhận dữ liệu. Endpoint mặc định nằm trong `.env.example`; đổi host cần cập nhật `LLM_ALLOWED_HOSTS` và khởi động lại. Không ghi key vào Git.
 
-`PORT` mặc định 8000, chỉ bind máy cục bộ. `LLM_TIMEOUT_SECONDS` và `LLM_MAX_TOKENS` kiểm soát ngân sách, app chặn cap vượt 8.192; không tự retry khi lỗi. `FPT_API_KEY` được đọc phía server, không hiển thị ngược lên giao diện.
+`PORT` mặc định 8000, chỉ bind máy cục bộ. Runtime giới hạn `LLM_TIMEOUT_SECONDS` tối đa 45 giây dùng chung từ lời gọi AI đầu tiên đến giải thích tùy chọn; không cấp lại 45 giây riêng cho mỗi bước. Thời gian nạp model/truy xuất cục bộ không được bảo đảm bởi giới hạn này. `LLM_MAX_TOKENS` bị chặn tối đa 8.192; focused mặc định tối đa 2.048. Không tự retry khi lỗi; key máy chủ không trả về giao diện.
 
 ## Kiểm tra nội dung
 
@@ -42,7 +42,17 @@ PHISHLENS_PROFILE=candidate .venv/bin/python run.py
 PHISHLENS_PROFILE=candidate PHISHLENS_CANDIDATE_RAG_MODE=span_selection .venv/bin/python run.py
 ```
 
-Có thể dùng `make run-candidate`. Candidate cần `models/url_character/`, chưa được thay bản mặc định. Các profile đối chứng `candidate-v5` và `legacy` xem [kiến trúc](../architecture.md). Khi chạy uvicorn trực tiếp, dùng `app.main:app` cho stable và `app.api.interaction:app` cho v6.1.
+Có thể dùng `make run-candidate`. Candidate cần `models/url_character/`, chưa được thay bản mặc định. Các profile đối chứng `candidate-v5` và `legacy` xem [kiến trúc](../architecture.md). Chạy trực tiếp các ASGI lõi lịch sử chỉ dành cho tái lập nghiên cứu; chúng chưa có lớp runtime mới. Nếu dùng uvicorn để triển khai, dùng factory `app.api.runtime:create_stable_app --factory` hoặc `app.api.runtime:create_focused_app --factory`.
+
+Bản verdict lõi mới chạy riêng ở cổng 8001:
+
+```bash
+PHISHLENS_PROFILE=focused PORT=8001 .venv/bin/python run.py
+```
+
+Mở **http://127.0.0.1:8001**. Bản này mặc định yêu cầu tắt thinking, cap 2.048 token, dùng E5 và giải thích bằng lựa chọn đoạn sau kết luận. Cần cùng gói model URL ký tự của candidate. Nếu thiếu ngữ cảnh, chọn thông tin bổ sung rồi xem trước và đồng ý gửi lại; không cần nhập mã OTP, mật khẩu hoặc số tài khoản. Đầu ra JSON đầy đủ hơn không tự chứng minh phát hiện chính xác hơn. [Trạng thái đánh giá](../results.md#verdict-loi).
+
+Biến tùy chọn: `PHISHLENS_CORE_THINKING=default|disabled|enabled`, `PHISHLENS_CORE_MAX_TOKENS=2048`, `PHISHLENS_FOCUSED_RETRIEVAL=e5|action_hybrid`. `action_hybrid` chỉ để thử nghiệm, chưa tốt hơn E5 trên lượt dev mới. Có thể dùng `make run-focused` với `PORT` phù hợp.
 
 ## API cục bộ
 

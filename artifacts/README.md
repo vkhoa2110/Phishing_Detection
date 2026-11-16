@@ -16,6 +16,13 @@
 | RAG chọn bằng chứng | `rag_evidence_contract_v3`, `rag_evidence_pilot_v1` |
 | Hội thoại/RAG v6 | `v6_hardening_20261109`, `v6_pilot_live_20261109` |
 | Hợp đồng v6.1 | `v61_contract_fix_v1` |
+| Pilot compact v5/v6.1 | `compact_pilot_20261111`, `compact_pilot_20261111_continuation`; dùng `combined_report.md` trong continuation để giữ mọi lỗi ban đầu |
+| Đối chứng dev và review tuần 4 | `week4_dev_20261111`: xem `README.md`, các ledger lỗi API và reference AI riêng; 120 reserve không suy luận |
+| Verdict lõi và thinking | `focused_20261112`: pilot vận hành 32 request hoàn tất; lượt SMS dừng HTTP 429 ở 92/199, chưa công bố Accuracy/F1; RAG lọc hành vi chưa tốt hơn E5 |
+| Hoàn tất verdict lõi và bổ sung nguồn | `recovery_20261113`: gộp đủ 199 request, giữ 429 cũ; audit phạm vi nhãn hành vi/toàn thông điệp; corpus 25 → 29, raw E5 Hit 5/9 → 7/9 trên dev AI |
+| Kiểm chứng runtime và FR/NFR | `runtime_checks_20261113`: kết nối máy chủ, shared deadline, kiểm bản duyệt; 100 batch năm URL/model qua API in-process; audit hai cohort không trùng; không có điểm Accuracy mới |
+| Kiểm tra lý do và trích dẫn | `claim_grounding_20261114`: replay 199 phản hồi; 45 phản hồi cần rà cơ chế, 48 tóm tắt được quy chiếu AI; không đổi kết luận/F1. Giữ cả lần QA đầu và lần sửa cue tiếng Việt; phiếu review chưa chấm |
+| Trace RAG, parity và injection theo cặp | `evaluation_audit_20261116`: trace 36 ứng viên/300 relevance; model URL thật trên 16 ca×4 cấu hình còn 6 lượt lỗi hợp đồng thuộc 2 ca; 16 cặp injection/8 nhóm, ASR chưa chấm; không API hoặc F1 mới |
 | Kế hoạch SMS mới | `fresh_message_ablation_plan_v1` |
 
 [Kết quả và giới hạn](../docs/results.md) tập hợp các số quan trọng; [phương pháp](../docs/evaluation.md) nêu mẫu số, nhãn và đối chứng. Các thư mục trên là đường dẫn cục bộ, không bảo đảm có khi clone Git. Tài liệu chi tiết nguyên trạng trước refactor có trong [mốc 479c966](https://github.com/vkhoa2110/Phishing_Detection/tree/479c96612ca79d3e1de2d37df22d82ce19e09f23/docs).

@@ -1,0 +1,18 @@
+{
+  "snapshot": "vi-phishing-knowledge-gap-additions-20261113",
+  "catalog_sha256": "97a33dd4556fbf0ae9ec5a4c3a60939794ded2336a43379e35b23bcf13b0e9db",
+  "expanded_catalog_sha256": "4103a39cc08ad3a3adc7c311e61bdb38ae0eb0cb24409e6c6cbda199e4249bb1",
+  "collector_sha256": "7967a6030088093530906db75edcaeb0314469660170bd4b91f6c62ff8b8bd0d",
+  "collected_at": "2026-11-12T17:03:43.995717+00:00",
+  "files": {
+    "documents.jsonl": "03bf06d515b114b448223589a293b250689ca8b98baebac7563b939654aa5416",
+    "sources.csv": "5f948321c7423459b5e62f5a2e734d5f20bbdae76447ad0901f51a03c2faa284",
+    "collection_report.json": "7459e67ea411795ffb686e5f7ebcd72a208051abc8541763e27d4e442fea9cd1",
+    "deferred_sources.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "packages": {
+    "httpx": "0.28.1",
+    "beautifulsoup4": "4.15.0",
+    "trafilatura": "2.3.1"
+  }
+}

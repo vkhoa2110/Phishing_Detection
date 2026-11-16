@@ -509,3 +509,7 @@ input[type=checkbox] { accent-color: var(--blue); width: 17px; height: 17px; mar
 @media (prefers-reduced-motion: reduce) {
   *, *:before, *:after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
 }
+/* Optional context questions shown only by the focused candidate. */
+.clarification-question { display: block; margin: 14px 0; font-weight: 600; }
+.clarification-select { display: block; width: 100%; margin-top: 8px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: #172033; font: inherit; font-weight: 400; }
+.clarification-select:focus-visible { outline: 3px solid #a5b4fc; outline-offset: 2px; }

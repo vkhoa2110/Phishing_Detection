@@ -1,0 +1,55 @@
+{
+  "version": "vi-phishing-knowledge-gap-additions-20261113",
+  "language": "vi",
+  "selection_scope": "Development corpus coverage; selected after inspecting dev gaps, not an independent test.",
+  "sources": [
+    {
+      "id": "VN-RAG-201",
+      "publisher": "Bộ Công an",
+      "kind": "scam_warning",
+      "topics": ["prize_advance_fee"],
+      "url": "https://bocongan.gov.vn/bai-viet/cong-an-tinh-thanh-hoa-triet-pha-duong-day-lua-dao-bang-hinh-thuc-thong-bao-trung-thuong-1766998122",
+      "anchors": ["trúng thưởng", "thuế phí", "kích hoạt giải"],
+      "summary": "Bộ Công an mô tả vụ giả nhân viên chăm sóc khách hàng để báo người dân được nhận giải hoặc quà giá trị cao. Đối tượng viện lý do làm hồ sơ, kích hoạt giải và đóng phí, rồi buộc người nhận thanh toán thêm nhiều đơn hàng đắt hơn giá trị thực. Cơ chế cần chú ý là lời hứa nhận thưởng đi kèm yêu cầu chi thêm tiền liên tục. Một thông báo khuyến mại riêng lẻ chưa chứng minh có lừa đảo; cần xem điều kiện và khoản thanh toán bị yêu cầu.",
+      "context_note": "Nguồn mô tả một vụ án và cơ chế thu tiền nhận thưởng; không xác minh mọi chương trình khuyến mại hoặc người gửi cụ thể.",
+      "scenario": "prize_advance_fee", "entity": "Bộ Công an", "document_role": "scam_warning",
+      "scope": "Việt Nam, thông báo nhận thưởng", "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-202",
+      "publisher": "Bộ Công an",
+      "kind": "mixed_guidance",
+      "topics": ["cic_impersonation", "credential_theft"],
+      "url": "https://bocongan.gov.vn/bai-viet/canh-bao-lua-dao-chiem-doat-tai-san-tu-su-co-an-ninh-mang-tai-trung-tam-thong-tin-tin-dung-quoc-gia-cic-1757991790",
+      "anchors": ["CIC", "xóa nợ xấu", "OTP"],
+      "summary": "Cục Cảnh sát hình sự cảnh báo kẻ gian lợi dụng sự cố dữ liệu CIC để mạo danh ngân hàng hoặc cơ quan chức năng, dẫn người nhận vào trang giả và đòi thông tin xác thực. Có thủ đoạn quảng cáo khả năng sửa hồ sơ tín dụng hoặc xóa nợ xấu. Nguồn khuyến cáo tránh gửi mật khẩu, OTP qua liên hệ tự xưng; khi đổi thông tin tài khoản cần dùng kênh ngân hàng chính thức. Đây là cảnh báo mạo danh, không kết luận mọi thông báo nợ hay dịch vụ tư vấn đều gian lận.",
+      "context_note": "Bối cảnh sự cố CIC tháng 9/2025. Không khẳng định tình trạng tín dụng của cá nhân hay tính hợp pháp của một khoản nợ cụ thể.",
+      "scenario": "cic_impersonation", "entity": "Bộ Công an", "document_role": "mixed_guidance",
+      "scope": "Việt Nam, giả mạo CIC/ngân hàng", "source_language": "vi"
+    },
+    {
+      "id": "VN-RAG-203",
+      "publisher": "Microsoft Learn",
+      "kind": "scam_warning",
+      "topics": ["oauth_consent"],
+      "url": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/protect-against-consent-phishing",
+      "anchors": ["consent phishing", "permissions", "verified publishers"],
+      "summary": "Consent phishing dẫn dụ người dùng cấp quyền dữ liệu cho ứng dụng độc hại. Màn hình đồng ý có thể nằm trên nền tảng đăng nhập hợp lệ nhưng quyền được cấp lại cho ứng dụng của kẻ gian. Microsoft khuyến nghị kiểm tra nhà phát hành, phạm vi dữ liệu và mức cần thiết của quyền trước khi chấp thuận. Danh tính nhà phát hành đã được kiểm chứng cũng không thay thế việc đọc quyền được yêu cầu. Tài liệu hỗ trợ phân biệt nơi đăng nhập với ứng dụng nhận quyền; không xác minh một ứng dụng cụ thể.",
+      "context_note": "Đăng nhập trên miền hợp lệ không xác minh mục đích cấp quyền. Yêu cầu OAuth tự nó chưa chứng minh có lừa đảo.",
+      "scenario": "oauth_consent", "entity": "Microsoft", "document_role": "scam_warning",
+      "scope": "Microsoft Entra, cấp quyền ứng dụng", "source_language": "en"
+    },
+    {
+      "id": "VN-RAG-204",
+      "publisher": "Microsoft Learn",
+      "kind": "legitimate_workflow",
+      "topics": ["oauth_consent", "legitimate_authorization"],
+      "url": "https://learn.microsoft.com/en-us/entra/identity-platform/permissions-consent-overview",
+      "anchors": ["Delegated permissions", "Application permissions", "Consent"],
+      "summary": "Nền tảng Microsoft dùng cơ chế đồng ý để ứng dụng truy cập tài nguyên được bảo vệ. Quyền ủy quyền cho ứng dụng thao tác thay người đang đăng nhập; quyền ứng dụng có thể hoạt động không cần người đăng nhập và thường cần quản trị viên chấp thuận. Người sở hữu tài nguyên có thể đồng ý hoặc từ chối theo chính sách. Cấp quyền là một quy trình hợp lệ; cần đối chiếu mục đích công việc và phạm vi dữ liệu, không suy lừa đảo chỉ từ sự xuất hiện của màn hình xin quyền.",
+      "context_note": "Mô tả giao thức và quyền hợp lệ, không bảo đảm an toàn cho ứng dụng hoặc lời mời cụ thể.",
+      "scenario": "oauth_consent", "entity": "Microsoft", "document_role": "legitimate_workflow",
+      "scope": "Microsoft identity platform", "source_language": "en"
+    }
+  ]
+}

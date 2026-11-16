@@ -1,5 +1,7 @@
 # Kho tài liệu tiếng Việt cho RAG — bản đầu
 
+**Cập nhật 13/11/2026:** thu thêm [bốn nguồn có snapshot](collections/gap_additions_20261113/sources.csv) về thu tiền nhận thưởng, mạo danh CIC, consent phishing và cấp quyền hợp lệ; [danh mục và giới hạn](proposals/rag_gaps_20261113.json). Hai nguồn từ Bộ Công an, hai từ Microsoft Learn. Bản thử nghiệm ghép với v1 thành 29 tài liệu, giữ nguyên 25 bản cũ, nằm cục bộ tại `corpus_refresh_20261113/`. Nguồn mới được chọn từ lỗi dev đã xem, chưa phải cải tiến được chứng minh trên test độc lập. Index E5 mới chưa hiệu chỉnh ngưỡng; ứng dụng chưa đổi corpus. [Đối chiếu truy xuất trên cùng mẫu số](../../artifacts/evaluations/recovery_20261113/retrieval_results/report.md).
+
 **Cập nhật 28/10/2026:** đã bàn giao [corpus v2 gồm 37 nguồn](corpus_v2/README.md), thêm 12 tài liệu cho 8 nhóm kịch bản. [Kết quả 100 truy vấn BM25/E5/Hybrid](../../docs/results.md#rag). Ứng dụng mặc định vẫn dùng v1. Phần dưới ghi nguồn gốc và trạng thái bản v1.
 
 Đã thu thập và rà soát **25 nguồn nội dung riêng biệt từ 11 đơn vị**, chốt ngày **26/10/2026**. Đầu vào ban đầu có 26 URL; một URL Microsoft trả về cùng nội dung với nguồn đã có nên được loại trùng. Tất cả nguồn được giữ trong corpus đã tải thành công bằng HTTPS, trích được nội dung và kiểm tra chủ đề. Robots.txt được kiểm tra trước khi thu thập.

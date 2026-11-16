@@ -17,6 +17,10 @@ Mở **http://127.0.0.1:8000**. Đặt gói XGBoost trong `models/inference_XGBo
 
 Mặc định chạy chính sách v4. Thử candidate v6.1 bằng `make run-candidate` hoặc `PHISHLENS_PROFILE=candidate .venv/bin/python run.py`. Candidate cần gói URL ký tự riêng, chưa đủ bằng chứng để thay bản mặc định. RAG mặc định tắt; xem [cài đặt RAG](docs/guides/RAG.md).
 
+`make run-focused` chạy bản verdict lõi thử nghiệm. Các profile qua `run.py` dùng kết nối AI do máy chủ quản lý, một ngân sách chờ tối đa 45 giây cho phân loại và giải thích; người dùng xem và xác nhận nội dung trước khi gửi. [Yêu cầu và minh chứng FR/NFR](docs/requirements.md).
+
+Bản focused qua launcher kiểm tra thêm dấu hiệu tối thiểu giữa mã lý do và từng trích dẫn. Khi thiếu dấu hiệu, ứng dụng diễn giải thận trọng và yêu cầu kiểm tra lại; giữ nguyên mức cảnh báo của AI và kết quả URL. Đây chưa phải kiểm chứng ngữ nghĩa hoặc cải thiện F1. [Phạm vi và kết quả](docs/results.md#kiem-tra-ly-do).
+
 ## Cấu trúc
 
 ```text

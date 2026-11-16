@@ -111,10 +111,13 @@
     <label class="check-row"><input id="include-ml" type="checkbox"><span><strong>Tham khảo thêm điểm đường dẫn</strong><span class="help-text">Đường dẫn luôn được kiểm tra riêng. Mặc định AI tập trung vào hành vi trong tin nhắn.</span></span></label>
   </div>
   <details class="api-settings"><summary>Kết nối dịch vụ AI <span id="key-status">Đang kiểm tra…</span></summary><div class="settings-body">
+    <p id="server-connection-summary" class="help-text" hidden></p>
+    <div id="connection-fields" hidden>
     <p class="help-text">Nội dung được gửi đến endpoint bên dưới sau khi bạn xác nhận. Chỉ sử dụng dịch vụ bạn tin cậy.</p>
     <label class="field-label" for="endpoint">API endpoint</label><input id="endpoint" type="url" value="https://mkp-api.fptcloud.com/v1/chat/completions" autocomplete="off" spellcheck="false">
     <label class="field-label" for="llm-model">Tên mô hình</label><input id="llm-model" value="DeepSeek-V4-Flash" autocomplete="off" spellcheck="false">
     <label class="field-label" for="api-key">API key</label><div class="key-field"><input id="api-key" type="password" autocomplete="off" placeholder="Để trống nếu máy chủ đã cấu hình" spellcheck="false"><button id="show-key" type="button" aria-label="Hiện API key">Hiện</button></div><p class="help-text">Key nhập ở đây chỉ giữ trong phiên đang mở, không lưu sau khi tải lại trang.</p>
+    </div>
   </div></details>
   <details class="system-details"><summary>Trạng thái kỹ thuật</summary><div class="system-row"><div><strong>Mô hình kiểm tra đường dẫn</strong><span id="model-status">Đang kiểm tra…</span></div><button id="reload-model" class="secondary-button" type="button">Nạp lại</button></div><div class="system-row"><div><strong id="llm-name">Dịch vụ AI</strong><span id="api-status">Đang kiểm tra…</span></div><span class="status-dot" id="api-dot"></span></div></details>
   <button id="done-settings" type="button" class="primary-button">Lưu lựa chọn <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
