@@ -218,6 +218,56 @@ Suite offline tại mốc audit: 769 test đạt, một cảnh báo deprecation 
 
 **848 test offline đạt**, một cảnh báo Starlette/httpx; cùng 16 ca × 4 cấu hình đạt 64/64 kiểm hợp đồng. URL model thật, phản hồi LLM/retrieval giả lập; không có Accuracy/F1, nhãn người hoặc API mới. Hai journal lịch sử 212 và 199 request đã kiểm lại bằng snapshot 106 tệp đúng hash, giữ nguyên đầu ra. [Trước/sau, manifest và giới hạn](../artifacts/evaluations/privacy_metadata_fix_20261116/README.md).
 
+## Rà miền trần và ranh giới URL ngày 17/11
+
+Intake 2.2 của candidate/focused dùng bản IANA root offline cho miền trần trong text. Chuỗi có hậu tố chưa đủ căn cứ được hiển thị riêng, không chấm model; URL có scheme/`www.` và tab URL vẫn giữ chính sách cú pháp. Preview và bước tạo metadata cùng tính giới hạn sau lọc, tránh việc nhiều dấu chấm trong lời văn làm lỗi trước khi phân tích. Ranh giới literal cũng được kiểm để metadata không lấy tiền tố ASCII của authority có ký tự ẩn. Stable mặc định chưa áp dụng policy này.
+
+| Chỉ số chẩn đoán cùng dữ liệu | Intake 2.1 | Intake 2.2 |
+|---|---:|---:|
+| Khớp 32 ca hợp đồng phát triển theo chính sách mới | 22/32 | 32/32 |
+| SMS có URL được chấm trong 80 dev đã biết | 36 | 33 |
+| SMS có metadata đủ điều kiện | 35 | 33 |
+
+Có 7 SMS đổi inventory: 5 SMS/6 token như `P.Hiep`, `Q.Tan`, `Khác.Liên` được chuyển sang chưa chấm; 2 miền bị dính `]` hoặc `|…⇽` được nhận lại. Nhận định văn bản thường ở 5 SMS là review AI theo ngữ cảnh, chưa có nhãn người. Bản mới giữ IDN có hậu tố root thật và không cắt tùy ý tiền tố Unicode. Còn một ca domain dính `:prose` và một ca tiền tố Unicode/noise chưa phục hồi. TLD tồn tại trong snapshot vẫn có thể trùng viết tắt/tên tệp; không xác minh website an toàn hay tồn tại.
+
+32 ca được soạn cho lỗi/chính sách đã xem nên chỉ là regression, không phải benchmark độc lập. Không có F1/Accuracy phishing mới, không đổi model/score/ngưỡng/prompt/corpus và không suy luận 120 reserve. 64/64 lượt hợp đồng qua app giữ đúng quyết định/score cục bộ trên cùng bộ 16 ca; **932 test phần mềm đạt**, một cảnh báo Starlette/httpx. Browser desktop/mobile kiểm nhóm chưa chấm riêng, consent, bản sửa được che lại và không tràn ngang; URL model thật, LLM giả lập. [Từng mẫu, nguồn, trước/sau và giới hạn](../artifacts/evaluations/url_intake_audit_20261117/README.md).
+
+## Đối chứng metadata URL ngày 18/11
+
+Đã gọi provider thật trên đúng 80 SMS dev tuần 4, reference AI hành vi giữ nguyên 4 dương/54 âm/22 UNKNOWN. Ba arm giữ nguyên text (kể cả URL), core prompt/schema/model/decoding/thinking disabled/cap 2.048 token; chỉ metadata model URL thay đổi. Payload giống hệt nhau chia sẻ phản hồi: 240 ô logic, 146 yêu cầu vật lý.
+
+Lượt đầu dừng đúng gate sau 136 phản hồi hợp lệ và ba lỗi kết nối liên tiếp, còn bảy yêu cầu chưa gửi. Sau kiểm DNS/TLS, lượt bổ sung đăng ký riêng chỉ gửi bảy key chưa từng thử; không chạy lại ba lỗi. Bản gộp giữ đủ **143 hợp lệ + 3 lỗi / 146**, 140.779 token đã ghi và ba phản hồi thiếu usage. Bảy ô logic lỗi do các arm dùng chung phản hồi được giữ; không tính thành LOW. Hai giai đoạn đều một worker, cách thời điểm bắt đầu tối thiểu bốn giây, timeout 45 giây.
+
+| Thêm thông tin cho LLM | Precision | Recall | F1 | Đúng / 58 | Báo nhầm / 54 âm |
+|---|---:|---:|---:|---:|---:|
+| Không metadata model URL | 30,77% | 4/4 | 47,06% | 48/58 | 9 |
+| Metadata URL thật | 23,53% | 4/4 | 38,10% | 44/58 | 13 |
+| Metadata URL hoán đổi | 25,00% | 4/4 | 40,00% | 45/58 | 12 |
+
+Coverage nhị phân cả ba là 57/58 (98,28%); một mẫu âm lỗi không thành TN hoặc FP. 22 reference UNKNOWN báo riêng. Luôn LOW có accuracy 54/58 (93,10%) nhưng Recall 0/4 và F1 0; không dùng accuracy đơn lẻ với tỉ lệ lớp này.
+
+Thêm metadata thật làm bốn quyết định LOW đúng theo reference thành cảnh báo, chưa sửa được ca nhị phân nào; McNemar hai phía p=0,125. Metadata thật và hoán đổi chỉ khác một quyết định đúng/sai, p=1. Mỗi payload có một lần sinh, chưa đo dao động lặp; kết quả là chẩn đoán, chưa chứng minh cơ chế neo vào score. Có metadata ở 33 SMS nhưng chỉ gồm 22 âm/11 UNKNOWN, không có dương nên không đo được lợi ích Recall URL. Arm hoán đổi dùng bằng chứng sai có chủ đích, không đưa vào app.
+
+Không so tỷ lệ này trực tiếp với các prompt/cohort lịch sử. [Protocol, nguồn, từng mẫu và provenance](../artifacts/evaluations/url_score_control_20261118/README.md), [bảng cặp](../artifacts/evaluations/url_score_control_20261118/combined/metrics.json).
+
+### Kiểm tra lại cảnh báo bằng nội dung
+
+Verifier chỉ đọc text đã duyệt, không biết kết luận/lý do lượt đầu, điểm URL, arm hoặc reference. Quy tắc và cap 1.024 token khóa trước suy luận; chỉ xét HIGH/WARNING hợp lệ. 87 ô cảnh báo dùng 31 request theo text giống nhau; **31/31 hợp lệ**, không retry hoặc sửa JSON. Phản hồi thiếu thông tin/lỗi sẽ giữ cảnh báo; lượt này không có hai trạng thái đó ở verifier. Lỗi lượt phân loại vẫn giữ nguyên.
+
+| Cấu hình | F1 trước → sau | Báo nhầm theo AI trước → sau | Dương giữ được | Đúng sau / 58 |
+|---|---:|---:|---:|---:|
+| LLM, không metadata URL | 47,06% → 80,00% | 9 → 2 | 4/4 | 55/58 |
+| LLM + metadata URL thật | 38,10% → 80,00% | 13 → 2 | 4/4 | 55/58 |
+| LLM + metadata hoán đổi, chỉ đối chứng | 40,00% → 80,00% | 12 → 2 | 4/4 | 55/58 |
+
+Sau verifier, Precision 66,67%, Recall 4/4, accuracy 94,83%, coverage 98,28%; một mẫu âm lỗi vẫn không có quyết định. Không có TP→LOW hoặc cảnh báo→UNKNOWN để tạo điểm tăng. Cả ba arm còn cùng hai mẫu âm theo reference bị cảnh báo: cập nhật địa chỉ giao hàng và tuyển CTV. Verifier vẫn viện dẫn thao tác click/cập nhật như yêu cầu nguy hiểm; quote có thật chưa đủ chứng minh ngữ nghĩa nguy hiểm. Không sửa prompt/nhãn để xóa hai lỗi này trong lượt đã khóa.
+
+Tổng hai giai đoạn là **177 lần thử API**, 174 phản hồi hợp lệ và ba lỗi kết nối ban đầu; **169.972 token ghi nhận**, ba usage còn thiếu, không suy ra số tiền. Verifier thêm 29.193 token, median thời gian một request 376 ms trong lượt này; đây không phải SLA hoặc độ trễ toàn app. Kiểm toán riêng xác nhận 1.267 tệp minh chứng cũ và 235 tệp source/test không đổi; suite **999 test phần mềm đạt**, một cảnh báo Starlette/httpx đã có.
+
+Đây là cải thiện **độ khớp với reference AI trên dev đã biết**, chưa phải kết quả độc lập. Bốn dương chỉ có ba tin rất giống nhau về đóng phí nhận thưởng và một tin yêu cầu đọc mã sáu số; không đại diện bốn cơ chế/campaign đa dạng. Các nhóm UNKNOWN được giữ riêng; giảm cảnh báo ở đó chưa biết đúng hay sai. Verifier cùng model/nhà cung cấp không tạo gold, không xác minh an toàn URL; không để LOW theo hành vi xóa tín hiệu URL độc lập. Giữ thử nghiệm riêng, **chưa bật verifier mặc định trong app**. Cần bộ kiểm chứng khác có phishing chứa URL, cơ chế đa dạng và nhãn đáng tin cậy trước quyết định vận hành.
+
+[So sánh dạng CSV](../artifacts/evaluations/url_score_control_20261118/comparison.csv) · [Toàn bộ bản chiếu và kết quả verifier](../artifacts/evaluations/url_score_control_20261118/verifier/verifier_report.json) · [Bốn mẫu dương trước/sau](../artifacts/evaluations/url_score_control_20261118/positive_audit.csv).
+
 ## Cách đọc kết quả
 
 ### Kiểm chứng ứng dụng ngày 13/11

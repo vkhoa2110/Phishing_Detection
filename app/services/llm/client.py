@@ -10,8 +10,7 @@ from pydantic import ValidationError
 from app.core.privacy import redact
 from app.domain.schemas import LLMVerdict, RAGVerdict, MessageVerdict, MessageRAGVerdict
 from app.core.settings import Settings
-from app.services.url.parsing import extract_urls
-from app.services.url.approved_metadata import select_approved_metadata
+from app.services.url.approved_metadata import approved_visible_urls, select_approved_metadata
 from app.domain.validation import validate_message_verdict
 
 PROMPT_VERSION = "baseline-1.0"
@@ -104,7 +103,7 @@ SOURCE_SCOPE_FIELDS = ("kind", "scenario", "entity", "document_role", "scope", "
 def approved_ml_metadata(text, urls):
     """Only attach existing scores to URLs in the final approved text."""
     try:
-        visible, _ = extract_urls(text, "text")
+        visible = approved_visible_urls(text)
     except ValueError as exc:
         raise LLMFailure("INPUT_INVALID", "Bản nội dung đã sửa vượt giới hạn 5 URL; hãy kiểm tra lại bản gửi.") from exc
     return select_approved_metadata(visible, urls, redact_url=redact)

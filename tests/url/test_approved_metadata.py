@@ -106,3 +106,35 @@ def test_metadata_retains_model_order_and_only_the_existing_contract_fields():
 def test_more_than_five_visible_urls_still_rejects_the_request():
     with pytest.raises(LLMFailure, match="5 URL"):
         approved_ml_metadata(" ".join(f"https://site{i}.example/" for i in range(6)), [])
+
+
+def test_dotted_prose_does_not_exhaust_metadata_url_budget():
+    text = " ".join(f"item{i}.chuỗi" for i in range(6))
+    assert approved_ml_metadata(text, []) == []
+
+
+def test_known_url_metadata_survives_more_than_five_ambiguous_bare_candidates():
+    text = " ".join(f"item{i}.unknownsuffix" for i in range(6)) + " https://EXAMPLE.org/A"
+    result = approved_ml_metadata(text, [scored("https://example.org/A")])
+    assert [row["url"] for row in result] == ["https://EXAMPLE.org/A"]
+
+
+def test_more_than_five_known_bare_domains_still_exceeds_budget():
+    with pytest.raises(LLMFailure, match="5 URL"):
+        approved_ml_metadata(" ".join(f"site{i}.org" for i in range(6)), [])
+
+
+@pytest.mark.parametrize("visible", [
+    "example.org\u200b", "\u200bexample.org", "example.org\u0301", "example.orgệ", "example.org\ufe0f",
+])
+def test_bare_regex_prefix_is_not_approval_to_restore_hidden_or_unicode_authority(visible):
+    assert approved_ml_metadata(visible, [scored("example.org")]) == []
+
+
+def test_clear_wrapper_is_a_literal_boundary_for_approved_bare_url():
+    assert [row["url"] for row in approved_ml_metadata("|EXAMPLE.org⇽", [scored("example.org")])] == ["EXAMPLE.org"]
+
+
+def test_literal_format_character_in_path_is_not_removed_or_rejected_as_authority_recovery():
+    url = "example.org/a\u200b"
+    assert [row["url"] for row in approved_ml_metadata(url, [scored(url)])] == [url]

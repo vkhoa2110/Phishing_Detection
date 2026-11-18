@@ -12,7 +12,7 @@ import httpx
 from fastapi import HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.api.interaction import CandidateV6Analysis, create_app as create_interaction_app
+from app.api.interaction import CandidateV6Analysis, create_app as create_interaction_app, runtime_manifest
 from app.core.settings import ROOT, Settings
 from app.domain import clarification
 from app.services.llm.core import CoreMessageService, PROFILE
@@ -25,13 +25,17 @@ PIPELINE = "focused-core-1.0-candidate"
 
 
 def manifest(settings, thinking, hybrid):
+    inherited = runtime_manifest(settings, "span_selection")
     files = ("app/api/focused.py", "app/services/llm/core.py", "app/services/llm/telemetry.py",
              "app/domain/clarification.py", "app/services/rag/action_retrieval.py")
-    return {"message_profile": PROFILE, "thinking_requested": thinking,
+    return {"url_intake_version": inherited["url_intake_version"],
+        "bare_domain_reference": inherited["bare_domain_reference"],
+        "message_profile": PROFILE, "thinking_requested": thinking,
         "thinking_support_verified_by_runtime": False, "max_tokens": settings.max_tokens,
         "model": settings.llm_model, "explanation_mode": "span_selection", "rag_stage": "post_classification",
         "retrieval_policy": RETRIEVAL_POLICY if hybrid else "existing_e5",
-        "source_files_sha256": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in files},
+        "source_files_sha256": {**inherited["source_files_sha256"],
+            **{name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in files}},
         "corpus": settings.rag_corpus, "index_dir": settings.rag_index_dir}
 
 

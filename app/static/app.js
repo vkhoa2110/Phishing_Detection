@@ -255,6 +255,7 @@ function render(data) {
   const target = $("result-content"); target.replaceChildren();
   const grid = node("div", "result-grid"), main = node("div", "result-main"), aside = node("div", "result-aside");
   const intakeFindings = Array.isArray(data.url_intake?.findings) ? data.url_intake.findings : [];
+  const unscoredCandidates = Array.isArray(data.url_intake?.unscored_candidates) ? data.url_intake.unscored_candidates : [];
   if (intakeFindings.length) {
     const intake = section("URL được đọc lại từ cách viết che dấu", intakeFindings.length);
     intake.append(node("p", "inline-warning", "Đây là cách đọc phục vụ chấm cục bộ. Ứng dụng không mở URL; hãy đối chiếu chuỗi gốc trước khi hành động."));
@@ -332,6 +333,13 @@ function render(data) {
     }
   }
   postExplanation(data.post_explanation, main);
+  if (unscoredCandidates.length) {
+    const unscored = section("Chuỗi chưa được chấm URL", unscoredCandidates.length);
+    unscored.id = "unscored-url-candidates";
+    unscored.append(node("p", "result-subtle", "Các chuỗi này có thể là văn bản hoặc tên miền và chưa được chấm URL. Nếu đây là URL, hãy kiểm tra riêng trong thẻ Đường dẫn."));
+    for (const candidate of unscoredCandidates) unscored.append(node("code", "url-text", candidate.original));
+    aside.append(unscored);
+  }
   if (data.urls.length) {
     const urls = section("Đường dẫn được phát hiện", data.urls.length);
     for (const item of data.urls) {
@@ -352,7 +360,7 @@ function render(data) {
     aside.append(urls);
   } else {
     const noUrls = section("Kiểm tra đường dẫn");
-    noUrls.append(node("p", "result-subtle", data.invalid_urls.length ? "Không có đường dẫn hợp lệ để phân loại." : "Không phát hiện đường dẫn trong nội dung. Kết quả nội dung phụ thuộc vào phần phân tích AI."));
+    noUrls.append(node("p", "result-subtle", unscoredCandidates.length ? "Chưa có URL được chấm. Các chuỗi cần bạn đối chiếu được hiển thị riêng ở trên." : data.invalid_urls.length ? "Không có đường dẫn hợp lệ để phân loại." : "Không phát hiện đường dẫn trong nội dung. Kết quả nội dung phụ thuộc vào phần phân tích AI."));
     aside.append(noUrls);
   }
   if (data.invalid_urls.length) {
@@ -389,7 +397,7 @@ function render(data) {
   }
   const technical = node("details", "technical-details"); technical.append(node("summary", "", "Chi tiết phân tích và tải kết quả"));
   const parts = node("div", "components"), count = data.urls.filter(u => u.status === "ok").length;
-  parts.append(component("KIỂM TRA ĐƯỜNG DẪN", count ? `${labels[urlAssessment.risk_level]} · ${count} / ${urlAssessment.total} URL` : data.urls.length ? "Chưa có kết quả" : "Không có URL hợp lệ", count ? `${data.ml.run_id} · ${data.ml.feature_count} đặc trưng` : data.urls.length ? data.ml.message : "Không chạy mô hình URL cho đầu vào này."));
+  parts.append(component("KIỂM TRA ĐƯỜNG DẪN", count ? `${labels[urlAssessment.risk_level]} · ${count} / ${urlAssessment.total} URL` : data.urls.length ? "Chưa có kết quả" : unscoredCandidates.length ? "Có chuỗi chưa được chấm URL" : "Không có URL hợp lệ", count ? `${data.ml.run_id} · ${data.ml.feature_count} đặc trưng` : data.urls.length ? data.ml.message : "Không chạy mô hình URL cho đầu vào này."));
   parts.append(component("PHÂN TÍCH AI", llm.status === "ok" ? labels[llm.verdict.risk_level] : llm.status === "disabled" ? "Đang tắt" : "Chưa có kết quả", llm.status === "ok" ? `${llm.model} · ${llm.included_ml ? "Có" : "Không kèm"} điểm URL · ${llm.rag ? "Có" : "Không"} tài liệu tham khảo` : llm.message)); technical.append(parts);
   if (llm.status === "ok") {
     const sent = node("details", "payload-details"); sent.append(node("summary", "", "Xem bản nội dung đã gửi tới AI"), node("pre", "", llm.input_used)); technical.append(sent);

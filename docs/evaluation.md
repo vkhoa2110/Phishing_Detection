@@ -217,3 +217,47 @@ Quy tắc OTP giữ scheme/domain và từ tiếng Việt đầy đủ, thay vì
 Lượt sau sửa dùng nguyên bộ 16 ca của audit trước và chạy model URL thật; response AI và retrieval vẫn là fixture. Manifest mới khóa toàn bộ source app/static, cấu hình runtime, model/preprocessing và đầu ra. Bảng 80 SMS chỉ kiểm intake/metadata trên dev đã biết, không chạy lại LLM hoặc tạo Accuracy/F1. [Minh chứng sau sửa](../artifacts/evaluations/privacy_metadata_fix_20261116/README.md).
 
 Hai journal lịch sử 212 và 199 request khóa phiên bản privacy/client cũ. Sau thay source, phải chạy `verify` từ source snapshot hoặc checkout đúng checkpoint; xem [tái lập lịch sử](development.md#tai-lap-lich-su). Không sửa hash cũ để chấp nhận source mới.
+
+## Rà trích xuất URL trong văn bản ngày 17/11
+
+Candidate/focused dùng intake 2.2: miền trần trong văn bản cần hậu tố thuộc bản IANA root đã khóa. Chuỗi chưa đủ căn cứ được xuất riêng ở `unscored_candidates`, không chấm model và không đưa vào danh sách URL lỗi. URL tường minh `http(s)://`, `www.` và tab nhập URL riêng vẫn theo chính sách cú pháp hiện có. Đây là tín hiệu trích xuất, không phải kiểm DNS, đăng ký tên miền hoặc uy tín. Bản stable giữ extractor cũ.
+
+Tham chiếu có 1.436 TLD, phiên bản `2026111600`, tải từ [IANA](https://data.iana.org/TLD/tlds-alpha-by-domain.txt); file nằm trong `app/services/url/resources/` và được kiểm SHA-256 khi nạp. Request không tải danh sách hay mở URL. Miền riêng, miền đặc biệt và TLD mới hơn snapshot có thể cần nhập riêng ở tab URL. Quy trình cập nhật thủ công nằm trong [resource README](../app/services/url/resources/README.md).
+
+Ưu tiên giữ token có authority hợp lệ nguyên vẹn trước khi tách dấu phân cách rõ như `|`, ngoặc vuông/ngoặc nhọn và mũi tên. Không cắt tùy ý tiền tố Unicode, không sửa authority tường minh sai cú pháp, không thay path/query hợp lệ để cứu mẫu đã xem. Mã metadata kiểm ranh giới literal để tránh regex lấy tiền tố ASCII rồi phục hồi authority có ký tự ẩn. Chuỗi trần mơ hồ không chiếm giới hạn năm URL, kể cả ở bước tạo metadata.
+
+`data/evaluation/url_intake_boundary_v1.jsonl` gồm 32 ca do trợ lý soạn cho chính sách này. Các ca là regression phát triển, không phải benchmark độc lập hoặc nhãn phishing. Runner `evaluation.url.intake_audit` đối chiếu kết quả intake cũ đúng hash và mã hiện tại; lưu từng ca, thay đổi trên đúng 80 SMS dev đã biết, source/reference/input hashes và cả lỗi. Kết quả cũ không bị sửa; 120 SMS reserve không được suy luận. Rà ngữ cảnh 10 SMS khác intake là nhận định AI về trích URL, có phiếu người còn trống, không tạo nhãn phishing mới.
+
+TLD hợp lệ vẫn có thể trùng viết tắt hoặc tên tệp. Bộ ca kiểm hợp đồng đạt không chứng minh Precision/Recall trích xuất ngoài thực tế; thay đổi số URL/metadata càng không phải thay đổi F1 phishing. [Đầu ra và giới hạn](../artifacts/evaluations/url_intake_audit_20261117/README.md).
+
+## Đối chứng điểm URL và kiểm tra lại cảnh báo ngày 18/11
+
+`evaluation.messages.url_score_control` khóa đúng 80 SMS dev tuần 4 và reference AI có sẵn (4 dương, 54 âm, 22 UNKNOWN). Ba arm dùng cùng core prompt/schema/model/thông số/cap 2.048 token; chỉ metadata URL thay đổi: không cấp, cấp thật, hoặc hoán đổi cả bộ score/risk/ngưỡng từ một URL khác. Giữ URL/ID của mẫu nhận. Phép hoán đổi có seed cố định trước suy luận, không dùng nhãn hay score để chọn donor. Arm hoán đổi là đối chứng cố ý đưa bằng chứng sai, không dùng trong app.
+
+Intake hiện có metadata ở 33 SMS: 22 âm và 11 UNKNOWN theo reference AI, **không có dương**. Lượt này đo độ nhạy với metadata và thay đổi báo nhầm; không thể chứng minh URL tăng Recall phishing. Các payload giống hệt nhau dùng chung phản hồi: 240 ô logic, 146 request vật lý. Báo riêng 58 nhãn nhị phân, 22 UNKNOWN, nhóm có metadata và các chuyển đổi cặp; phân biệt cảnh báo sai thành LOW với thành UNKNOWN/lỗi. Các kết quả trên nhãn AI hành vi không phải độ chính xác phishing toàn thông điệp.
+
+Mỗi payload khác nhau chỉ có một phản hồi; temperature 0,1 không bảo đảm tất định và chưa có đối chứng lặp để ước lượng dao động sinh. Hoán đổi giữ nguyên mức risk ở 17/33 URL dù mọi score đều đổi. Vì vậy chênh lệch nhỏ không tự chứng minh phụ thuộc sai vào score; bảng cặp là chẩn đoán, không phải bằng chứng nhân quả độc lập.
+
+`evaluation.messages.verifier_study` chuẩn bị lượt riêng sau khi lượt đối chứng đã chốt. Chỉ cảnh báo HIGH/WARNING hợp lệ được xét lại; verifier chỉ thấy text đã duyệt và schema, không thấy điểm URL, kết luận/lý do lượt đầu, arm hoặc nhãn tham chiếu. Cùng text trong nhiều arm dùng chung phản hồi. `ordinary_content` chuyển bản chiếu thử nghiệm về LOW; `supported_alarm` giữ mức; thiếu thông tin hoặc lỗi giữ cảnh báo và yêu cầu review. Mọi request/response ban đầu vẫn nguyên trạng. Báo cả FP→LOW, TP→LOW, bốn ca dương và lỗi, không chỉ tỷ lệ trên nhóm được chọn. Cùng nhà cung cấp chấm lần hai không tạo nhãn độc lập; quote tồn tại trong text không chứng minh kết luận ngữ nghĩa đúng.
+
+Hai giai đoạn dùng một worker, cách thời điểm bắt đầu tối thiểu bốn giây, timeout 45 giây; pilot lần lượt 12 và tối đa bốn request. Chỉ xem trạng thái kỹ thuật để quyết định tiếp tục những request chưa gửi, không thay prompt/tham số theo dự đoán pilot. Dừng khi gặp HTTP fatal (gồm 429), ba lỗi truyền liên tiếp hoặc tổng token đã ghi đạt 300.000; không retry/sửa JSON. Đây là giới hạn token quan sát, không phải trần tiền: thiếu usage và request đang chạy có thể làm vượt phần quan sát. Không chạy 120 reserve, tạo nhãn gold hoặc tự đưa verifier vào app.
+
+Lượt thật dừng sau 139/146 yêu cầu vì ba lỗi kết nối liên tiếp. Sau kiểm DNS/TLS, đã đăng ký amendment và lượt bổ sung riêng cho đúng bảy key chưa từng gửi; dùng cơ chế `evaluation.common.continuation`, giữ timeout/thông số và cả ba lỗi ban đầu. Run bị dừng giữ nguyên. `combined` là bản gộp có provenance, không phải lượt sạch mới hoặc thực thi liên tục. Không dùng cơ chế này vượt HTTP 429/quyền/hạn mức và không chạy lại key lỗi. Verifier nhận bản gộp đã kiểm hash, giữ các lỗi lượt đầu ngoài gate.
+
+Ở đây “không URL” trong tên arm nghĩa là không thêm **metadata model URL**; LLM vẫn đọc nguyên URL trong text. UNKNOWN/lỗi ở mẫu âm không được tính là TN hoặc FP, nên làm giảm coverage/accuracy nhưng có thể không đổi F1. Mẫu dương UNKNOWN/lỗi vẫn làm giảm Recall và được tính là bỏ sót trong F1. Công thức là `2TP / (2TP + FP + FN + unknown_positive)`; báo coverage và lỗi cùng F1 để tránh hiểu nhầm.
+
+```bash
+.venv/bin/python -B -m evaluation.messages.url_score_control prepare --out NEW_CONTROL
+.venv/bin/python -B -m evaluation.messages.url_score_control run --out NEW_CONTROL
+.venv/bin/python -B -m evaluation.messages.url_score_control run --out NEW_CONTROL --live --limit 12
+# Chỉ sau khi kiểm pilot kỹ thuật; chạy tiếp những key chưa từng gửi:
+.venv/bin/python -B -m evaluation.messages.url_score_control run --out NEW_CONTROL --live
+.venv/bin/python -B -m evaluation.messages.url_score_control report --out NEW_CONTROL
+.venv/bin/python -B -m evaluation.messages.verifier_study prepare --control-run NEW_CONTROL --out NEW_VERIFIER
+# Chạy pilot với metadata.pilot_unique_requests của registration, rồi tiếp phần chưa gửi.
+.venv/bin/python -B -m evaluation.messages.verifier_study run --out NEW_VERIFIER --live --limit 4
+.venv/bin/python -B -m evaluation.messages.verifier_study run --out NEW_VERIFIER --live
+.venv/bin/python -B -m evaluation.messages.verifier_study report --out NEW_VERIFIER
+```
+
+Nếu số request verifier dưới bốn, dùng đúng cỡ pilot đã đăng ký; không có cảnh báo thì không cần API. Source snapshot, protocol, nhật ký và bảng từng mẫu tại [lượt 18/11](../artifacts/evaluations/url_score_control_20261118/README.md). Cần mã đúng snapshot khi kiểm lại source hash; không sửa registration cũ để chấp nhận mã mới.

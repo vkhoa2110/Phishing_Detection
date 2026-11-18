@@ -1,6 +1,6 @@
 # Yêu cầu chức năng và minh chứng
 
-Phạm vi triển khai là các profile chạy qua `run.py` và `app.api.runtime`. Stable vẫn dùng XGBoost/v4; candidate và focused dùng URL ký tự, chưa được chọn thay mặc định chỉ từ điểm dev. Các ASGI nghiên cứu giữ nguyên cho replay, không tự có chính sách triển khai mới. Đối chiếu cập nhật ngày 16/11/2026; trạng thái chức năng khác với chất lượng phát hiện.
+Phạm vi triển khai là các profile chạy qua `run.py` và `app.api.runtime`. Stable vẫn dùng XGBoost/v4; candidate và focused dùng URL ký tự, chưa được chọn thay mặc định chỉ từ điểm dev. Các journal nghiên cứu cần source đúng phiên bản để replay; source snapshot/commit cũ giữ cục bộ hoặc trong Git. Đối chiếu cập nhật ngày 17/11/2026; trạng thái chức năng khác với chất lượng phát hiện.
 
 ## FR-01–FR-08
 
@@ -37,3 +37,5 @@ Suite offline bao gồm nhóm `tests/api`, `messages`, `url`, `rag`, `data`, `ev
 Mọi số liệu NFR mới và danh sách phần chưa hoàn tất nằm tại [runtime_checks_20261113](../artifacts/evaluations/runtime_checks_20261113/README.md). Ưu tiên nhãn độc lập, mẫu dương có URL và đánh giá nguồn/giải thích trước khi mở test hoặc thay model vận hành.
 
 Rà soát đầu ngày 16/11 phát hiện hai lỗi: metadata URL bị bỏ khi hostname được chuẩn hóa hoa/thường; regex che mã OTP có thể che nhầm scheme `https`. Sau sửa, cùng 16 ca × 4 cấu hình đạt 64/64 kiểm hợp đồng qua focused, dùng model URL thật và phản hồi AI/retrieval giả lập. Metadata chỉ ghép với URL còn trong bản đã duyệt; giữ đúng cách viết đã duyệt, không khôi phục URL đã xóa và bỏ trường hợp nhiều URL bị nhập nhằng sau che dữ liệu. Quy tắc che thông tin đăng nhập URL cũng được sửa để có thể che lại mà không làm hỏng URL. Đây là sửa chức năng, không phải điểm chất lượng phát hiện hoặc bảo đảm che hết PII. [Audit trước sửa](../artifacts/evaluations/evaluation_audit_20261116/README.md) và [kiểm chứng sau sửa](../artifacts/evaluations/privacy_metadata_fix_20261116/README.md). Trace retrieval và báo cáo injection đã xuất offline; chấm relevance/tuân chỉ dẫn vẫn còn thiếu.
+
+Ngày 17/11 bổ sung tham chiếu IANA offline cho miền trần trong text ở candidate/focused. Chuỗi có hậu tố chưa đủ căn cứ nằm riêng ở `unscored_candidates`, giữ nguyên trong bản nội dung được duyệt, không gửi score và không bị coi là URL lỗi. Giao diện yêu cầu đối chiếu lại chuỗi chưa chấm; giới hạn năm URL áp dụng sau lọc. Tên miền có hậu tố trong danh sách vẫn có thể là viết tắt/tên tệp, và URL có scheme không được xác minh tồn tại hoặc an toàn. [Protocol, regression và chẩn đoán dev](../artifacts/evaluations/url_intake_audit_20261117/README.md).

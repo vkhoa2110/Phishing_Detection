@@ -76,7 +76,7 @@ def test_v6_recovers_obfuscated_url_and_returns_interaction_without_changing_def
         })
         assert url_only.status_code == 200
         assert url_only.json()["urls"][0]["url"] == "example.com/login"
-        too_many = " ".join(f"site{i}[.]example/a" for i in range(6))
+        too_many = " ".join(f"site{i}[.]com/a" for i in range(6))
         invalid = client.post("/api/analyze", json={"text": too_many, "use_llm": False})
         assert invalid.status_code == 422 and "tối đa 5" in invalid.json()["detail"]
         assert len(seen) == 1 and "unit-only-key" not in response.text

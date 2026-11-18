@@ -45,7 +45,7 @@ def test_url_mode_recovers_documented_form_but_still_rejects_non_url():
 
 
 def test_limit_counts_recovered_and_strict_urls_together():
-    text = " ".join(["https://one.example"] + [f"site{i}[.]example/a" for i in range(5)])
+    text = " ".join(["https://one.example"] + [f"site{i}[.]example.org/a" for i in range(5)])
     with pytest.raises(ValueError, match="tối đa 5"):
         inspect_url_intake(text, "text")
 

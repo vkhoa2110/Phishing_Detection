@@ -10,14 +10,16 @@ from __future__ import annotations
 import re
 import unicodedata
 
-from app.services.url.parsing import extract_urls, trim_url
+from app.services.url.parsing import URL_PATTERN, extract_urls, trim_url, valid_url
 from app.services.url.authority import IDNA_POLICY, inspect_authority
+from app.services.url.domain_reference import has_delegated_tld, reference_manifest
 
 
-VERSION = "url-intake-2.1"
+VERSION = "url-intake-2.2"
 ZERO_WIDTH = "\u200b\u200c\u200d\u2060\ufeff"
 DEFANGED_DOT = re.compile(r"(?i)(?:\[\s*\.\s*\]|\(\s*\.\s*\)|\{\s*\.\s*\})")
 TOKEN = re.compile(r"[^\s<>\"']{4,4096}")
+TEXT_BOUNDARY = re.compile(r"[|\[\]{}⇽⇾←→]")
 
 
 def _strip_outer(value: str) -> str:
@@ -64,16 +66,40 @@ def _normalize_authority(value: str) -> tuple[str, list[str]]:
     return head + tail, changes
 
 
+def _text_candidates(text: str):
+    """Respect whole authorities and URL tails before splitting prose wrappers."""
+    for match in TOKEN.finditer(text):
+        raw = match.group()
+        original = trim_url(_strip_outer(raw))
+        value, _ = _normalize_authority(original)
+        try:
+            _idna_view(value)
+        except (UnicodeError, ValueError):
+            # Never repair an invalid explicit authority or split a defanged
+            # dot. Whole valid Unicode hosts/IPv6/path/query remain untouched.
+            if "://" not in value and not value.lower().startswith("www.") and not DEFANGED_DOT.search(original):
+                parts = [part for part in TEXT_BOUNDARY.split(raw) if part]
+                if parts and parts != [raw]:
+                    yield from parts
+                    continue
+        yield raw
+
+
 def inspect_url_intake(text: str, mode: str) -> dict:
     strict_failure = None
-    try:
-        strict, invalid = extract_urls(text, mode)
-    except ValueError as exc:
-        if mode != "url":
-            raise
-        strict, invalid, strict_failure = [], [], exc
-    accepted, recovered, findings, rejected = [], [], [], []
-    candidates = [text.strip()] if mode == "url" else [match.group() for match in TOKEN.finditer(text)]
+    if mode == "url":
+        try:
+            strict, invalid = extract_urls(text, mode)
+        except ValueError as exc:
+            strict, invalid, strict_failure = [], [], exc
+    else:
+        # Harvest without the legacy five-candidate limit. Ordinary dotted
+        # prose must not exhaust the model's budget before policy filtering.
+        strict, invalid = [], []
+        for value in dict.fromkeys(trim_url(match.group()) for match in URL_PATTERN.finditer(text)):
+            (strict if valid_url(value) else invalid).append(value)
+    accepted, recovered, findings, rejected, unscored = [], [], [], [], []
+    candidates = [text.strip()] if mode == "url" else _text_candidates(text)
     strict_set = set(strict)
     for raw in candidates:
         original = trim_url(_strip_outer(raw))
@@ -94,6 +120,13 @@ def inspect_url_intake(text: str, mode: str) -> dict:
         value = normalized
         if not recognizable and not changes:
             continue
+        if (mode != "url" and not re.match(r"(?i)^(?:https?://|www\.)", value)
+                and not has_delegated_tld(inspect_authority(value)[1])):
+            if not any(item["original"] == original for item in unscored):
+                unscored.append({"original": original, "analysis_url": value,
+                                 "reason": "bare_suffix_not_in_pinned_iana_root",
+                                 "requires_user_review": True, "opened": False})
+            continue
         if changes:
             if value not in recovered:
                 recovered.append(value)
@@ -112,6 +145,7 @@ def inspect_url_intake(text: str, mode: str) -> dict:
         "version": VERSION, "idna_policy": IDNA_POLICY,
         "urls": urls, "strict_urls": accepted, "recovered_urls": recovered,
         "invalid_urls": rejected, "findings": findings, "interpretation_only": True,
+        "unscored_candidates": unscored, "bare_domain_reference": reference_manifest(),
         "notice": "URL khôi phục chỉ là cách đọc phục vụ chấm cục bộ; ứng dụng không mở URL và không xác nhận đích đến.",
     }
 

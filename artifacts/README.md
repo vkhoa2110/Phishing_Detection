@@ -24,6 +24,8 @@
 | Kiểm tra lý do và trích dẫn | `claim_grounding_20261114`: replay 199 phản hồi; 45 phản hồi cần rà cơ chế, 48 tóm tắt được quy chiếu AI; không đổi kết luận/F1. Giữ cả lần QA đầu và lần sửa cue tiếng Việt; phiếu review chưa chấm |
 | Trace RAG, parity và injection theo cặp | `evaluation_audit_20261116`: trace 36 ứng viên/300 relevance; model URL thật trên 16 ca×4 cấu hình còn 6 lượt lỗi hợp đồng thuộc 2 ca; 16 cặp injection/8 nhóm, ASR chưa chấm; không API hoặc F1 mới |
 | Sửa che OTP và metadata URL | `privacy_metadata_fix_20261116`: cùng bộ 16 ca×4 cấu hình đạt 64/64 kiểm hợp đồng; 80 SMS dev có metadata 30→35; giữ score/model và replay lịch sử bằng snapshot; không API hoặc F1 mới |
+| Miền trần và ranh giới trích URL | `url_intake_audit_20261117`: đối chiếu intake 2.1/2.2 trên ca tự soạn và đúng 80 SMS dev; tham chiếu IANA offline, chuỗi mơ hồ không chấm model; không nhãn phishing, API hoặc F1 mới |
+| Đối chứng điểm URL và verifier | `url_score_control_20261118`: đúng 80 SMS dev, metadata không cấp/thật/hoán đổi; kiểm lại riêng các cảnh báo bằng text; xem trạng thái và giới hạn trong `README.md`, không tự tích hợp app |
 | Kế hoạch SMS mới | `fresh_message_ablation_plan_v1` |
 
 [Kết quả và giới hạn](../docs/results.md) tập hợp các số quan trọng; [phương pháp](../docs/evaluation.md) nêu mẫu số, nhãn và đối chứng. Các thư mục trên là đường dẫn cục bộ, không bảo đảm có khi clone Git. Tài liệu chi tiết nguyên trạng trước refactor có trong [mốc 479c966](https://github.com/vkhoa2110/Phishing_Detection/tree/479c96612ca79d3e1de2d37df22d82ce19e09f23/docs).

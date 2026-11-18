@@ -224,6 +224,7 @@ def run(out, cases_path=DEFAULT_CASES, *, pack=None, model=None):
     write_jsonl(out / "historical_dev_intake.jsonl", historical)
     sources = [str(p.relative_to(ROOT)) for p in sorted((ROOT / "app").rglob("*.py"))]
     sources += [str(p.relative_to(ROOT)) for p in sorted((ROOT / "app/static").glob("*")) if p.is_file()]
+    sources += [str(p.relative_to(ROOT)) for p in sorted((ROOT / "app/services/url/resources").rglob("*")) if p.is_file()]
     sources += ["evaluation/messages/runtime_parity.py", "evaluation/data/sms.py"]
     manifest = {"source_sha256": {n: sha(ROOT / n) for n in sources}, "cases_sha256": sha(cases_path),
         "runtime": status["runtime"], "runtime_configuration": status.get("runtime_manifest", {}),

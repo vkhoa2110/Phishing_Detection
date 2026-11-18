@@ -12,6 +12,7 @@ from pathlib import Path
 import time
 
 import httpx
+from fastapi import HTTPException
 from starlette.concurrency import run_in_threadpool
 
 import app.services.rag.evidence as rag_evidence_v3
@@ -23,8 +24,10 @@ from app.services.llm.compact import CandidateMessageV61Service, PROFILE, PARSER
 from app.services.rag.explanation_v2 import PARSER_VERSION, PROFILE as EXPLANATION_PROFILE, build_retrieval_query
 from app.services.rag.retrieval import RAGService
 from app.core.settings import Settings
-from app.domain.schemas import MessageVerdict
+from app.core.privacy import redact
+from app.domain.schemas import InputData, MessageVerdict
 from app.services.url.intake import VERSION as INTAKE_VERSION, extract_urls_v2, inspect_url_intake
+from app.services.url.domain_reference import reference_manifest
 from app.services.url.policy import VERSION as URL_POLICY
 
 
@@ -45,10 +48,13 @@ def runtime_manifest(settings, explanation_mode):
         "corpus_sha256": digest(settings.root / settings.rag_corpus),
         "index_dir": settings.rag_index_dir,
         "index_manifest_sha256": digest(settings.root / settings.rag_index_dir / "manifest.json"),
+        "url_intake_version": INTAKE_VERSION,
+        "bare_domain_reference": reference_manifest(),
         "source_files_sha256": {name: digest(code_root / name) for name in (
             "app/api/interaction.py", "app/services/llm/compact.py", "app/services/llm/policy_v6.py", "app/services/llm/policy_v5.py",
             "app/services/rag/evidence.py", "app/services/rag/explanation_v2.py", "app/services/rag/explanation.py",
-            "app/services/url/intake.py", "app/services/url/authority.py")},
+            "app/services/url/intake.py", "app/services/url/authority.py",
+            "app/services/url/domain_reference.py")},
     }
 
 
@@ -157,17 +163,26 @@ class CandidateV6Analysis(ExtractorAnalysisService):
             intake_version=intake["version"], recovered=len(intake["recovered_urls"]),
             idna_policy=intake["idna_policy"],
             recovered_requires_user_review=bool(intake["recovered_urls"]),
+            unscored_candidates=len(intake["unscored_candidates"]),
+            bare_domain_reference=intake["bare_domain_reference"],
         )
         result["url_intake"] = {
             key: intake[key] for key in (
                 "version", "idna_policy", "strict_urls", "recovered_urls", "findings",
                 "interpretation_only", "notice",
+                "unscored_candidates", "bare_domain_reference",
             )
         }
         if intake["recovered_urls"]:
             result["notice"] += (
                 " URL viết che dấu được chấm trên cách đọc hiển thị trong kết quả; "
                 "hãy đối chiếu lại chuỗi gốc."
+            )
+        if intake["unscored_candidates"]:
+            result["final"]["requires_review"] = True
+            result["notice"] += (
+                " Có chuỗi có dấu chấm chưa được chấm URL; chúng có thể là văn bản hoặc tên miền. "
+                "Nếu đây là URL, hãy kiểm tra riêng trong thẻ Đường dẫn."
             )
         result["timing"]["total_ms"] = round((time.perf_counter() - started) * 1000, 1)
         return result
@@ -200,8 +215,23 @@ def create_app(settings=None, transport=None, model_service=None, rag_service=No
     app.title = "PhishLens · v6.1 candidate (experimental)"
     app.version = "1.6.1-candidate"
     app.router.routes[:] = [
-        route for route in app.router.routes if getattr(route, "path", None) != "/api/status"
+        route for route in app.router.routes
+        if getattr(route, "path", None) not in {"/api/status", "/api/preview"}
     ]
+
+    @app.post("/api/preview")
+    def preview(data: InputData):
+        try:
+            intake = inspect_url_intake(data.text, data.mode)
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        text, fields = redact(data.text)
+        return {
+            "text": text, "masked_fields": fields,
+            "url_count": len(intake["urls"]), "invalid_count": len(intake["invalid_urls"]),
+            "unscored_candidate_count": len(intake["unscored_candidates"]),
+            "bare_domain_reference": intake["bare_domain_reference"],
+        }
 
     @app.get("/api/status")
     async def status():
