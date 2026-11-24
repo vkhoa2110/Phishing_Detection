@@ -15,6 +15,13 @@ from app.services.llm.client import LLMFailure
 
 VERSION = "server-managed-runtime-1.0"
 PRESENTATION_SHA256 = hashlib.sha256((ROOT / "app/domain/claim_grounding.py").read_bytes()).hexdigest()
+FOCUSED_PROFILES = {"focused", "verifier-shadow"}
+DEFAULT_BUDGET_SCOPE = "shared_from_first_provider_call_including_optional_explanation"
+SHADOW_BUDGET_SCOPE = "shared_from_first_provider_call_including_optional_explanation_and_verification"
+
+
+def budget_scope(profile):
+    return SHADOW_BUDGET_SCOPE if profile == "verifier-shadow" else DEFAULT_BUDGET_SCOPE
 
 
 @dataclass
@@ -58,6 +65,10 @@ class BudgetedLLM:
         except TimeoutError as exc:
             budget.timed_out_stage = stage
             raise LLMFailure("TIMEOUT", "Đã hết thời gian chờ AI cho lượt kiểm tra này.") from exc
+        except RecursionError as exc:
+            # Excessively nested provider JSON is invalid input, including when
+            # a frozen parser raises before returning its normal error record.
+            raise LLMFailure("RESPONSE_INVALID", "Phản hồi AI không hợp lệ; kết quả đã hoàn tất được giữ riêng.") from exc
         except LLMFailure as exc:
             if exc.code == "TIMEOUT": budget.timed_out_stage = stage
             raise
@@ -72,6 +83,13 @@ class BudgetedLLM:
             return {**self.service.empty_explanation("error", exc.code),
                     "stage": "post_classification", "usage_available": False}
 
+    async def verify(self, **kwargs):
+        try:
+            return await self.invoke("verify", **kwargs)
+        except LLMFailure as exc:
+            # A failed shadow opinion cannot invalidate a completed analysis.
+            return {"status": "error", "code": exc.code, "usage": {}, "usage_available": False}
+
 
 class ManagedAnalysis:
     def __init__(self, service, seconds, profile):
@@ -84,9 +102,9 @@ class ManagedAnalysis:
             result = await self.service.analyze(data)
             result["execution"]["runtime"] = {"version": VERSION, "profile": self.profile,
                 "connection_mode": "server_managed", "provider_budget_seconds": self.seconds,
-                "budget_scope": "shared_from_first_provider_call_including_optional_explanation",
+                "budget_scope": budget_scope(self.profile),
                 "calls_attempted": budget.calls, "timed_out_stage": budget.timed_out_stage}
-            result["execution"]["runtime"]["reason_presentation_sha256"] = PRESENTATION_SHA256 if self.profile == "focused" else None
+            result["execution"]["runtime"]["reason_presentation_sha256"] = PRESENTATION_SHA256 if self.profile in FOCUSED_PROFILES else None
             grounding = result.get("llm", {}).get("claim_grounding")
             if grounding:
                 result["execution"]["llm"]["reason_presentation"] = grounding["version"]
@@ -109,6 +127,8 @@ def create_app(profile="stable", settings=None, transport=None, model_service=No
         from app.api.interaction import create_app as factory
     elif profile == "focused":
         from app.api.focused import create_app as factory
+    elif profile == "verifier-shadow":
+        from app.api.verifier_shadow import create_app as factory
     elif profile == "candidate-v5":
         from app.api.candidate import create_app as factory
     elif profile == "legacy":
@@ -123,7 +143,7 @@ def create_app(profile="stable", settings=None, transport=None, model_service=No
     async def lifespan(instance):
         async with original_lifespan(instance):
             inner = instance.state.analysis
-            wrapped = BudgetedLLM(inner.llm, guard_reasons=profile == "focused")
+            wrapped = BudgetedLLM(inner.llm, guard_reasons=profile in FOCUSED_PROFILES)
             inner.llm = instance.state.llm = wrapped
             instance.state.analysis = ManagedAnalysis(inner, settings.timeout_seconds, profile)
             yield
@@ -136,11 +156,22 @@ def create_app(profile="stable", settings=None, transport=None, model_service=No
         data = await original_status()
         data["runtime"] = {"version": VERSION, "profile": profile, "connection_mode": "server_managed",
             "client_connection_overrides": False, "default_changed_by_this_runtime": False}
-        data["runtime"]["reason_presentation"] = PRESENTATION_VERSION if profile == "focused" else None
-        data["runtime"]["reason_presentation_sha256"] = PRESENTATION_SHA256 if profile == "focused" else None
+        data["runtime"]["reason_presentation"] = PRESENTATION_VERSION if profile in FOCUSED_PROFILES else None
+        data["runtime"]["reason_presentation_sha256"] = PRESENTATION_SHA256 if profile in FOCUSED_PROFILES else None
+        # Read loaded settings after each preserved factory applies its cap.
+        # Explicit allowlist: no endpoint, headers, keys, input or raw response.
+        service = app.state.llm
+        actual = service.settings
+        data["runtime"]["effective_llm"] = {
+            "model": actual.llm_model,
+            "prompt_profile": data.get("analysis_policy", {}).get("message_prompt_profile") or getattr(service, "profile", "legacy"),
+            "max_tokens": actual.max_tokens,
+            "thinking_requested": getattr(service, "thinking", "default"),
+            "rag_stage": data.get("analysis_policy", {}).get("rag_stage", "pre_classification"),
+        }
         data["limits"].update(llm_timeout_seconds=settings.timeout_seconds,
             llm_request_budget_seconds=settings.timeout_seconds,
-            llm_budget_scope="shared_from_first_provider_call_including_optional_explanation")
+            llm_budget_scope=budget_scope(profile))
         return data
 
     @app.post("/api/analyze")
@@ -159,5 +190,6 @@ def create_app(profile="stable", settings=None, transport=None, model_service=No
 def create_stable_app(): return create_app("stable")
 def create_candidate_app(): return create_app("candidate")
 def create_focused_app(): return create_app("focused")
+def create_verifier_shadow_app(): return create_app("verifier-shadow")
 def create_v5_app(): return create_app("candidate-v5")
 def create_legacy_app(): return create_app("legacy")

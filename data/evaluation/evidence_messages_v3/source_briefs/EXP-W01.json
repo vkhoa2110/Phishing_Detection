@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W01",
+  "primary_url": "https://www.mps.gov.vn/bai-viet/canh-bao-thu-doan-lua-dao-mua-du-lich-1775739673",
+  "publisher": "Bộ Công an",
+  "evidence_excerpt": "yêu cầu nạn nhân thanh toán toàn bộ số tiền trước",
+  "assistant_paraphrase": "Mạo danh đại lý du lịch, đặt cọc và mã đặt phòng giả",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "5ad5ec8946b9f5fb609b419a563a90969d5eebb52bb248cfa63b8434651095a0",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

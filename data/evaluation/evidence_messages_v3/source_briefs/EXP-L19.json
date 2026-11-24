@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L19",
+  "primary_url": "https://support.microsoft.com/vi-vn/windows/deployment/updates-lifecycle/install-windows-updates",
+  "publisher": "Microsoft Support",
+  "evidence_excerpt": "Thiết bị của bạn sẽ tải xuống và cài đặt",
+  "assistant_paraphrase": "Cập nhật hệ điều hành bằng phần cài đặt",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "31bc208eff217878e8d57a37bc6803b6f953ad828c7f2826b786b86ebf89ee0c",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

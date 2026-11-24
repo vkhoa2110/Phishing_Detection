@@ -1,0 +1,402 @@
+{
+  "EXP-W01": {
+    "phishing": [
+      "Combo nghỉ lễ còn một suất. [[Chuyển cọc vào tài khoản cá nhân của em ngay, đừng gọi khách sạn vì họ chưa cập nhật mã đại lý]].",
+      "Mã đặt phòng đã giữ nhưng chưa đồng bộ. [[Thanh toán nốt toàn bộ tiền trước khi tự kiểm tra mã với lễ tân]], nếu gọi trực tiếp bên em sẽ mất suất.",
+      "Em đổi tài khoản nhận cọc tour sang tài khoản người quen. [[Cứ chuyển vào số mới, bỏ qua tên công ty khác với hợp đồng]] để kịp chốt hôm nay.",
+      "Vé vừa bị treo do thiếu phí kích hoạt. [[Nộp thêm khoản bảo chứng vào tài khoản em thì mã vé cũ mới có hiệu lực]], không được hỏi hãng lúc này.",
+      "Phòng giá tốt chỉ giữ qua chat. [[Gửi ảnh hai mặt thẻ và mã bảo mật để em tự trừ tiền giữ chỗ]], không cần đặt qua hệ thống khách sạn."
+    ],
+    "benign": "Buổi phổ biến an toàn du lịch nhắc lại thủ đoạn đặt cọc rồi gửi mã phòng giả. Hãy kiểm tra với nơi lưu trú trước khi trả phần còn lại; đây là nội dung cảnh báo cho nhóm, không yêu cầu chuyển tiền.",
+    "insufficient": "Bên đặt phòng gửi mã giữ chỗ và báo còn một khoản cần thanh toán. Mình chỉ chuyển tiếp phần này, chưa có hợp đồng hay thông tin đại lý."
+  },
+  "EXP-W02": {
+    "phishing": [
+      "Tôi là hỗ trợ ví. Để kiểm tra lỗi, [[đọc lại toàn bộ mã OTP vừa tới cho tôi qua cuộc gọi này]]. Mã chỉ dùng xác minh, anh chị cứ yên tâm.",
+      "Bạn nhận quà hoàn tiền. [[Mở Ví Trả Sau và xác nhận đơn mua hàng tôi vừa tạo để lấy thưởng]], khoản tiền sẽ được trả lại ngay sau đó.",
+      "Tài khoản ví sắp bị khóa. [[Gửi mật khẩu đăng nhập và ảnh mã xác thực vào khung chat này]] để nhân viên giữ tài khoản giúp bạn.",
+      "Chúng tôi cần thử luồng thanh toán. [[Bấm đồng ý giao dịch chuyển tiền sang tài khoản lạ dù bạn không khởi tạo]], đây chỉ là bước kỹ thuật.",
+      "Hoàn thưởng đang chờ xác minh. [[Cho tôi mã OTP thanh toán trên điện thoại để nhận thưởng]], không cần kiểm tra nội dung tin của ngân hàng."
+    ],
+    "benign": "Thông báo đào tạo: cuộc gọi yêu cầu đọc OTP hoặc mật khẩu ví là dấu hiệu cần dừng và kiểm tra. Không trả lời mã cho người tự xưng hỗ trợ. Tài liệu này chỉ nhắc cách phòng tránh.",
+    "insufficient": "Có người tự giới thiệu là hỗ trợ ví vừa gọi cho tôi. Tôi chưa nghe phần hướng dẫn nên chưa biết họ cần thông tin gì."
+  },
+  "EXP-W03": {
+    "phishing": [
+      "Thông báo phạt nguội: [[nhập số thẻ ngân hàng, mã CVV và OTP để nộp phạt tức thì]], nếu chậm chúng tôi sẽ khóa tài khoản thanh toán của bạn.",
+      "Hồ sơ giao thông cần đồng bộ. [[Cài tệp ứng dụng được gửi riêng rồi bật quyền trợ năng để cán bộ thao tác ngân hàng hộ bạn]].",
+      "Xe liên quan vi phạm. [[Chuyển tiền vào tài khoản cá nhân cán bộ để xóa lỗi, không đến cơ quan xác minh]] vì hệ thống đang xử lý kín.",
+      "Cổng xử phạt đang bảo trì. [[Gửi ảnh thẻ hai mặt và OTP qua tin nhắn cho nhân viên thu phạt]], chúng tôi sẽ trích tiền thay bạn.",
+      "Lệnh nộp phạt có hiệu lực ngay. [[Đăng nhập ngân hàng theo hướng dẫn của tôi rồi đọc mã xác nhận chuyển khoản]], bỏ qua cảnh báo tên người nhận khác."
+    ],
+    "benign": "Bản tin an toàn nêu ví dụ thông báo phạt nguội giả dẫn sang cổng thanh toán giả. Người đọc nên tự kiểm tra kênh dịch vụ công; bản tin không phải giấy phạt gửi cho bạn.",
+    "insufficient": "Thông báo: phương tiện của quý khách có hồ sơ cần đối chiếu. Nội dung được chuyển tiếp không kèm số biên bản hay cơ quan lập hồ sơ."
+  },
+  "EXP-W04": {
+    "phishing": [
+      "Ngân hàng yêu cầu cập nhật bảo mật. [[Tải tệp APK từ tin này và bật quyền đọc màn hình cùng trợ năng]], sau đó mở ứng dụng ngân hàng cho tôi kiểm tra.",
+      "Bản cập nhật chưa lên kho ứng dụng. [[Tắt chức năng bảo vệ thiết bị để cài gói do nhân viên gửi riêng]], rồi nhập tài khoản ngân hàng trong gói đó.",
+      "Kho ứng dụng đang lỗi. [[Cài bản thử nghiệm từ lời mời lạ và cấp quyền điều khiển thiết bị]] để tránh bị dừng giao dịch trong hôm nay.",
+      "Tôi cần xử lý tài khoản từ xa. [[Cho phép ứng dụng mới chụp màn hình liên tục và điều khiển thao tác khi bạn mở ngân hàng]].",
+      "Đồng bộ sinh trắc học khẩn. [[Bỏ qua cảnh báo cài từ nguồn không rõ và gửi mã OTP trong ứng dụng mới cho nhân viên]] để hoàn tất."
+    ],
+    "benign": "Nhóm kỹ thuật chuyển tiếp cảnh báo mã độc giả ứng dụng ngân hàng. Không cài gói từ cuộc gọi lạ hoặc cấp quyền điều khiển máy; không có yêu cầu cập nhật trong thông báo này.",
+    "insufficient": "Ứng dụng thanh toán báo cần cập nhật. Tôi không biết thông báo xuất hiện trong kho ứng dụng hay do người khác gửi tới."
+  },
+  "EXP-W05": {
+    "phishing": [
+      "Kế toán lưu ý: hóa đơn cũ vẫn giữ nguyên nhưng [[chuyển tiền sang tài khoản cá nhân mới trong email, không gọi người phụ trách hợp đồng để kiểm tra]].",
+      "Đối tác đổi ngân hàng hôm nay. [[Bỏ bước xác nhận qua số đã lưu và thanh toán ngay vào tài khoản thay thế này]], giám đốc đã đồng ý miệng.",
+      "Thanh toán đơn xuất khẩu cần gấp. [[Tên người hưởng khác công ty cũng được, cứ gửi toàn bộ tiền theo email mới và giữ kín với bộ phận mua hàng]].",
+      "Tôi là giám đốc đang họp. [[Chuyển khoản khẩn cho nhà cung cấp mới, không kiểm tra bằng gọi lại hay quy trình hai người duyệt]]. Chứng từ bổ sung sau.",
+      "Phụ lục tài khoản chưa ký kịp. [[Ưu tiên trả tiền vào số nhận mới trước, bỏ qua thông tin người hưởng trên hợp đồng đã ký]] để không bị phạt."
+    ],
+    "benign": "Phòng tài chính thông báo đổi quy trình: mọi email đổi người thụ hưởng phải được gọi xác nhận bằng số liên hệ đã lưu và có phụ lục được duyệt. Chưa thực hiện chuyển khoản chỉ từ email.",
+    "insufficient": "Đối tác báo đã thay đổi thông tin người hưởng trên hóa đơn. Tôi chỉ có thông báo ngắn, chưa có phụ lục hoặc kết quả gọi xác minh."
+  },
+  "EXP-W06": {
+    "phishing": [
+      "Bạn không mở yêu cầu nào nhưng có tài liệu lương mới. [[Nhập mã phiên do tôi gửi vào cổng đăng nhập Microsoft và đồng ý cho thiết bị không phải của bạn]] để xem tài liệu.",
+      "Thông báo IT ngoài giờ: [[dùng mã đăng nhập do người gọi đọc, chấp thuận ứng dụng lạ dù bạn không khởi tạo phiên]] để tránh mất thư.",
+      "Có bản hợp đồng chờ ký. [[Dán mã thiết bị của nhân viên gửi qua chat rồi duyệt quyền truy cập tài khoản]], không cần kiểm tra thiết bị nào đang được đăng nhập.",
+      "Tôi gửi mã kết nối máy ở văn phòng. [[Đăng nhập tài khoản cơ quan và xác nhận phiên trên thiết bị bạn không nhận ra]], đây là điều kiện nhận bảng lương.",
+      "Hộp thư sắp bị xóa. [[Nhập mã đăng nhập được cung cấp trong email lạ thay vì mã từ thiết bị của chính bạn]], chấp nhận cả thông báo cấp quyền."
+    ],
+    "benign": "Buổi hướng dẫn bảo mật giải thích kẻ gian có thể gửi mã thiết bị của chúng để nạn nhân xác nhận trên trang đăng nhập thật. Chỉ đăng nhập phiên do chính mình mở và hiểu thiết bị được cấp quyền.",
+    "insufficient": "Nhập mã hiển thị trên thiết bị để tiếp tục đăng nhập. Đoạn thông báo này không cho biết ai khởi tạo phiên hoặc thiết bị nằm ở đâu."
+  },
+  "EXP-W07": {
+    "phishing": [
+      "Tôi là cán bộ điều tra. [[Tắt liên lạc với gia đình, vào phòng một mình và chuyển toàn bộ tiền vào tài khoản kiểm tra của tôi]] để chứng minh vô can.",
+      "Hồ sơ của em thuộc diện bí mật. [[Không được gọi trường hay bố mẹ; hãy vay tiền rồi gửi vào tài khoản do cán bộ đọc]] thì mới kết thúc xác minh.",
+      "Chúng tôi đang giám sát điện thoại. [[Giữ cuộc gọi hình liên tục, bỏ SIM phụ và chuyển tiền bảo đảm vào tài khoản cá nhân]] để không bị bắt.",
+      "Con đang bị giữ vì điều tra. [[Người nhà phải chuyển tiền ngay theo hướng dẫn qua chat, tuyệt đối không gọi công an địa phương]] nếu muốn giải quyết êm.",
+      "Em cần hợp tác chuyên án. [[Tự quay cảnh bị giữ để xin tiền gia đình rồi gửi tiền cho người đang hướng dẫn]], không tiết lộ đây là cuộc gọi từ xa."
+    ],
+    "benign": "Nhà trường nhắc phụ huynh kiểm tra trực tiếp với con khi gặp cuộc gọi đòi tiền và yêu cầu giữ bí mật. Việc cô lập sinh viên là thủ đoạn được cảnh báo, không phải yêu cầu của trường.",
+    "insufficient": "Gia đình nhận tin có việc khẩn liên quan con ở trường. Chỉ có dòng đề nghị liên hệ lại, chưa có nội dung sự việc hay yêu cầu tiền."
+  },
+  "EXP-W08": {
+    "phishing": [
+      "Vé hãng đang giảm sâu. [[Gửi số thẻ, CVV và OTP qua tin nhắn để nhân viên đặt vé hộ]], không cần kiểm tra mã giữ chỗ trên ứng dụng hãng.",
+      "Mã đặt vé của bạn chưa có hiệu lực. [[Đóng phí bảo lãnh vào tài khoản cá nhân trước khi được phép kiểm tra với hãng]], suất bay sắp hết.",
+      "Bạn được hoàn vé. [[Đăng nhập ngân hàng từ trang do đại lý lạ gửi rồi cung cấp OTP cho tư vấn viên]] để kích hoạt nhận tiền.",
+      "Hệ thống hãng đang lỗi. [[Chuyển toàn bộ tiền sang ví cá nhân của tôi, không dùng kênh thanh toán đã ghi trong đặt chỗ]]; tôi sẽ gửi mã vé sau.",
+      "Tài khoản đại lý đã xác thực. [[Gửi ảnh mặt trước và mặt sau thẻ cho tôi lưu thông tin thanh toán chuyến bay]], không cần hóa đơn hoặc hợp đồng."
+    ],
+    "benign": "Tổ du lịch chia sẻ cảnh báo website mạo danh hãng bay. Trước khi mua, kiểm tra kênh của hãng và tình trạng mã đặt chỗ; không có giao dịch nào được yêu cầu trong thư này.",
+    "insufficient": "Đại lý nhắn rằng mã vé đang chờ thanh toán. Phần chuyển tiếp không có hành trình, điều kiện giá hay dữ liệu xác minh đại lý."
+  },
+  "EXP-W09": {
+    "phishing": [
+      "Điện lực báo cắt điện trong ít phút. [[Cài gói ứng dụng đính kèm và cấp quyền trợ năng, sau đó đăng nhập ngân hàng]] để cập nhật hợp đồng.",
+      "Tiền điện bị treo trên hệ thống. [[Chuyển tiền vào tài khoản riêng của người gọi rồi đọc OTP thanh toán cho nhân viên]] để tránh mất điện.",
+      "Ứng dụng điện lực cũ hết hạn. [[Tải bản ngoài kho qua tin này, tắt bảo vệ và cho phép điều khiển màn hình]] để đồng bộ công tơ.",
+      "Nhà anh chị thuộc diện kiểm tra khẩn. [[Nộp phí kiểm định vào tài khoản cá nhân ngay, không gọi trung tâm chăm sóc khách hàng]] vì đang có đoàn xuống.",
+      "Chúng tôi cần hoàn cước điện. [[Gửi mật khẩu ngân hàng và mã xác thực trong cuộc trò chuyện]] để kế toán hoàn tiền thay bạn."
+    ],
+    "benign": "Ban quản lý chuyển tiếp thông tin về ứng dụng điện lực giả. Cư dân chủ động tra mã khách hàng ở kênh đã sử dụng, không cài tệp từ cuộc gọi lạ. Thông báo không thu cước.",
+    "insufficient": "Thông báo tiền điện cần kiểm tra lại thông tin khách hàng. Tôi chưa có mã hợp đồng hoặc thông tin người gửi trong đoạn này."
+  },
+  "EXP-W10": {
+    "phishing": [
+      "Đơn hàng lỗi cần thu hồi. [[Nộp khoản xác minh trước qua tài khoản cá nhân thì hệ thống mới hoàn tiền cho bạn]], đừng mở khiếu nại trong sàn.",
+      "Tôi là bộ phận hoàn tiền. [[Rời ứng dụng mua hàng sang nhóm chat riêng, cung cấp OTP ngân hàng để nhận lại tiền]] và làm theo quản trị viên.",
+      "Shop gửi nhầm hàng, xin hoàn đủ tiền. [[Xác nhận lệnh chuyển tiền đi trên ngân hàng rồi chụp màn hình cho tôi]], số tiền đó sẽ quay lại gấp đôi.",
+      "Hoàn hàng cần kích hoạt ví nhận. [[Chuyển tiền thử vào ví của người hỗ trợ nhiều lần cho tới khi được báo đạt điều kiện]]; không cần vận đơn.",
+      "Phí bồi thường đã duyệt. [[Nhập thông tin thẻ và mã bảo mật vào biểu mẫu ngoài sàn do tôi cung cấp]] để nhận tiền ngay."
+    ],
+    "benign": "Nhóm mua sắm nhắc rằng lời mời hoàn tiền rồi yêu cầu nộp tiền hoặc đưa OTP là thủ đoạn cần kiểm tra. Khiếu nại nên thực hiện trong đơn hàng của mình; tin này không đề nghị hoàn hàng nào.",
+    "insufficient": "Bên bán cho biết hàng có lỗi và đề nghị trao đổi về hoàn tiền. Chưa có hướng dẫn thực hiện, số tiền hay bằng chứng về đơn mua."
+  },
+  "EXP-W11": {
+    "phishing": [
+      "Tôi phụ trách BHXH. [[Cài ứng dụng đồng bộ qua tệp gửi riêng và cung cấp mã OTP ngân hàng]] để không bị ngừng quyền lợi.",
+      "Hồ sơ căn cước chưa khớp. [[Bật chia sẻ màn hình lúc đăng nhập ngân hàng cho cán bộ đối chiếu]]; không cần đến cơ quan bảo hiểm.",
+      "Thẻ bảo hiểm cần cập nhật khẩn. [[Gửi ảnh căn cước cùng mật khẩu tài khoản và OTP vào chat này]], nhân viên sẽ làm hộ miễn phí.",
+      "Đợt nhận trợ cấp đang chốt. [[Nộp phí mở khóa quyền lợi vào tài khoản cá nhân người hướng dẫn]] rồi mới được giải ngân.",
+      "Phiên bản bảo hiểm mới chỉ gửi qua tin nhắn. [[Cho phép cài ngoài kho và cấp quyền điều khiển máy khi mở ứng dụng ngân hàng]] để xác thực."
+    ],
+    "benign": "Đơn vị phổ biến cảnh báo cuộc gọi mạo danh bảo hiểm đòi đồng bộ căn cước. Không gửi mã ngân hàng cho người gọi; ai cần cập nhật hãy chủ động hỏi cơ quan phụ trách qua kênh đã biết.",
+    "insufficient": "Có thông báo hồ sơ bảo hiểm cần đồng bộ. Tôi không có phần hướng dẫn hoặc thông tin cơ quan gửi để đối chiếu."
+  },
+  "EXP-W12": {
+    "phishing": [
+      "Việc cộng tác viên tại nhà đã duyệt. [[Nạp tiền mua đơn ảo trước, hoàn thành chuỗi nhiệm vụ mới được rút lương]], bỏ dở sẽ mất cọc.",
+      "Tài khoản làm việc cần kích hoạt. [[Chuyển phí vào ví cá nhân quản lý để mở nhiệm vụ, không có hợp đồng trước khi nạp]]; lợi nhuận bảo đảm.",
+      "Đơn nhiệm vụ cuối bị thiếu số dư. [[Vay thêm để nộp đơn bù thì toàn bộ hoa hồng mới được rút]], không làm là mất tiền cũ.",
+      "Công ty tuyển đánh giá sản phẩm. [[Ứng tiền mua hàng theo lệnh nhóm chat và không cần nhận sản phẩm]], quản lý sẽ gửi thưởng sau.",
+      "Bạn đã trúng tuyển thử việc online. [[Thanh toán phí giữ vị trí cho người tuyển dụng ngay trước khi được xem hợp đồng]], hạn xác nhận chỉ còn ít phút."
+    ],
+    "benign": "Trung tâm hỗ trợ việc làm chia sẻ cảnh báo tuyển cộng tác viên phải nạp tiền làm nhiệm vụ. Không chuyển phí cho người tuyển dụng chỉ vì lời hứa hoàn vốn; đây là bản tin hướng dẫn.",
+    "insufficient": "Một người gửi lời mời làm cộng tác viên online và hẹn trao đổi công việc sau. Đoạn này chưa nêu thu nhập, hợp đồng hay khoản thu."
+  },
+  "EXP-W13": {
+    "phishing": [
+      "Tài liệu nhân sự đang chờ. [[Cấp cho ứng dụng không rõ nhà phát triển quyền đọc toàn bộ hộp thư và duy trì truy cập]] để xem một trang thông báo.",
+      "IT yêu cầu xác minh tài khoản. [[Bỏ qua cảnh báo ứng dụng chưa xác minh và chấp thuận quyền đọc, gửi thư thay bạn]] dù bạn không đăng ký dịch vụ này.",
+      "Cần xác thực để nhận bảng lương. [[Đồng ý quyền truy cập dữ liệu liên tục cho tiện ích do người lạ gửi]], không hỏi lại bộ phận IT.",
+      "Trình xem hóa đơn mới đã sẵn sàng. [[Cho ứng dụng quyền đọc và xóa thư của cơ quan kể cả khi bạn không sử dụng]] thì mới tải được hóa đơn.",
+      "Kiểm tra bảo mật bắt buộc: [[cấp quyền gửi email với danh nghĩa của bạn cho ứng dụng chưa biết rồi giữ kín với quản trị viên]], thao tác không cần mật khẩu."
+    ],
+    "benign": "Thư đào tạo nhắc phân biệt việc đăng nhập với việc cấp quyền ứng dụng. Cần đọc tên ứng dụng và phạm vi truy cập, đặc biệt quyền đọc hoặc gửi thư; không có yêu cầu cấp quyền trong thư này.",
+    "insufficient": "Ứng dụng yêu cầu người dùng xác nhận quyền để mở tài liệu. Không có tên ứng dụng hoặc danh sách quyền trong đoạn được gửi."
+  },
+  "EXP-W14": {
+    "phishing": [
+      "Khoản vay đã được duyệt. [[Đóng phí giải ngân vào tài khoản cá nhân trước khi nhận tiền]], nếu không sẽ bị ghi nhận vi phạm dù chưa ký hợp đồng.",
+      "Hồ sơ vay nhập sai số tài khoản. [[Chuyển khoản phí sửa thông tin mới được giải ngân]], khoản đã nộp chỉ được hoàn sau lần đóng tiếp theo.",
+      "Bạn đủ hạn mức tín dụng. [[Đọc mã OTP ngân hàng cho tư vấn viên, chúng tôi gọi đó là mã hợp đồng]] để hoàn tất vay.",
+      "Ngân hàng cần tiền bảo chứng. [[Nạp tiền trước vào ví của nhân viên thay vì kênh thu trên hợp đồng]], cam kết không kiểm tra lại đơn vị cho vay.",
+      "Dịch vụ rút hạn mức thẻ: [[gửi cả ảnh thẻ hai mặt và mã xác nhận giao dịch qua chat cho tôi]], tiền sẽ về sau khi trừ phí hỗ trợ."
+    ],
+    "benign": "Phòng chăm sóc khách hàng gửi cảnh báo về phí giải ngân giả và người xin mã OTP dưới tên mã hợp đồng. Nội dung này hướng dẫn tự xác minh đơn vị cho vay, không mời vay hoặc thu phí.",
+    "insufficient": "Tư vấn viên báo hồ sơ vay được tiếp nhận, hẹn gửi điều kiện cụ thể sau. Chưa có hợp đồng, phí hay yêu cầu mã xác thực."
+  },
+  "EXP-W15": {
+    "phishing": [
+      "Tôi là luật sư nhận thu hồi tiền bị mất. [[Nộp trước phí mở hồ sơ vào tài khoản cá nhân, chưa cần hợp đồng hay xác minh văn phòng]]; tôi bảo đảm lấy lại đủ.",
+      "Hồ sơ đòi tiền đã thắng. [[Chuyển tiền thuế cho người môi giới trước để được nhận bồi thường]], không cần liên hệ cơ quan thi hành.",
+      "Chúng tôi có khách mua lại quyền nghỉ dưỡng. [[Đặt cọc thêm khoản bảo đảm giao dịch ngay qua chat]], giấy tờ pháp lý chỉ được xem sau khi chuyển.",
+      "Tiền lừa đảo của bạn đã tìm thấy. [[Gửi phí mở khóa ví thu hồi cho nhân viên và không báo công an]] để tránh bị giữ khoản hoàn.",
+      "Luật sư đang ở tòa. [[Chuyển thêm tiền xử lý bí mật vào tài khoản trợ lý trước, bỏ qua bước ký ủy quyền]] thì hồ sơ mới tiếp tục."
+    ],
+    "benign": "Tổ tư vấn chuyển thông tin cảnh báo dịch vụ lấy lại tiền cam kết chắc chắn nhưng đòi đóng trước qua tài khoản riêng. Người cần hỗ trợ tự kiểm tra tư cách và hợp đồng; bản tin không thu tiền.",
+    "insufficient": "Một văn phòng đề nghị tư vấn về khoản tiền tranh chấp và hẹn gửi hợp đồng dịch vụ. Chưa có thông tin xác minh hoặc yêu cầu thanh toán."
+  },
+  "EXP-W16": {
+    "phishing": [
+      "Ví tài sản cần đồng bộ. [[Gửi đủ cụm từ khôi phục bí mật của ví vào cuộc chat hỗ trợ này]] để chúng tôi kiểm tra số dư.",
+      "Bạn đủ điều kiện nhận token. [[Nhập khóa riêng của ví vào biểu mẫu do người quản trị nhóm gửi]] rồi chờ hệ thống tự trả thưởng.",
+      "Tài khoản bị khóa do nâng cấp. [[Chụp lại toàn bộ các từ khôi phục và chuyển cho nhân viên qua tin nhắn]], không cần dùng chức năng khôi phục trong ví của bạn.",
+      "Gói đầu tư có bảo hiểm vốn. [[Chuyển tài sản vào địa chỉ cá nhân do môi giới cung cấp và giao khóa ví để họ vận hành hộ]], lợi nhuận chắc chắn mỗi ngày.",
+      "Tôi kiểm tra lỗi ví miễn phí. [[Đọc từng từ trong cụm phục hồi cho tôi qua cuộc gọi]], đây là điều kiện mở lại quyền rút."
+    ],
+    "benign": "Bản tin an toàn ví nhắc người dùng tự giữ khóa và cụm từ phục hồi, không chia sẻ cho hỗ trợ hoặc nhóm đầu tư. Bài phổ biến không kêu gọi góp vốn hay yêu cầu chuyển tài sản.",
+    "insufficient": "Nhóm thảo luận gửi thông báo cập nhật ví và nói sẽ hướng dẫn sau. Không rõ có yêu cầu khóa, quyền truy cập hay chuyển tài sản không."
+  },
+  "EXP-W17": {
+    "phishing": [
+      "Lợi nhuận đã về tài khoản sàn. [[Nộp thêm tiền thuế vào ví quản trị trước khi được rút, không được trừ trực tiếp từ số dư]] dù bạn đã nộp lần trước.",
+      "Lệnh rút đang bị chặn. [[Đóng tiền sửa điểm tín nhiệm rồi mới được lấy lại cả vốn]], nếu rút khiếu nại hệ thống sẽ xóa tài khoản.",
+      "Bạn nhận ưu đãi đầu tư gấp đôi. [[Vay thêm tiền nạp cho môi giới để hoàn thành vòng giao dịch bắt buộc trước khi rút vốn cũ]].",
+      "Ví sàn cần xác thực thanh khoản. [[Chuyển một khoản bằng số vốn đang giữ vào tài khoản cá nhân của người quản lý]] thì mới mở khóa rút.",
+      "Lệnh rút lần trước sai thao tác. [[Tiếp tục nộp phí bảo đảm cho nhóm hỗ trợ, đừng liên hệ ngân hàng hay cơ quan chức năng]] vì họ không biết quy trình."
+    ],
+    "benign": "Câu lạc bộ tài chính thảo luận cảnh báo sàn hứa lợi nhuận rồi đòi nộp thêm để rút tiền. Đây là thông tin phòng tránh, không phải lời mời đầu tư hoặc thông báo thuế gửi cho người đọc.",
+    "insufficient": "Ứng dụng đầu tư báo lệnh rút cần được xem xét. Chưa có điều kiện rút, yêu cầu bổ sung tiền hoặc thông tin đơn vị vận hành."
+  },
+  "EXP-W18": {
+    "phishing": [
+      "Tớ đổi số rồi, cần tiền gấp. [[Chuyển ngay cho tài khoản người khác tớ gửi, không gọi lại số cũ hay hỏi người nhà]]; mọi việc phải giữ kín.",
+      "Anh đang bị giữ điện thoại nên nhắn bằng tài khoản mới. [[Vay giúp rồi chuyển tiền sang ví người lạ, tuyệt đối đừng xác minh qua cuộc gọi]] vì sẽ lỡ việc.",
+      "Chị nhờ nhận hộ khoản tiền. [[Gửi mã OTP vừa đến để chị đăng nhập tài khoản ngân hàng của em nhận thay]], đừng đọc nội dung cảnh báo kèm mã.",
+      "Bạn cũ nhờ hỗ trợ bình chọn. [[Đưa mật khẩu và mã đăng nhập mạng xã hội cho mình qua chat]] để hoàn tất một phiếu, mình đang cần rất gấp.",
+      "Em gặp chuyện và cần anh cứu. [[Chuyển tiền vào tài khoản người đang giữ em, không được gọi em hoặc bất cứ người quen nào để kiểm tra]]."
+    ],
+    "benign": "Lớp nhắc nhau xác minh bằng kênh đã biết khi tài khoản quen nhắn mượn tiền hoặc xin mã đăng nhập. Đây là lời nhắc an toàn sau một vụ chiếm tài khoản, không phải yêu cầu vay tiền.",
+    "insufficient": "Bạn nhắn: khi nào rảnh gọi mình, có việc muốn nhờ. Chỉ có phần này, chưa biết việc gì hay có yêu cầu tiền hoặc tài khoản không."
+  },
+  "EXP-W19": {
+    "phishing": [
+      "Học bổng vừa được chọn. [[Nộp phí xác nhận vào tài khoản cá nhân trước khi nhận quyết định, không hỏi phòng công tác sinh viên]] vì danh sách chưa công bố.",
+      "Suất nhập học của em đang chờ. [[Gửi mật khẩu cổng sinh viên và OTP cho người tư vấn qua chat]] để họ giữ chỗ, đừng tự kiểm tra trên cổng.",
+      "Chương trình việc làm dành cho tân sinh viên. [[Chuyển tiền giữ việc trước rồi mới được biết công ty và hợp đồng]], thu nhập cam kết cao.",
+      "Phòng đào tạo cần thu khoản mới. [[Thanh toán ngay sang tài khoản riêng của người nhắn, bỏ qua biểu phí công khai của trường]] để không bị hủy hồ sơ.",
+      "Em được miễn học phí nhưng phải kích hoạt. [[Cài tệp ngoài kho rồi chia sẻ màn hình khi mở ngân hàng cho cán bộ làm hộ]] trong cuộc gọi này."
+    ],
+    "benign": "Nhà trường phổ biến thủ đoạn giả học bổng và tuyển cộng tác viên thu tiền trước. Sinh viên đối chiếu thông báo qua kênh trường đã biết; thư này không xác nhận trúng học bổng hoặc thu khoản phí nào.",
+    "insufficient": "Có thông báo học bổng dành cho sinh viên mới, hẹn gửi hồ sơ sau. Chưa có điều kiện tham gia hoặc đơn vị liên hệ cụ thể."
+  },
+  "EXP-W20": {
+    "phishing": [
+      "Tôi đang giữ ảnh đã cắt ghép của bạn. [[Chuyển tiền vào ví tôi trong hôm nay nếu không muốn chúng bị gửi cho đồng nghiệp]], không được nhờ ai kiểm tra.",
+      "Video riêng tư sắp được phát tán. [[Trả tiền bịt miệng theo tài khoản tôi chỉ định và giữ bí mật với người nhà]], nếu báo cơ quan chức năng tôi sẽ đăng ngay.",
+      "Bạn phải xử lý hình ảnh trên mạng. [[Cài ứng dụng điều khiển và mở ngân hàng để tôi tự thu phí gỡ video đe dọa]] trong cuộc gọi này.",
+      "Tôi có thể xóa clip đang đe dọa bạn. [[Nộp trước phí bảo đảm vào tài khoản cá nhân, không cần hợp đồng hoặc kiểm tra danh tính của tôi]].",
+      "Nhóm đang chuẩn bị gửi ảnh ghép tới công ty. [[Vay tiền chuyển ngay cho người nhắn để chặn phát tán, không được liên hệ bạn bè xác minh]]."
+    ],
+    "benign": "Nhóm truyền thông nhắc mọi người về ảnh cắt ghép dùng để tống tiền. Nếu nhận đe dọa, lưu bằng chứng và tìm kênh hỗ trợ đã xác minh; bản tin không chứa yêu cầu trả tiền hay ảnh riêng tư.",
+    "insufficient": "Tôi được báo có hình ảnh liên quan mình trên mạng. Chưa thấy nội dung, người đăng hoặc bất kỳ yêu cầu thanh toán nào."
+  },
+  "EXP-L01": {
+    "benign": [
+      "Bạn vừa chọn Quên mật khẩu trong tài khoản Google của mình. Mã khôi phục đã được gửi đến phương thức bạn đăng ký; tiếp tục tại màn hình khôi phục đang mở.",
+      "Mật khẩu tài khoản của bạn vừa được thay đổi sau thao tác trong Cài đặt. Bạn có thể xem lại phương thức khôi phục ở phần Bảo mật khi cần.",
+      "Nếu quên mật khẩu, bạn có thể tự mở phần khôi phục tài khoản và thực hiện các bước hiện trên màn hình. Không cần gửi thông tin đăng nhập cho người hỗ trợ qua chat.",
+      "Nhóm học tập hướng dẫn đổi mật khẩu: vào phần Bảo mật trong tài khoản của chính bạn rồi thực hiện thay đổi. Đây là hướng dẫn chung, không xác nhận có sự cố tài khoản."
+    ],
+    "insufficient": "Thông báo yêu cầu xác minh tài khoản để tiếp tục. Phần được gửi không có tài khoản, thao tác trước đó hoặc nơi nhập mã."
+  },
+  "EXP-L02": {
+    "benign": [
+      "Bạn vừa chọn đặt lại mật khẩu Apple trên iPhone của mình. Hãy tiếp tục trong phần tài khoản ở Cài đặt của thiết bị tin cậy đang sử dụng.",
+      "Yêu cầu khôi phục tài khoản do bạn vừa mở đã được tiếp nhận. Bạn có thể kiểm tra trạng thái ở phần khôi phục và làm theo hướng dẫn trên màn hình.",
+      "Để đổi mật khẩu, tự mở phần tài khoản trong Cài đặt trên thiết bị của bạn. Nếu không thực hiện được, sử dụng hướng dẫn hỗ trợ chính thức đã lưu.",
+      "Nhắc lịch cá nhân: hôm nay kiểm tra thông tin khôi phục tài khoản và thiết bị tin cậy. Không có yêu cầu gửi mã cho ai khác."
+    ],
+    "insufficient": "Mã khôi phục tài khoản đã được gửi. Không có thông tin người nào đã yêu cầu hoặc mã sẽ được nhập ở đâu."
+  },
+  "EXP-L03": {
+    "benign": [
+      "Phiên đăng nhập bạn vừa mở trên máy làm việc đang chờ xác nhận. Mở Authenticator, đối chiếu số với màn hình máy của bạn rồi chấp thuận nếu khớp.",
+      "Bạn vừa đăng nhập tài khoản cơ quan và nhận thông báo xác thực. Kiểm tra đúng ứng dụng cùng phiên đang sử dụng trước khi bấm đồng ý.",
+      "Bộ phận IT hướng dẫn nhân viên tự thêm tài khoản vào ứng dụng xác thực trong buổi đã hẹn. Không ai yêu cầu nhân viên đọc mã qua điện thoại.",
+      "Bạn có thể tự mở ứng dụng xác thực để xem tài khoản đã thêm. Tin nhắc này không yêu cầu duyệt một phiên đăng nhập từ người khác."
+    ],
+    "insufficient": "Hãy phê duyệt yêu cầu đăng nhập trên điện thoại. Không biết người nhận có vừa tự đăng nhập hay không."
+  },
+  "EXP-L04": {
+    "benign": [
+      "Bạn vừa chọn Đăng nhập trên TV của mình. Dùng mã đang hiện trên chiếc TV trước mặt để hoàn tất ở trình duyệt khác, kiểm tra đúng tên ứng dụng trước khi đồng ý.",
+      "Máy in bạn đang tự cài đặt hiển thị mã kết nối tài khoản. Tiếp tục theo hướng dẫn quản trị đã xác minh và chỉ xác nhận cho máy in đang ở trước mặt.",
+      "Buổi thực hành thiết bị: mỗi người tự khởi tạo phiên trên thiết bị của mình rồi đối chiếu mã hiện ra. Không nhập mã do người lạ gửi qua thư.",
+      "Bạn đã tự hủy phiên đăng nhập trên TV. Nếu muốn thử lại, tạo yêu cầu mới từ thiết bị của chính bạn và kiểm tra tên ứng dụng được cấp quyền."
+    ],
+    "insufficient": "Thiết bị cần được liên kết với tài khoản bằng mã. Chưa có thông tin nguồn tạo mã hoặc mục đích cấp quyền."
+  },
+  "EXP-L05": {
+    "benign": [
+      "Yêu cầu đổi chuyến bạn vừa mở trong ứng dụng hãng đã có phương án mới. Hãy xem hành trình, điều kiện vé và phí chênh lệch hiển thị trong đặt chỗ trước khi xác nhận.",
+      "Chuyến bay đã được đổi theo thao tác của bạn trong ứng dụng. Phiếu xác nhận được gửi về email đăng ký mua vé; bạn có thể đối chiếu lại trong đặt chỗ.",
+      "Nhắc chuyến bay cá nhân: tự mở phần quản lý đặt chỗ, đối chiếu họ tên và hành trình. Thư nhắc không yêu cầu chuyển tiền vào tài khoản nhân viên.",
+      "Hướng dẫn đổi vé: khách tự chọn chuyến trong ứng dụng hãng và xem điều kiện giá đang hiển thị. Nếu cần trợ giúp, chủ động dùng kênh đã xác minh của hãng."
+    ],
+    "insufficient": "Đặt chỗ của quý khách cần được xác nhận lại. Không có mã vé hoặc thông tin thay đổi trong phần chuyển tiếp."
+  },
+  "EXP-L06": {
+    "benign": [
+      "Hóa đơn điện kỳ này đã được phát hành cho hợp đồng gia đình bạn đang sử dụng. Vui lòng tự mở tài khoản điện lực, đối chiếu mã khách hàng và kỳ tính cước để thanh toán.",
+      "Thanh toán tiền điện bạn vừa thực hiện đã được tiếp nhận. Bạn có thể xem kết quả trong lịch sử thanh toán và đối chiếu với hóa đơn của hợp đồng.",
+      "Ban quản lý nhắc đối chiếu khoản tiền điện trước khi thanh toán. Cư dân tự liên hệ trung tâm theo thông tin trên hợp đồng nếu số tiền khác thường.",
+      "Nhắc cá nhân: xem chỉ số và hóa đơn điện tháng này trong tài khoản đã đăng ký. Không có yêu cầu cài phần mềm hoặc chia sẻ màn hình."
+    ],
+    "insufficient": "Hệ thống thông báo còn khoản điện chưa thanh toán. Chưa có mã khách hàng hay thông tin để đối chiếu số tiền."
+  },
+  "EXP-L07": {
+    "benign": [
+      "Bạn vừa chọn Quên mật khẩu cho tài khoản bảo hiểm của mình. Kiểm tra email đã đăng ký và nhập mã vào màn hình khôi phục bạn đang chủ động sử dụng.",
+      "Yêu cầu cấp lại mật khẩu bảo hiểm do bạn thực hiện đã được tiếp nhận. Tiếp tục kiểm tra email đăng ký và hoàn tất trong phiên khôi phục đang mở.",
+      "Hướng dẫn nội bộ: khi quên mật khẩu, người lao động tự dùng chức năng lấy lại mật khẩu và email của mình. Bộ phận nhân sự không thu OTP ngân hàng.",
+      "Bạn đã hoàn tất thay mật khẩu bảo hiểm. Lần sử dụng sau tự mở ứng dụng quen dùng để kiểm tra, không cần chuyển khoản xác minh tài khoản."
+    ],
+    "insufficient": "Mật khẩu bảo hiểm cần được cấp lại. Không có thông tin người yêu cầu hay phương thức nhận mã trong thông báo này."
+  },
+  "EXP-L08": {
+    "benign": [
+      "Mình đã cấp quyền xem bản kế hoạch cho đúng tài khoản cơ quan của bạn theo cuộc họp sáng nay. Tệp nằm trong thư mục dự án của nhóm, bạn xem rồi ghi nhận xét giúp mình.",
+      "Bảng ngân sách được cập nhật trong thư mục dùng chung sau cuộc họp hôm qua. Bạn vui lòng đối chiếu số liệu và bình luận trực tiếp ở các dòng cần sửa.",
+      "Quyền sửa tài liệu đã được chủ sở hữu cấp theo yêu cầu bạn gửi. Kiểm tra tên tệp trong thư mục nhóm; thông báo không yêu cầu mật khẩu qua email.",
+      "Mình thu hồi liên kết cũ sau khi kết thúc dự án. Thành viên cần bản lưu liên hệ lại qua nhóm công việc đã biết; không có khoản phí mở khóa tài liệu."
+    ],
+    "insufficient": "Có tệp được chia sẻ cho bạn. Phần tin nhắn không nêu chủ sở hữu, tên tệp hoặc cuộc trao đổi trước đó."
+  },
+  "EXP-L09": {
+    "benign": [
+      "Nhắc lịch họp dự án lúc 14 giờ như cả nhóm đã thống nhất. Phòng Zoom đã được gửi trong lịch chung; bạn dùng ứng dụng đang cài để nhập mã phòng và tham gia.",
+      "Buổi trao đổi ngày mai vẫn diễn ra theo lịch đã hẹn. Mình gửi lại thông tin phòng họp; ai cần đổi giờ phản hồi trong nhóm trước chiều nay nhé.",
+      "Buổi học online sắp bắt đầu, giáo viên đang mở phòng như lịch đã đăng. Học viên tự mở ứng dụng họp đã cài và nhập thông tin lớp được cung cấp từ đầu khóa.",
+      "Cuộc họp đổi giờ theo ý kiến cả nhóm. Vui lòng xem lịch chung trước khi tham gia; tin này chỉ nhắc thời gian, không yêu cầu thông tin ngân hàng."
+    ],
+    "insufficient": "Tham gia phòng họp ngay để trao đổi việc gấp. Không có tên người tổ chức hay thông tin lịch hẹn trong phần được gửi."
+  },
+  "EXP-L10": {
+    "benign": [
+      "Mời bạn dự buổi rà soát đã thống nhất vào chiều mai. Bạn có thể chọn tham dự, từ chối hoặc đề xuất giờ khác trong sự kiện trên lịch của nhóm.",
+      "Đề xuất đổi giờ họp bạn vừa gửi đã được chuyển tới người tổ chức. Lịch sẽ cập nhật khi thời gian mới được thống nhất.",
+      "Lịch làm việc tuần sau vừa được cập nhật trong Calendar. Hãy xem lại sự kiện quen thuộc của nhóm để tránh trùng giờ, không có thay đổi thanh toán nào.",
+      "Mình không dự được khung giờ cũ nên đã gửi đề xuất đổi lịch. Bạn kiểm tra trong sự kiện nhóm đã tạo để phản hồi khi thuận tiện."
+    ],
+    "insufficient": "Bạn được mời tham gia một sự kiện. Không có tên người gửi, nội dung hay lịch trao đổi trước đó."
+  },
+  "EXP-L11": {
+    "benign": [
+      "Bạn vừa bật xác thực hai yếu tố trong phần bảo mật GitHub. Dùng ứng dụng xác thực của mình để quét mã thiết lập, sau đó lưu mã dự phòng ở nơi riêng và hoàn tất trên trang đang mở.",
+      "Cấu hình bảo mật tài khoản được cập nhật sau thao tác của bạn. Hãy giữ bản mã dự phòng đã tải ở nơi an toàn để sử dụng khi đổi thiết bị.",
+      "Buổi hướng dẫn cho nhóm lập trình: mỗi người tự cấu hình xác thực hai yếu tố trong tài khoản của mình. Không thu mã hoặc mật khẩu của thành viên.",
+      "Nhắc việc cá nhân: kiểm tra phương thức xác thực dự phòng trước khi đổi điện thoại. Bạn tự thao tác trong cài đặt tài khoản, không có yêu cầu chuyển tiền."
+    ],
+    "insufficient": "Cần cập nhật phương thức xác thực của tài khoản lập trình. Đoạn tin không cho biết ai khởi tạo hoặc cần cung cấp thông tin gì."
+  },
+  "EXP-L12": {
+    "benign": [
+      "Hóa đơn cước viễn thông điện tử kỳ này được gửi theo địa chỉ bạn đã đăng ký. Bạn vui lòng đối chiếu hợp đồng và khoản cần trả qua kênh tra cứu vẫn sử dụng.",
+      "Khoản cước bạn vừa thanh toán đã được ghi nhận. Biên nhận điện tử có trong tài khoản dịch vụ đã đăng ký, bạn có thể tra lại khi cần đối soát.",
+      "Đơn vị cung cấp thông báo thay giấy báo cước bằng bản điện tử. Khách hàng có thể tự tra cứu hóa đơn và liên hệ điểm giao dịch quen thuộc nếu cần giải thích.",
+      "Nhắc lịch gia đình: kiểm tra hóa đơn internet trong ứng dụng và so với hợp đồng. Không bấm thanh toán khoản không khớp, không có yêu cầu chuyển vào tài khoản nhân viên."
+    ],
+    "insufficient": "Thuê bao có khoản cước cần đối chiếu. Phần được gửi thiếu kỳ cước, số hợp đồng và thông tin kênh tra cứu."
+  },
+  "EXP-L13": {
+    "benign": [
+      "Kiện hàng bạn đặt hôm qua sẽ được giao thu tiền khi nhận theo đơn đã xác nhận. Bạn đối chiếu đúng hàng, mã vận đơn và khoản thu trước khi đồng ý nhận nhé.",
+      "Shipper đang giao đơn bạn đã đặt từ shop hôm qua. Khoản thu hộ đúng như thông tin mua hàng; bạn kiểm tra kiện theo điều kiện đã thỏa thuận rồi thanh toán khi nhận.",
+      "Shop xác nhận gửi hàng thu hộ như thỏa thuận mua bán trước đó. Bạn có thể theo dõi kiện trong đơn đã đặt và kiểm tra thông tin trước khi nhận.",
+      "Nhắc đơn COD: nếu hàng hoặc số tiền không khớp, người nhận liên hệ lại shop qua kênh đã đặt. Không thanh toán chỉ để hủy một kiện không đặt."
+    ],
+    "insufficient": "Có kiện hàng chờ giao và một khoản cần thu. Không có thông tin đơn mua, hàng hóa hoặc thỏa thuận của người nhận."
+  },
+  "EXP-L14": {
+    "benign": [
+      "Nhắc sinh viên kiểm tra học phí và công nợ của mình trên cổng trường đang sử dụng. Nếu số tiền chưa khớp, gửi thắc mắc tới bộ phận phụ trách theo hướng dẫn của trường.",
+      "Biên lai học phí cho khoản bạn vừa nộp được gửi vào email sinh viên đã đăng ký. Bạn có thể đối chiếu với thông tin công nợ và hỏi bộ phận tài chính nếu có sai lệch.",
+      "Lớp nhắc hạn kiểm tra công nợ trong cổng trường. Nếu thuộc diện chính sách hoặc có thắc mắc, dùng kênh liên hệ chính thức để hỏi, không chuyển khoản theo tin nhắn cá nhân.",
+      "Trường thông báo học phí có thể được đối chiếu lại theo các đợt. Sinh viên xem khoản phải nộp trong mục công nợ của chính mình thay vì suy từ số tiền của bạn khác."
+    ],
+    "insufficient": "Lớp báo cần đóng một khoản cho học kỳ tới. Chưa có quyết định, biểu phí hay thông tin đơn vị nhận tiền."
+  },
+  "EXP-L15": {
+    "benign": [
+      "Sao kê thẻ tháng này đã có theo dịch vụ bạn đăng ký. Bạn tự mở ứng dụng ngân hàng để xem giao dịch, ngày đến hạn và khoản cần thanh toán.",
+      "Nhắc hạn thanh toán dư nợ theo sao kê bạn đã xem. Vui lòng chủ động kiểm tra và thực hiện qua tài khoản ngân hàng đang sử dụng để đối chiếu số tiền.",
+      "Yêu cầu sao kê do bạn vừa thực hiện đã được tiếp nhận. Khi cần đối chiếu giao dịch, tự mở tài khoản hoặc tới quầy; không cung cấp mã bảo mật thẻ qua email.",
+      "Nhắc việc cá nhân: kiểm tra sao kê và khoản trích nợ tự động đã đăng ký. Nếu giao dịch khác dự kiến, chủ động liên hệ ngân hàng bằng thông tin đã lưu."
+    ],
+    "insufficient": "Thẻ có khoản cần thanh toán. Đoạn tin không kèm kỳ sao kê, dữ liệu đối chiếu hoặc chỉ dẫn xử lý."
+  },
+  "EXP-L16": {
+    "benign": [
+      "Yêu cầu hoàn tiền bạn vừa gửi cho đơn Google Play của mình đang được xem xét. Bạn có thể theo dõi trạng thái trong tài khoản đã dùng để mua.",
+      "Hướng dẫn cho đơn ứng dụng bạn muốn trả: tự mở lịch sử mua, chọn đúng giao dịch, điền lý do và gửi yêu cầu. Kết quả còn tùy điều kiện hoàn tiền của đơn đó.",
+      "Yêu cầu của bạn đang được xem xét theo chính sách của giao dịch. Kiểm tra tài khoản đã mua ứng dụng để theo dõi, không cần đọc OTP ngân hàng cho bất cứ ai.",
+      "Bạn muốn hỏi nhà phát triển về mặt hàng không hoạt động. Hãy tự xem thông tin hỗ trợ trong mục ứng dụng đã mua; tin hướng dẫn không yêu cầu cài công cụ điều khiển máy."
+    ],
+    "insufficient": "Có thông báo một giao dịch đủ điều kiện xem xét hoàn tiền. Chưa rõ người nhận có mua giao dịch đó hay ai gửi thông báo."
+  },
+  "EXP-L17": {
+    "benign": [
+      "Bạn muốn dừng gia hạn gói Apple đã mua. Tự mở mục Đăng ký trong Cài đặt của mình, chọn đúng gói và xem điều kiện hủy đang hiển thị.",
+      "Yêu cầu hủy gói do bạn vừa thực hiện đã được ghi nhận trong tài khoản. Bạn có thể mở phần đăng ký để kiểm tra trạng thái và thời gian sử dụng còn lại.",
+      "Nhắc cá nhân: kiểm tra các gói dùng thử trước khi gia hạn. Bạn có thể tự quyết định hủy trong cài đặt, không cần gửi mật khẩu cho người mời hỗ trợ.",
+      "Nếu không thấy gói trong tài khoản, hãy kiểm tra biên nhận và đơn vị thực sự thu phí trước khi liên hệ hỗ trợ. Tin này không khẳng định có khoản nợ hoặc lỗi thanh toán."
+    ],
+    "insufficient": "Gói dịch vụ của bạn sắp được gia hạn. Phần được chuyển tiếp chưa có tên gói, tài khoản hoặc đơn vị thu phí."
+  },
+  "EXP-L18": {
+    "benign": [
+      "Bạn muốn kiểm tra thông tin thuê bao của mình. Có thể tự dùng kênh nhà mạng đã biết hoặc tới điểm giao dịch đã xác minh, mang giấy tờ cá nhân để đối chiếu trực tiếp khi cần.",
+      "Lịch hẹn kiểm tra thông tin SIM bạn đã đặt tại cửa hàng được xác nhận. Bạn tới đúng điểm giao dịch và hỏi lại thủ tục trực tiếp nếu có thông tin cần bổ sung.",
+      "Nhắc cá nhân: đối chiếu thông tin thuê bao trước khi đổi SIM. Bạn tự mở ứng dụng đã dùng hoặc hỏi cửa hàng, không cần cài gói được gửi qua tin nhắn.",
+      "Nhà mạng hướng dẫn chủ thuê bao tự kiểm tra thông tin và liên hệ khi có sai lệch. Đây là thông tin hỗ trợ, không phải yêu cầu chuyển tiền để tránh khóa SIM."
+    ],
+    "insufficient": "Thuê bao cần được kiểm tra thông tin. Không có dữ liệu cho biết đây là thông báo trong ứng dụng hay từ người gọi lạ."
+  },
+  "EXP-L19": {
+    "benign": [
+      "Bạn vừa mở Windows Update trong Cài đặt của máy mình. Xem bản cập nhật có sẵn, chọn tải và cài tại đó rồi sắp xếp thời gian khởi động lại phù hợp.",
+      "Bản cập nhật bạn đã cài trong phần hệ thống đang chờ khởi động lại. Bạn lưu công việc đang làm rồi chọn thời điểm hoàn tất trên thiết bị của mình.",
+      "Nhắc nhóm máy tính: kiểm tra bản cập nhật bằng chức năng có sẵn trong Windows. Không có tệp cài riêng gửi qua chat hoặc yêu cầu cấp quyền cho người gọi.",
+      "Bạn có thể chỉnh giờ hoạt động để giảm gián đoạn khi cập nhật. Hướng dẫn này chỉ nói về cài đặt trên thiết bị của bạn, không yêu cầu trả phí mở khóa."
+    ],
+    "insufficient": "Máy báo cần cập nhật phần mềm. Không có tên phần mềm, vị trí thông báo hoặc hướng dẫn cài đặt đi kèm."
+  },
+  "EXP-L20": {
+    "benign": [
+      "Giao dịch ví bạn vừa thực hiện đã có kết quả. Bạn tự mở lịch sử giao dịch, đối chiếu số tiền và người nhận rồi xác nhận tình trạng với bên bán.",
+      "Biên nhận điện tử của khoản bạn vừa thanh toán được lưu trong ví. Bạn có thể xem lại chi tiết giao dịch ở tài khoản của mình để đối soát.",
+      "Người bán hỏi bạn kiểm tra giao dịch đã chủ động thực hiện. Hãy đối chiếu lịch sử ví trên máy mình rồi chỉ thông báo trạng thái, không chia sẻ mã đăng nhập.",
+      "Nhắc cá nhân: đừng dựa chỉ vào ảnh báo chuyển tiền. Tự xem kết quả trong lịch sử ví của mình khi cần đối soát; đây là hướng dẫn kiểm tra, không yêu cầu thu thêm tiền."
+    ],
+    "insufficient": "Giao dịch của bạn đã có kết quả. Chưa có số tham chiếu, số tiền hoặc thông tin về thao tác trước đó."
+  }
+}

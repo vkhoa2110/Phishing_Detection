@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W12",
+  "primary_url": "https://congan.tuyenquang.gov.vn/vi/tin-bai/canh-bao-tinh-trang-lua-dao-tuyen-cong-tac-vien-online-gia-tang?id=198292&type=NEWS",
+  "publisher": "Công an tỉnh Tuyên Quang",
+  "evidence_excerpt": "yêu cầu người tham gia nộp phí trước",
+  "assistant_paraphrase": "Tuyển cộng tác viên, nạp tiền làm nhiệm vụ",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "b5b9497efbd6e1c9439cf53c8a507b55003b6fd9f25944d954fee647850f8413",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

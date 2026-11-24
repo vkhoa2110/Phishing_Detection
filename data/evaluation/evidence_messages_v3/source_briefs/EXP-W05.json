@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W05",
+  "primary_url": "https://www.vietcombank.com.vn/upload/2018/05/24/VCB_Thong-tin-canh-bao-KHTC-ve-rui-ro-bi-hack-email.pdf",
+  "publisher": "Vietcombank",
+  "evidence_excerpt": "Hacker sửa thông tin người hưởng trên hóa đơn",
+  "assistant_paraphrase": "Email doanh nghiệp bị chiếm, thay tài khoản nhận thanh toán",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "a0995d72d9aee26598a7b11d8367d729c6f12cdd4dc6855e8efb2982fe0081d3",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W11",
+  "primary_url": "https://baohiemxahoi.gov.vn/chidaodieuhanh/pages/thong-tin-bao-chi.aspx?CateID=125&ItemID=22963",
+  "publisher": "BHXH Việt Nam",
+  "evidence_excerpt": "yêu cầu người dân cập nhật CCCD vào ứng dụng",
+  "assistant_paraphrase": "Giả cán bộ BHXH yêu cầu đồng bộ căn cước",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "311772dde760d6f951750fe650fd6ca15e627c89c1e17ba5ba1bede89f515447",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

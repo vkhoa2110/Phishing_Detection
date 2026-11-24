@@ -1,6 +1,97 @@
 # Kết quả và giới hạn
 
-Các số dưới đây tóm tắt các lượt thực nghiệm theo từng mốc, cập nhật đến 13/11/2026. [Tài liệu lịch sử trước lần tổ chức cấu trúc](https://github.com/vkhoa2110/Phishing_Detection/tree/479c96612ca79d3e1de2d37df22d82ce19e09f23/docs) và các manifest/raw cục bộ giữ nguyên.
+Các số dưới đây tóm tắt các lượt thực nghiệm theo từng mốc, cập nhật đến 24/11/2026. [Tài liệu lịch sử trước lần tổ chức cấu trúc](https://github.com/vkhoa2110/Phishing_Detection/tree/479c96612ca79d3e1de2d37df22d82ce19e09f23/docs) và các manifest/raw cục bộ giữ nguyên.
+
+## Sửa preview và kiểm đầu ra core 1.1 ngày 24/11
+
+Đã sửa preview có marker số trong hostname/path khiến bước che lần hai thay đổi nội dung sau duyệt. Đối chiếu toàn bộ **307 ca dev v3**: số ca đổi tiếp ở bước phân tích giảm **5/307 → 0/307**. Bước che phòng vệ vẫn hoạt động sau khi người dùng chỉnh sửa. Đây là kiểm tính nhất quán trên dev, không bảo đảm redactor đã phát hiện mọi PII.
+
+Focused chuyển sang **`message-core-1.1`**: yêu cầu giữ nguyên định dạng quote, đồng thời nối khác biệt chỉ về hoa/thường hoặc khoảng trắng về đúng đoạn gốc. Parser không sửa từ, dấu tiếng Việt, dấu câu, URL, token che dữ liệu, JSON hoặc kết luận. API có mã chẩn đoán JSON/schema/quote được giới hạn, không sao chép giá trị sai hoặc reasoning. Stable vẫn dùng prompt v4 và XGBoost; model, ngưỡng, RAG corpus và mặc định launcher không đổi.
+
+| Kiểm chứng | Kết quả | Phạm vi |
+|---|---|---|
+| Bộ test phần mềm hiện hành | **1.567/1.567 đạt**, 0 fail/error/skipped | Offline; 268 tệp mã/test/cấu hình không đổi trong lượt chạy; một cảnh báo Starlette/httpx |
+| Hai parser đọc cùng phản hồi đã lưu | **9/12 → 12/12 hợp lệ** | Cùng content và text thực gửi; giữ risk của provider, quote đầu ra có trong nguồn |
+| API thật trên cùng 12 ca dev đã chọn | Trước sửa **9/12**, sau sửa **11/12 hợp lệ** | Hai lượt sinh độc lập, chọn theo lỗi/dev; chưa phải Accuracy/F1 hoặc ước lượng chất lượng toàn tập |
+| HTTP/cắt trong chẩn đoán mới | **24/24 HTTP 200 và stop**, 0 length | 24.556 token ghi nhận; không retry, không RAG hoặc holdout |
+
+Ba phản hồi baseline không qua parser cũ gồm hai quote đổi xuống dòng thành dấu cách và một quote đổi chữ đầu thành hoa. Replay chỉ xác nhận nguyên nhân của **ba phản hồi mới này**, vì full-dev lịch sử không lưu raw classifier content. Candidate còn một OUTPUT_INVALID do WARNING/scam_request nhưng `missing_context` không rỗng; giữ lỗi và mã `CORE_SCHEMA_INVALID`, không tự sửa mức hoặc gửi lại. Chưa có F1 full-dev mới của core 1.1.
+
+Đã lưu nguồn cũ trước sửa và giữ nguyên journal/metric/hash của full-dev. Bộ kiểm lịch sử đối chiếu live source sẽ báo khác hash khi mã thay đổi; snapshot chỉ xác nhận nguồn lịch sử, không biến bản mới thành lượt tái chạy cũ. [Minh chứng 24/11](../artifacts/evaluations/submission_hardening_20261124/README.md) · [Demo cấu hình cụ thể](guides/USAGE.md#demo-bản-focused-đã-sửa-lỗi-ngày-2411).
+
+## Full-dev bộ v3 ngày 22/11 — core 1.0, nhãn AI
+
+Bộ mới có **400 dòng = 240 ca cơ sở + 40 injection + 120 robustness**, dựa 40 trang nguồn. Đã hoàn tất **307 dòng dev × 4 cấu hình = 1.228 ô**, trong đó 183 ca cơ sở/31 injection/93 robustness; **93 holdout chưa suy luận**, 0/400 cặp nhãn người hoàn tất. 183 ca cơ sở có 70 dương/82 âm/31 thiếu thông tin theo AI. Chỉ 152 ca nhị phân vào bảng, lỗi/UNKNOWN vẫn giữ trong mẫu số tương ứng.
+
+| Cấu hình | TP/70 | FP/82 | Đúng/152 | UNKNOWN/152 | Lỗi/152 | F1 | Coverage |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| LLM | 69 | 0 | 146 | 5 | 1 | 99,28% | 96,05% |
+| LLM + RAG | 69 | 0 | 144 | 7 | 1 | 99,28% | 94,74% |
+| LLM + URL | 69 | 3 | 139 | 9 | 1 | 97,18% | 93,42% |
+| LLM + URL + RAG | 69 | 4 | 139 | 8 | 1 | 96,50% | 94,08% |
+
+Trong lượt này, cấp score URL chưa cải thiện kết quả. RAG của focused nằm sau verdict; 614/614 cặp ±RAG có cùng payload phân loại nhưng được sinh độc lập. Chênh lệch bảng không đo hiệu quả RAG đối với phát hiện.
+
+Toàn phạm vi có **72/1.228 lỗi phân loại**: 65 OUTPUT_INVALID ở stress xuống dòng, 6 OUTPUT_INVALID ở ca cơ sở và một HTTP429 ở stress viết hoa. Stress thay từng dấu cách thành xuống dòng ở phần không phải URL; không đại diện thông điệp thông thường. Gồm **1.651 request provider = 1.228 phân loại + 423 giải thích**, 0 length, 2.014.700 token ghi nhận và một usage không biết. Giữ nguyên 80 ô pilot; chỉ chạy các ô chưa gửi sau khi gặp 429, không retry ô lỗi. Những kết quả này thuộc **core 1.0**, không gán cho bản 1.1 hiện hành.
+
+[Bảng đủ chỉ số, từng mẫu, injection và provenance](../artifacts/evaluations/expanded_dev_full_20261122/README.md) · [Dữ liệu và phiếu 400 dòng](../artifacts/evaluations/expanded_collection_20261122/README.md). Dữ liệu AI có chủ đích và dev đã xem; chưa đủ kết luận chất lượng trên tin thực nhận hoặc nhãn người.
+
+## Hoàn tất luồng đánh giá và kiểm mức sẵn sàng ngày 21/11
+
+Đã nối phiếu hai người chấm → phân xử có căn cứ → nhãn được khóa hash → bốn cấu hình qua đúng API ứng dụng trên dev. Các công cụ từ chối nhãn chưa hoàn tất, sai ID/text, khai báo thiếu hoặc bất đồng chưa xử lý; không đọc nhãn thiết kế để thay cho người. Khai báo nguồn nhãn và danh tính vẫn do người quản lý xác nhận, phần mềm không xác thực được con người hoặc tính độc lập.
+
+Runner ghi cấu hình thực nạp, hash mã/model/corpus, attempt trước gửi, dấu vết metadata URL/tài liệu, finish reason và usage. Giữ UNKNOWN/lỗi trong mẫu số phù hợp, tách ca cơ sở/injection/lặp, xuất mã sửa đúng hoặc sai thêm; không dùng đề xuất LOW của verifier thay verdict chính. Chuẩn bị không gọi provider; suy luận thật cần đăng ký trước và bật rõ `--live`. Lượt dừng vì hạn mức hoặc usage chưa biết không tự tiếp tục/gửi lại.
+
+Đây là so sánh cấu hình ứng dụng, không phải ablation cùng system prompt: stable đổi hướng dẫn khi cấp RAG trước verdict; focused/shadow dùng RAG sau verdict. Những classifier payload giống nhau vẫn được sinh độc lập nên không quy chênh lệch F1 riêng cho RAG. Nguồn/model/ngưỡng/profile mặc định không thay đổi.
+
+**1.524/1.524 test offline đạt**, gồm 179 test thêm so với mốc bộ bổ sung 1.345; một cảnh báo deprecation Starlette/httpx. Snapshot 259 tệp mã/test/cấu hình không đổi trong lượt chạy. Kiểm qua factory với URL/RAG thật cục bộ và provider giả đạt **12/12 lượt = 3 profile × 4 arm** trên một tin fixture; không phải 12 tin độc lập hoặc bằng chứng chất lượng LLM.
+
+Kiểm mức sẵn sàng xác nhận packet có thể gửi người chấm; **0/80 cặp** ở bộ bổ sung đã hoàn tất, nên chưa thể chạy đánh giá theo nhãn người. Chưa có Accuracy/F1 mới, suy luận bộ bổ sung/holdout hoặc API thật. Phần còn thiếu gồm nhãn người, dữ liệu thực nhận, thêm nhóm phishing có URL độc lập, đánh giá chất lượng nguồn/lời giải thích và xác nhận cấu hình vận hành. Nhiều test đạt chưa chứng minh dự án đã đủ chất lượng phát hành.
+
+[Minh chứng, kiểm thử và phiếu đang chờ](../artifacts/evaluations/evaluation_completion_20261121/README.md) · [Trạng thái có thể kiểm lại](../artifacts/evaluations/evaluation_completion_20261121/readiness.json) · [Quy trình và lệnh](evaluation.md#chốt-nhãn-người-và-đánh-giá-đúng-ứng-dụng-ngày-2111).
+
+## Bộ bổ sung có nguồn v2 ngày 21/11
+
+Đã khóa riêng **80 mẫu từ 34 nguồn mới so với v1**: 72 ca cơ sở gồm 40 tình huống lừa đảo, 24 hợp lệ/âm khó, 8 thiếu ngữ cảnh, thêm 8 injection ghép cặp. Ca cơ sở có 20 dương có URL/20 không URL; âm 12/12; thiếu 4/4. Đây là nhãn thiết kế, không phải nhãn người. Xuất xứ có **64 ca dựng lại + 8 trích đoạn công khai không đầy đủ**; **0/80 bản tin thực nhận được xác thực**. Nhãn hành vi riêng của 72 ca là 32 dương/24 âm/16 thiếu; không gộp với nhãn tình huống để tính F1.
+
+Kênh 72 ca là 28 SMS/37 EMAIL/7 UNKNOWN, trong đó kênh của ca dựng do tác giả chọn. Thiếu 8 SMS và 4 trích đoạn công khai so quota; không giả định kênh hoặc nguyên văn để đủ số. Split theo nhóm, seed cố định: 45 dev/35 holdout, tương ứng 40/32 ca cơ sở. Dương có URL dev 14 ca/3 nhóm, holdout 6 ca/1 nhóm: chưa đủ nhóm chiến dịch độc lập để kết luận tổng quát.
+
+So máy với 100 ca v1 và 80 SMS dev không có trùng/gần trùng Jaccard≥0,75 hoặc miền chung; 120 SMS reserve không đưa vào so sánh/suy luận. Có 1/80 URL chuẩn hóa và 22/80 ca trùng miền với PhishVN lịch sử; một nguồn của một ca đã có trong RAG. Giữ riêng các nhóm này, không gọi toàn bộ là ngoài mẫu. Không thêm nguồn vào corpus hoặc chạy model/provider trên bộ mới.
+
+Hai phiếu mù mới có 80 dòng/phiếu, **0/80 cặp người hoàn tất**. Builder có 49 test mới; full suite **1.345/1.345 đạt**, một cảnh báo deprecation Starlette/httpx. Chưa có điểm Accuracy/F1 mới. [Minh chứng và quota](../artifacts/evaluations/supplement_collection_20261121/README.md), [dữ liệu và giới hạn](../data/evaluation/evidence_messages_v2/README.md), [phạm vi người chấm](../artifacts/evaluations/supplement_collection_20261121/annotation_instructions.md).
+
+## Hoàn thiện kiểm chứng ngày 21/11
+
+Đã bổ sung kiểm thử cho **25/25 tổ hợp** URL × LLM trong text mode có một URL, gồm các mức HIGH/WARNING/LOW/UNKNOWN/UNAVAILABLE. Mỗi ô assert toàn bộ kết luận và hai nhận định thành phần theo bảng kỳ vọng viết riêng; không lấy bảng CSV lịch sử làm đáp án. Có thêm các ca thiếu URL, lỗi hoặc xử lý URL chưa đầy đủ. Tổng bộ kiểm thử hiện tại **1.296/1.296 test offline đạt**, một cảnh báo deprecation Starlette/httpx. Các node test không phải số thông điệp được LLM thật đánh giá.
+
+Nhánh `verifier-shadow` cho phép quan sát verifier sau kết luận HIGH/WARNING hợp lệ, giữ nguyên kết luận gốc ngay cả khi đề xuất LOW. Chỉ gửi nội dung đã duyệt, không cấp score/nhận định đầu/nguồn RAG cho verifier; mọi bước dùng chung ngân sách chờ tối đa 45 giây. Stable vẫn là mặc định. Đã sửa lỗi JSON lồng quá sâu có thể gây API 500: phản hồi đó được báo lỗi kỹ thuật, giữ kết quả URL và kết luận đã hoàn tất. Kiểm bằng **12/12 fixture JSON sâu**, không phải 12 lần gọi API thật.
+
+Smoke qua factory thật xác nhận stable nạp XGBoost, focused/shadow nạp model ký tự; cap hiệu lực lần lượt 8.192/2.048/2.048. Với hai lượt phân tích cùng nội dung giả lập, model URL thật và ba phản hồi provider giả, focused/shadow gửi payload phân loại giống nhau, có cùng kết luận/URL; ý kiến LOW của shadow chỉ ở trường `verification`. Lượt này có **0 API LLM thật**, không đo F1 hoặc mức giảm báo nhầm.
+
+Đã đo riêng từng URL, gồm intake/chuẩn hóa và sinh đặc trưng/TF-IDF trước predict; phạm vi API đo in-process ASGI và serialization. Mỗi ô dưới đây có **100 quan sát**, từ năm chuỗi URL fixture lặp theo protocol, sau warmup:
+
+| Model/phạm vi | Median / URL | P95 / URL | Lượt ≤1 giây / số đo |
+|---|---:|---:|---:|
+| XGBoost — intake + model | 3,631 ms | 4,466 ms | 100/100 |
+| Ký tự + LR — intake + model | 0,467 ms | 0,507 ms | 100/100 |
+| XGBoost — API ASGI một URL | 7,193 ms | 8,966 ms | 100/100 |
+| Ký tự + LR — API ASGI một URL | 2,364 ms | 3,027 ms | 100/100 |
+
+Đây là tải tuần tự, model đã nạp trên i5-11400H, affinity bốn logical CPU, RAM máy 14,84 GiB không bị ép xuống 8 GiB; không gồm mạng HTTP vật lý, LLM, tải đồng thời hay thời gian nạp model. Dùng **400 số đo đầu tiên** đã ghi bền vững; bước xuất summary lỗi do thiếu metadata phân phối XGBoost, sau đó tính lại thống kê từ raw mà không chạy model. Giữ cả lần chạy sau sửa metadata riêng, không chọn theo tốc độ. Số đo thuộc hash nguồn trong protocol trước khi bổ sung nhánh runtime shadow; không dùng làm độ trễ shadow hiện tại hoặc chứng minh độ chính xác model tốt hơn.
+
+Công cụ phiếu người chấm mới khóa ID/nội dung bằng hash, phát hiện sửa input/thiếu dòng/nhãn sai/thiếu căn cứ và tổng hợp bất đồng riêng. Đã chuẩn bị hai bản cho **122 mẫu classification, 8 cặp RAG và 64 dòng injection**; số cặp đủ hai người vẫn **0/122, 0/8 và 0/64**, đồng thuận chưa đo. Không điền nhãn, tự phân xử hoặc xuất gold. Đây là các mẫu đã có, không phải dữ liệu thu thập mới.
+
+[Mục lục thay đổi và kiểm thử](../artifacts/evaluations/improvements_20261121/README.md) · [Single-URL raw và phục hồi](../artifacts/evaluations/url_single_latency_20261121/README.md) · [Phiếu và cách đối chiếu](../artifacts/evaluations/human_review_workflow_20261121/README.md). Chưa chạy thêm đánh giá phân loại với API thật hoặc suy luận holdout; cần người chấm trước khi kết luận RAG/URL/verifier cải thiện chất lượng.
+
+## Pilot challenge có nguồn ngày 19/11
+
+Đã hoàn tất 20 request phân loại và 9 chọn nguồn, không lỗi/cắt đầu ra, ghi nhận 33.875 token. 12 tin gốc được chọn từ 12 nhóm nguồn dev theo hash, thêm một biến thể injection; chưa suy luận holdout hoặc 120 SMS reserve. Các tin đều dựng lại, không phải thông điệp thu nhận thực tế được chứng thực.
+
+LLM và LLM + URL cùng khớp **10/10 nhãn AI nhị phân (5 dương/5 âm)**, F1 100%. Hai ca AI UNKNOWN còn lại đều bị cảnh báo. Mẫu nhỏ và nhãn AI chưa cho phép kết luận chất lượng ngoài thực tế; chưa thấy lợi ích URL trên nhiệm vụ hành vi. RAG sau phân loại dùng chung verdict nên F1 bằng nhau theo thiết kế, không là một kết quả tăng chất lượng.
+
+RAG có 8 cặp trích đoạn vật lý được chọn. Một phiên AI mù nhãn/arm chỉ chấm 2/8 cặp liên quan trực tiếp và 1/8 hỗ trợ đầy đủ quan hệ được chọn; phần lớn chỉ chung chủ đề. Đây là chẩn đoán AI trên pool đã chọn, chưa phải điểm người, retrieval Recall/Hit@k hoặc gold ngữ nghĩa. URL từng được cảnh báo `dichvucongbocongan.co` được model ký tự chấm LOW ở score 0,3767; không hạ ngưỡng theo ca này hoặc suy ra trạng thái website hiện tại.
+
+[Chi tiết cấu hình, mẫu số, hai bộ nhãn, khác biệt runtime và minh chứng](../artifacts/evaluations/evidence_pilot_20261119/README.md). Nhãn/corpus/model/ngưỡng cũ giữ nguyên; chưa tự đưa cấu hình thử nghiệm vào ứng dụng.
 
 ## URL
 
@@ -244,7 +335,7 @@ Lượt đầu dừng đúng gate sau 136 phản hồi hợp lệ và ba lỗi k
 | Metadata URL thật | 23,53% | 4/4 | 38,10% | 44/58 | 13 |
 | Metadata URL hoán đổi | 25,00% | 4/4 | 40,00% | 45/58 | 12 |
 
-Coverage nhị phân cả ba là 57/58 (98,28%); một mẫu âm lỗi không thành TN hoặc FP. 22 reference UNKNOWN báo riêng. Luôn LOW có accuracy 54/58 (93,10%) nhưng Recall 0/4 và F1 0; không dùng accuracy đơn lẻ với tỉ lệ lớp này.
+Coverage nhị phân cả ba là 57/58 (98,28%); một mẫu âm có UNKNOWN ngữ nghĩa hợp lệ, không thành TN hoặc FP. 22 reference UNKNOWN báo riêng. Luôn LOW có accuracy 54/58 (93,10%) nhưng Recall 0/4 và F1 0; không dùng accuracy đơn lẻ với tỉ lệ lớp này.
 
 Thêm metadata thật làm bốn quyết định LOW đúng theo reference thành cảnh báo, chưa sửa được ca nhị phân nào; McNemar hai phía p=0,125. Metadata thật và hoán đổi chỉ khác một quyết định đúng/sai, p=1. Mỗi payload có một lần sinh, chưa đo dao động lặp; kết quả là chẩn đoán, chưa chứng minh cơ chế neo vào score. Có metadata ở 33 SMS nhưng chỉ gồm 22 âm/11 UNKNOWN, không có dương nên không đo được lợi ích Recall URL. Arm hoán đổi dùng bằng chứng sai có chủ đích, không đưa vào app.
 
@@ -260,7 +351,9 @@ Verifier chỉ đọc text đã duyệt, không biết kết luận/lý do lư�
 | LLM + metadata URL thật | 38,10% → 80,00% | 13 → 2 | 4/4 | 55/58 |
 | LLM + metadata hoán đổi, chỉ đối chứng | 40,00% → 80,00% | 12 → 2 | 4/4 | 55/58 |
 
-Sau verifier, Precision 66,67%, Recall 4/4, accuracy 94,83%, coverage 98,28%; một mẫu âm lỗi vẫn không có quyết định. Không có TP→LOW hoặc cảnh báo→UNKNOWN để tạo điểm tăng. Cả ba arm còn cùng hai mẫu âm theo reference bị cảnh báo: cập nhật địa chỉ giao hàng và tuyển CTV. Verifier vẫn viện dẫn thao tác click/cập nhật như yêu cầu nguy hiểm; quote có thật chưa đủ chứng minh ngữ nghĩa nguy hiểm. Không sửa prompt/nhãn để xóa hai lỗi này trong lượt đã khóa.
+Sau verifier, Precision 66,67%, Recall 4/4, accuracy 94,83%, coverage 98,28%; một mẫu âm UNKNOWN ngữ nghĩa vẫn không có quyết định. Không có TP→LOW hoặc cảnh báo→UNKNOWN để tạo điểm tăng. Cả ba arm còn cùng hai mẫu âm theo reference bị cảnh báo: cập nhật địa chỉ giao hàng và tuyển CTV. Verifier vẫn viện dẫn thao tác click/cập nhật như yêu cầu nguy hiểm; quote có thật chưa đủ chứng minh ngữ nghĩa nguy hiểm. Không sửa prompt/nhãn để xóa hai lỗi này trong lượt đã khóa.
+
+Đính chính loại bất định qua audit và kiểm lại scorer ngày 21/11: `VN-SMS-2a7d2fbc908bcbee` là `status=ok`, `missing_context`, không phải lỗi API. Với hai arm LLM/LLM+URL, lỗi kỹ thuật là **0/58** nhãn nhị phân và **2/80** toàn arm; hai lỗi nằm ngoài nhóm nhị phân. Scorer mới khớp 4/4 hàng trước/sau và 160/160 chuyển đổi với dữ liệu đã khóa, không có suy luận mới. [Đối chiếu lịch sử](../artifacts/evaluations/evaluation_completion_20261121/historical_reconciliation/README.md); raw/report cũ được giữ nguyên.
 
 Tổng hai giai đoạn là **177 lần thử API**, 174 phản hồi hợp lệ và ba lỗi kết nối ban đầu; **169.972 token ghi nhận**, ba usage còn thiếu, không suy ra số tiền. Verifier thêm 29.193 token, median thời gian một request 376 ms trong lượt này; đây không phải SLA hoặc độ trễ toàn app. Kiểm toán riêng xác nhận 1.267 tệp minh chứng cũ và 235 tệp source/test không đổi; suite **999 test phần mềm đạt**, một cảnh báo Starlette/httpx đã có.
 

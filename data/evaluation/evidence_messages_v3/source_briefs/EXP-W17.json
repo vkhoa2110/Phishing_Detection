@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W17",
+  "primary_url": "https://congan.dongnai.gov.vn/Pages/newsdetail.aspx?CatId=109&NewsId=15807",
+  "publisher": "Công an tỉnh Đồng Nai",
+  "evidence_excerpt": "hoa hồng 30% lợi nhuận, đóng thuế",
+  "assistant_paraphrase": "Sàn đầu tư đòi nộp thêm tiền để rút tiền",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "de96709e1d9f98197436869d1a299618167128a6b4dab8bd0754e9c0393fca51",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

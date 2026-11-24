@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L11",
+  "primary_url": "https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication",
+  "publisher": "GitHub",
+  "evidence_excerpt": "Confirm that you've downloaded and can access your recovery codes",
+  "assistant_paraphrase": "Tự cấu hình xác thực hai yếu tố",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "71baa45af72630097634c2faeddf9f166e88703c1a119ba736984e96780e66d0",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L14",
+  "primary_url": "https://ctsv.hust.edu.vn/so-tay-sv/69/ban-dao-tao-huong-dan-thu-tuc-bieu-mau-thac-mac-ve-hoc-tap-hoc-phi",
+  "publisher": "Đại học Bách khoa Hà Nội",
+  "evidence_excerpt": "Hóa đơn điện tử (Biên lai thu học phí) được cấp tự động",
+  "assistant_paraphrase": "Thủ tục học phí, biên lai điện tử và cổng sinh viên",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "web_search_primary_cached_body",
+  "verification_details": "HUST primary handbook body returned by search on 2026-11-22; direct/browser body only shell. Tuition announcement candidate 51638 returned404 and was replaced before freeze.",
+  "local_primary_body_sha256": null,
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

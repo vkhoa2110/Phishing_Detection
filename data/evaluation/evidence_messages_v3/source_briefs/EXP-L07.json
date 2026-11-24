@@ -1,0 +1,17 @@
+{
+  "id": "EXP-L07",
+  "primary_url": "https://baohiemxahoi.gov.vn/chuyen-trang-bhxh-bhyt/tu-van-hoi-dap/Pages/default.aspx?ItemID=274922",
+  "publisher": "BHXH Việt Nam",
+  "evidence_excerpt": "Bạn sử dụng chức năng Quên mật khẩu",
+  "assistant_paraphrase": "Tự đặt lại mật khẩu qua email đã đăng ký",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [
+    "https://dichvucong.baohiemxahoi.gov.vn"
+  ],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "591be28c02d011a4db699eb9793d2b956ff75586f7f013a6a1508474390df927",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

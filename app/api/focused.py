@@ -21,12 +21,13 @@ from app.services.rag.action_retrieval import ActionAwareRAG, POLICY as RETRIEVA
 from app.services.rag.retrieval import RAGService
 import app.services.rag.evidence as evidence_selection
 
-PIPELINE = "focused-core-1.0-candidate"
+PIPELINE = "focused-core-1.1-candidate"
 
 
 def manifest(settings, thinking, hybrid):
     inherited = runtime_manifest(settings, "span_selection")
     files = ("app/api/focused.py", "app/services/llm/core.py", "app/services/llm/telemetry.py",
+             "app/core/privacy.py", "app/domain/evidence_spans.py",
              "app/domain/clarification.py", "app/services/rag/action_retrieval.py")
     return {"url_intake_version": inherited["url_intake_version"],
         "bare_domain_reference": inherited["bare_domain_reference"],
@@ -97,7 +98,7 @@ def create_app(settings=None, transport=None, model_service=None, rag_service=No
 
     app.router.lifespan_context = lifespan
     app.title = "PhishLens · focused core (experimental)"
-    app.version = "1.7.0-candidate"
+    app.version = "1.7.1-candidate"
     app.router.routes[:] = [r for r in app.router.routes if getattr(r, "path", None) != "/api/status"]
 
     @app.get("/api/status")

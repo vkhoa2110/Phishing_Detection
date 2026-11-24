@@ -69,7 +69,7 @@ def test_optional_rag_failure_keeps_core_decision_and_usage_separate(tmp_path):
         assert result["llm"]["usage"]["total_tokens"] == 24
         assert result["post_explanation"]["usage"]["total_tokens"] == 48
         assert result["execution"]["explanation"]["classification_changed"] is False
-        assert result["execution"]["llm"]["requested_profile"] == "message-core-1.0"
+        assert result["execution"]["llm"]["requested_profile"] == "message-core-1.1"
 
 
 def test_technical_failure_has_no_semantic_questions_and_keeps_url_alarm(tmp_path):
@@ -86,7 +86,7 @@ def test_technical_failure_has_no_semantic_questions_and_keeps_url_alarm(tmp_pat
 def test_status_declares_the_actual_profile_and_bounded_budget(tmp_path):
     with TestClient(app(tmp_path, lambda request: packet(decision()))) as client:
         result = client.get("/api/status").json()
-        assert result["analysis_policy"]["message_prompt_profile"] == "message-core-1.0"
+        assert result["analysis_policy"]["message_prompt_profile"] == "message-core-1.1"
         assert result["runtime_manifest"]["max_tokens"] == 2048
         assert result["runtime_manifest"]["thinking_requested"] == "disabled"
         assert result["analysis_policy"]["interaction_required"] is False

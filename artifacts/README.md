@@ -26,6 +26,13 @@
 | Sửa che OTP và metadata URL | `privacy_metadata_fix_20261116`: cùng bộ 16 ca×4 cấu hình đạt 64/64 kiểm hợp đồng; 80 SMS dev có metadata 30→35; giữ score/model và replay lịch sử bằng snapshot; không API hoặc F1 mới |
 | Miền trần và ranh giới trích URL | `url_intake_audit_20261117`: đối chiếu intake 2.1/2.2 trên ca tự soạn và đúng 80 SMS dev; tham chiếu IANA offline, chuỗi mơ hồ không chấm model; không nhãn phishing, API hoặc F1 mới |
 | Đối chứng điểm URL và verifier | `url_score_control_20261118`: đúng 80 SMS dev, metadata không cấp/thật/hoán đổi; kiểm lại riêng các cảnh báo bằng text; xem trạng thái và giới hạn trong `README.md`, không tự tích hợp app |
+| Challenge có căn cứ nguồn | `evidence_messages_20261118`: 34 nguồn, 88 tin dựng lại + 12 biến thể injection; pack/phiếu chấm đã khóa, chưa chạy model hoặc có nhãn người; xem giới hạn trùng URL lịch sử |
+| Pilot challenge dev | `evidence_pilot_20261119`: 12 tin gốc +1 injection;20 classifier +9 chọn nguồn hợp lệ; F1 khớp10 nhãn AI đạt100% nhưng2 ca UNKNOWN vẫn bị cảnh báo, chưa chứng minh URL/RAG cải thiện; không suy luận holdout |
+| Kiểm chứng sau audit tuần 5 | [improvements_20261121](evaluations/improvements_20261121/README.md): 25/25 ô fusion, verifier chỉ quan sát, xử lý JSON sâu; 1.296 test offline đạt, không API/F1 mới |
+| Latency từng URL | [url_single_latency_20261121](evaluations/url_single_latency_20261121/README.md): 100 lần/model/phạm vi, gồm intake/đặc trưng; dùng raw đầu tiên phục hồi sau lỗi export |
+| Hai phiếu người chấm và bất đồng | [human_review_workflow_20261121](evaluations/human_review_workflow_20261121/README.md): khóa 122 classification/8 RAG/64 injection, chưa có cặp hoàn tất, không tự điền gold |
+| Thu thập bộ bổ sung v2 | [supplement_collection_20261121](evaluations/supplement_collection_20261121/README.md): 34 trang nguồn mới, 72 ca cơ sở +8 injection, 45 dev/35 holdout; phiếu trống, chưa có F1 mới; full suite 1.345 test đạt |
+| Chốt nhãn và đánh giá đúng runtime | [evaluation_completion_20261121](evaluations/evaluation_completion_20261121/README.md): quy trình nhãn người/phân xử, so sánh bốn cấu hình qua API, kiểm mức sẵn sàng; 1.524 test offline, 12/12 lượt hợp đồng với provider giả; chưa có nhãn người hoặc F1 mới |
 | Kế hoạch SMS mới | `fresh_message_ablation_plan_v1` |
 
 [Kết quả và giới hạn](../docs/results.md) tập hợp các số quan trọng; [phương pháp](../docs/evaluation.md) nêu mẫu số, nhãn và đối chứng. Các thư mục trên là đường dẫn cục bộ, không bảo đảm có khi clone Git. Tài liệu chi tiết nguyên trạng trước refactor có trong [mốc 479c966](https://github.com/vkhoa2110/Phishing_Detection/tree/479c96612ca79d3e1de2d37df22d82ce19e09f23/docs).

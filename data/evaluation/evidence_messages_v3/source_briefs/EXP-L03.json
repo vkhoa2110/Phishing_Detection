@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L03",
+  "primary_url": "https://support.microsoft.com/vi-vn/authenticator/sign-in-using-microsoft-authenticator",
+  "publisher": "Microsoft Support",
+  "evidence_excerpt": "Nhấn hoặc nhập số tương ứng",
+  "assistant_paraphrase": "Xác thực đăng nhập do chính người dùng khởi tạo",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "d4fa04d9f59032c937cdfabe22e8b6d3fe484326138712c67fac3ef4b3ccccaf",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

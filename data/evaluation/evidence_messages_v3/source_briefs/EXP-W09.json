@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W09",
+  "primary_url": "https://www.evn.com.vn/d/vi-VN/news/Canh-bao-thu-doan-gia-mao-thuong-hieu-EVN-va-ung-dung-cham-soc-khach-hang-EVNSPC-60-134-509465",
+  "publisher": "EVN",
+  "evidence_excerpt": "website evnquocgia(.)com đã sao chép",
+  "assistant_paraphrase": "Giả điện lực và ứng dụng chăm sóc khách hàng",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "7b2850e16bfe581721d42e241014736abdb479cbdc3c56fa26ebc2cf03c25aae",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

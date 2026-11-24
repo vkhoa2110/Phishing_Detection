@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W19",
+  "primary_url": "https://www.mps.gov.vn/bai-viet/catp-hai-phong-canh-bao-cac-thu-doan-lua-dao-bua-vay-hoc-sinh-tan-sinh-vien-mua-tuu-truong-1787629964",
+  "publisher": "Bộ Công an",
+  "evidence_excerpt": "Giả mạo nhà trường thu học phí",
+  "assistant_paraphrase": "Giả tuyển sinh, học bổng và việc làm cho sinh viên",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "68d810a22ab33183f7168e431fb9e8216bb33fbe44e9e7ecb58ce77f6f53256f",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

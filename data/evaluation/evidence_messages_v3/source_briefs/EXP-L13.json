@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L13",
+  "primary_url": "https://ghn.vn/blogs/tin-tuc-ghn/nhung-dieu-shop-can-biet-ve-dich-vu-thu-ho-cod-ghn",
+  "publisher": "GHN",
+  "evidence_excerpt": "người mua sẽ thanh toán trực tiếp cho nhân viên giao hàng",
+  "assistant_paraphrase": "Thanh toán đúng đơn hàng khi nhận kiện hàng",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "1c4034a71c982a04a6b88fd8155a8071a3c79b6639506226af81770c981d3950",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L20",
+  "primary_url": "https://www.momo.vn/hoi-dap/lam-the-nao-de-biet-giao-dich-da-thanh-cong",
+  "publisher": "MoMo",
+  "evidence_excerpt": "MoMo sẽ gửi thông báo ngay sau khi giao dịch thành công",
+  "assistant_paraphrase": "Thông báo giao dịch và kiểm tra lịch sử ví",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "02b7294e180cf3ea66658652429cf995d8500813b3d066be1a2a5ef81768f1e9",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

@@ -54,6 +54,24 @@ Mở **http://127.0.0.1:8001**. Bản này mặc định yêu cầu tắt thinki
 
 Biến tùy chọn: `PHISHLENS_CORE_THINKING=default|disabled|enabled`, `PHISHLENS_CORE_MAX_TOKENS=2048`, `PHISHLENS_FOCUSED_RETRIEVAL=e5|action_hybrid`. `action_hybrid` chỉ để thử nghiệm, chưa tốt hơn E5 trên lượt dev mới. Có thể dùng `make run-focused` với `PORT` phù hợp.
 
+## Demo bản focused đã sửa lỗi ngày 24/11
+
+Để trình bày bản lõi `message-core-1.1` trên workspace có sẵn asset và cấu hình provider:
+
+```bash
+PORT=8001 make run-focused
+```
+
+Mở **http://127.0.0.1:8001** và xem `/api/status`: profile phải là `focused`, prompt `message-core-1.1`, cap phân loại 2.048 nếu không đặt override. Stable vẫn là lựa chọn mặc định khi chạy `run.py` không chỉ định profile. Chốt lệnh và cấu hình dùng demo trong báo cáo, vì số liệu full-dev ngày 22/11 thuộc core 1.0.
+
+1. Để hai tùy chọn RAG và cấp score URL cho AI tắt trong lượt đầu. Dán một tình huống yêu cầu gửi OTP, một quy trình người dùng tự khởi tạo và một nội dung thiếu ngữ cảnh để minh họa các nhánh; đọc kết quả thực trả, không dùng ba ví dụ làm điểm chính xác.
+2. Kiểm tra bản xem trước, sửa dữ liệu cá nhân còn sót rồi xác nhận gửi. Bản đã che số trong URL phải giữ nguyên khi phân tích; các giá trị mới nhập sau chỉnh sửa vẫn được che lại.
+3. Mở JSON để xem `llm.validation.quote_alignment`: nếu AI chỉ đổi hoa/thường hoặc khoảng trắng, quote hiển thị được nối về đoạn nguyên văn và có vị trí bắt đầu/kết thúc. Việc này không xác nhận ý nghĩa của trích dẫn đúng.
+4. Bật RAG ở lượt riêng nếu muốn trình bày phần đối chiếu. Focused truy xuất sau verdict; việc hiện nguồn không chứng minh tăng phát hiện. Lượt phân tích mới có thể cho kết quả khác do provider sinh lại.
+5. Giải thích rõ ô nội dung và URL: URL HIGH vẫn được giữ khi nội dung LOW/UNKNOWN hoặc AI lỗi. Trạng thái `OUTPUT_INVALID` có thể có mã chẩn đoán an toàn tại `llm.telemetry.output_validation`; đây là lỗi đầu ra, không phải kết luận tin bình thường.
+
+Hai lượt chẩn đoán nhỏ và các giới hạn nằm tại [minh chứng 24/11](../../artifacts/evaluations/submission_hardening_20261124/README.md). Chưa có đánh giá độc lập bằng nhãn người cho bản core 1.1.
+
 ## API cục bộ
 
 `GET /api/status` xem trạng thái; `POST /api/model/reload` nạp lại model; `POST /api/preview` tạo bản che; `POST /api/analyze` phân tích. Schema đầy đủ ở **http://127.0.0.1:8000/docs**.

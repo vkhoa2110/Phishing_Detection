@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L02",
+  "primary_url": "https://support.apple.com/vi-vn/102656",
+  "publisher": "Apple",
+  "evidence_excerpt": "Cách dễ nhất để đặt lại mật khẩu",
+  "assistant_paraphrase": "Đặt lại mật khẩu Apple bằng thiết bị tin cậy",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "87e082ff7f1662e01f9a4a2930f68696004e88f952e593f3e07834ea6f2a2041",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

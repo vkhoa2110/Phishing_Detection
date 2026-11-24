@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L06",
+  "primary_url": "https://evn.com.vn/d/vi-VN/news/Nhan-thong-bao-no-tien-dien-xac-minh-the-nao-60-3569-509453",
+  "publisher": "EVN",
+  "evidence_excerpt": "khách hàng chọn đúng mã khách hàng",
+  "assistant_paraphrase": "Chủ động xác minh thông báo tiền điện",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "938c8eb39ba7cfd2fb94de880c38370b31a5bf7d97915b505af483a37097d2d9",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

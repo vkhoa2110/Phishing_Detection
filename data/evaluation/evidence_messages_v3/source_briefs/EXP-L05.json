@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L05",
+  "primary_url": "https://www.vietnamairlines.com/in/vi/buy-tickets-other-products/how-to-buy-tickets-and-make-payment/how-to-change-ticket/on-app",
+  "publisher": "Vietnam Airlines",
+  "evidence_excerpt": "hành khách tiến hành thanh toán khoản phí chênh lệch",
+  "assistant_paraphrase": "Đổi vé trong ứng dụng hãng",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "579286cfc7e235ba67a633090f9ad5e84e2d73d75760f7facf63af69ef06be5c",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L08",
+  "primary_url": "https://support.microsoft.com/vi-vn/onedrive/share-files-and-folders-in-microsoft-onedrive",
+  "publisher": "Microsoft Support",
+  "evidence_excerpt": "Người nhận sẽ nhận được lời mời qua email",
+  "assistant_paraphrase": "Chia sẻ tệp cho người cụ thể",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "ee98a05fc83da9213d07a2cf54aaa8dee8242cc2ad6c2b7879f621876555c3bf",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

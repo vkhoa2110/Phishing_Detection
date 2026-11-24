@@ -2,6 +2,9 @@ import re
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 from app.services.url.parsing import URL_PATTERN, trim_url
 
+VERSION = "privacy-redaction-1.1"
+URL_MARKERS = re.compile(r"\[(?:EMAIL|PHONE|SECRET|NUMBER|AUTH)\]", re.IGNORECASE)
+
 
 def redact(text: str) -> tuple[str, list[str]]:
     """Che theo quy tắc; người dùng vẫn phải kiểm tra bản gửi."""
@@ -9,7 +12,10 @@ def redact(text: str) -> tuple[str, list[str]]:
 
     def mask_url(match: re.Match) -> str:
         raw = match.group()
-        value = trim_url(raw)
+        # Bracketed PII markers are not valid in a hostname. Keep the same
+        # redaction while using URL-safe spelling, including old previews.
+        value = URL_MARKERS.sub("REDACTED", trim_url(raw))
+        suffix = raw[len(trim_url(raw)):]
         has_scheme = "://" in value
         try:
             parsed = urlsplit(value if has_scheme else "http://" + value)
@@ -30,7 +36,7 @@ def redact(text: str) -> tuple[str, list[str]]:
             result = urlunsplit((parsed.scheme, netloc, parsed.path, query, fragment))
             if not has_scheme:
                 result = result.removeprefix("http://")
-            return result + raw[len(value):]
+            return result + suffix
         except ValueError:
             return "[URL_KHONG_PHAN_TACH_DUOC]"
 
@@ -75,5 +81,10 @@ def redact(text: str) -> tuple[str, list[str]]:
         text, count = re.subn(pattern, replacement, text)
         if count and label:
             changed.add(label)
+    # Numeric host/path components can be masked by the rules above. Finish
+    # their URL representation in this same preview, before consent, so the
+    # next defensive redaction pass sends identical text. IPv6/userinfo and
+    # query/fragment handling still use the normal URL parser.
+    text = URL_PATTERN.sub(mask_url, text)
     return text, sorted(changed)
 

@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L09",
+  "primary_url": "https://support.zoom.com/hc/vi/article?id=zm_kb&sysparm_article=KB0060737",
+  "publisher": "Zoom",
+  "evidence_excerpt": "không cần tải xuống bất kỳ Plugin hoặc phần mềm nào",
+  "assistant_paraphrase": "Tham gia cuộc họp được hẹn trước",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "web_open_primary_body",
+  "verification_details": "Zoom primary help body opened on 2026-11-22, browser lines 54-56; direct HTTP returned JS loading shell.",
+  "local_primary_body_sha256": null,
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

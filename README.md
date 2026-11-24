@@ -19,7 +19,11 @@ Mặc định chạy chính sách v4. Thử candidate v6.1 bằng `make run-cand
 
 `make run-focused` chạy bản verdict lõi thử nghiệm. Các profile qua `run.py` dùng kết nối AI do máy chủ quản lý, một ngân sách chờ tối đa 45 giây cho phân loại và giải thích; người dùng xem và xác nhận nội dung trước khi gửi. [Yêu cầu và minh chứng FR/NFR](docs/requirements.md).
 
+Focused hiện dùng `message-core-1.1`: đối chiếu quote chỉ khác định dạng về đúng đoạn gốc và báo rõ nguyên nhân đầu ra không hợp lệ. Preview đã sửa trường hợp marker số trong URL bị thay đổi ở lượt che tiếp theo. [Hướng dẫn demo](docs/guides/USAGE.md#demo-bản-focused-đã-sửa-lỗi-ngày-2411) và [minh chứng 24/11](artifacts/evaluations/submission_hardening_20261124/README.md) tách riêng kiểm lỗi của bản mới với số liệu core 1.0 lịch sử.
+
 Bản focused qua launcher kiểm tra thêm dấu hiệu tối thiểu giữa mã lý do và từng trích dẫn. Khi thiếu dấu hiệu, ứng dụng diễn giải thận trọng và yêu cầu kiểm tra lại; giữ nguyên mức cảnh báo của AI và kết quả URL. Đây chưa phải kiểm chứng ngữ nghĩa hoặc cải thiện F1. [Phạm vi và kết quả](docs/results.md#kiem-tra-ly-do).
+
+`make run-verifier-shadow` thử focused với một lượt LLM kiểm tra lại các kết luận HIGH/WARNING. Chế độ này chỉ ghi đề xuất vào trường `verification` của API, giữ nguyên kết luận hiển thị, cảnh báo URL và RAG. Lượt bổ sung dùng nội dung đã duyệt và chung ngân sách chờ 45 giây; có thể tăng token/chi phí khi sử dụng thật. Stable và focused thông thường không tự bật verifier. [Cấu hình và giới hạn](docs/architecture.md#verifier-shadow).
 
 ## Cấu trúc
 
@@ -63,3 +67,5 @@ make clean
 - [Danh sách công cụ](scripts/README.md), [dữ liệu](data/README.md), [đầu ra](artifacts/README.md).
 
 Nhãn AI và dữ liệu tự soạn dùng để chẩn đoán, chưa thay thế đánh giá độc lập. `.env`, trọng số, raw response và kết quả mới được Git bỏ qua. Báo cáo học thuật trong `docs/reports/` tiếp tục chỉ giữ cục bộ.
+
+Luồng [chốt nhãn người và đánh giá qua API ứng dụng](docs/evaluation.md#chốt-nhãn-người-và-đánh-giá-đúng-ứng-dụng-ngày-2111) kiểm cùng bốn cấu hình trên dev, tách UNKNOWN/lỗi và giữ từng attempt. Nhãn chưa hoàn tất sẽ chặn đánh giá theo reference người. Lượt [full-dev ngày 22/11](artifacts/evaluations/expanded_dev_full_20261122/README.md) đã hoàn tất 1.228 ô trên 307 ca dev có nhãn AI; 93 holdout và nhãn người còn chờ. [Kết quả mới nhất và giới hạn](docs/results.md) phân biệt kiểm phần mềm, chẩn đoán API và chất lượng phát hiện độc lập.

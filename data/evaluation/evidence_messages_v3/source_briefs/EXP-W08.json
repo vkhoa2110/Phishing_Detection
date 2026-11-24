@@ -1,0 +1,19 @@
+{
+  "id": "EXP-W08",
+  "primary_url": "https://pages.vietnamairlines.com/canh-bao-trang-web-gia-mao",
+  "publisher": "Vietnam Airlines",
+  "evidence_excerpt": "www.vietnamairslines.com",
+  "assistant_paraphrase": "Website giả mạo hãng hàng không",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [
+    "www.vietnamairslines.com",
+    "www.vietnamairlineshanoi.com",
+    "vnairlines.net"
+  ],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "e1c8a9b5958557bc233dc71743fd88b67ddf97d4d880a2f5ddc5ce9accc70eef",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

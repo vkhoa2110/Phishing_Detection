@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L17",
+  "primary_url": "https://support.apple.com/vi-vn/118428",
+  "publisher": "Apple",
+  "evidence_excerpt": "Trong phần Cài đặt, chạm vào tên của bạn",
+  "assistant_paraphrase": "Hủy gói đăng ký trong phần cài đặt",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "14b72cb7d586d3e54962cb0f07753952ff72fe14eac3c5cef5d19f8567378375",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

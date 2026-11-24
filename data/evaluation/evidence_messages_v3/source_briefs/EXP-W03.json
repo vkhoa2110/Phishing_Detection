@@ -1,0 +1,18 @@
+{
+  "id": "EXP-W03",
+  "primary_url": "https://congan.angiang.gov.vn/canh-bao-hanh-vi-gia-mao-cong-dich-vu-cong-quoc-gia-de-lua-dao",
+  "publisher": "Công an tỉnh An Giang",
+  "evidence_excerpt": "xe bạn có vi phạm, xử lý ngay",
+  "assistant_paraphrase": "Giả cổng dịch vụ công và thông báo phạt nguội",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [
+    "vndichvucong-gov.com",
+    "dichvucong-vn.com"
+  ],
+  "verification_method": "web_search_primary_cached_body",
+  "verification_details": "Primary publisher body returned by web search on 2026-11-22; direct TLS/fetch failed.",
+  "local_primary_body_sha256": null,
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

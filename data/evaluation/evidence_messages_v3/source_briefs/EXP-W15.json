@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W15",
+  "primary_url": "https://congan.dongnai.gov.vn/Pages/newsdetail.aspx?CatId=112&NewsId=29112",
+  "publisher": "Công an tỉnh Đồng Nai",
+  "evidence_excerpt": "Sau khi yêu cầu nạn nhân nộp các khoản phí",
+  "assistant_paraphrase": "Giả luật sư thu hồi tiền, đòi phí trước",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "752f709dd8ee7c09eb88498b1bf27288f404a86b5733e8bbcd86e29e6069267e",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W13",
+  "primary_url": "https://www.microsoft.com/en-us/security/blog/2023/12/05/microsoft-incident-response-lessons-on-preventing-cloud-identity-compromise/",
+  "publisher": "Microsoft Security",
+  "evidence_excerpt": "Consent phishing expands on traditional phishing",
+  "assistant_paraphrase": "Chiếm danh tính đám mây, cấp quyền ứng dụng độc hại",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "defe89279789a01d4617095d08b2af8770783c0f8511b2b7a1a92f85bbc5f689",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

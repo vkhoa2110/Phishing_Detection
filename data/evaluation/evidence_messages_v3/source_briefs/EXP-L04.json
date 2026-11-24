@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L04",
+  "primary_url": "https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-device-code",
+  "publisher": "Microsoft Learn",
+  "evidence_excerpt": "allows users to sign in to input-constrained devices",
+  "assistant_paraphrase": "Đăng nhập thiết bị hạn chế giao diện do người dùng khởi tạo",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "391528856c70b492e6e41cfbe8623e23764e1adfd16868ce43a99ba6819f360b",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

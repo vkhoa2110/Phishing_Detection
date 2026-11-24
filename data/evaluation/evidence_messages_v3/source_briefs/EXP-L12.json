@@ -1,0 +1,17 @@
+{
+  "id": "EXP-L12",
+  "primary_url": "https://danang.vnpt.com.vn/ho-tro-khach-hang/202607/huong-dan-nhan-thong-bao-cuoc-xac-nhan-thanh-toan-0091355/",
+  "publisher": "VNPT Đà Nẵng",
+  "evidence_excerpt": "Gửi đến địa chỉ email liên hệ thanh toán đã đăng ký",
+  "assistant_paraphrase": "Thông báo cước và xác nhận thanh toán điện tử",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [
+    "hoadon.vnptdanang.vn"
+  ],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "0a3f3af670c2b28151721801aa12cfac43f866171b1e7544299fa14c6abd6940",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

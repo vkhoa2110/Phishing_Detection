@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W14",
+  "primary_url": "https://www.vpbank.com.vn/bi-kip-va-chia-se/retail-story-and-tips/goc-canh-giac/canh-bao-thu-doan-lua-dao-chiem-doat-tien-trong-tk-ngan-hang",
+  "publisher": "VPBank",
+  "evidence_excerpt": "yêu cầu Khách hàng nộp trước một khoản tiền/phí",
+  "assistant_paraphrase": "Phí vay trước giải ngân và dụ cung cấp mã giao dịch",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "e0ce044614bd49256fe042ab6a4653e9be762aa5d083dd6d32781697c1f7c0af",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

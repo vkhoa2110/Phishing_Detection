@@ -1,0 +1,30 @@
+{
+  "version": "evidence-supplement-collection-2.0",
+  "expansion_version": "scenario-expansion-1.0",
+  "registered_before_materialization": true,
+  "seed": 20261121,
+  "dev_fraction": 0.6,
+  "base_targets": {
+    "PHISHING": {"with_URL": 50, "without_URL": 50},
+    "BENIGN": {"with_URL": 50, "without_URL": 50},
+    "INSUFFICIENT": {"with_URL": 20, "without_URL": 20}
+  },
+  "channel_target": {"SMS": 120, "EMAIL": 120},
+  "paired_injection_target": 40,
+  "public_specimen_or_template_target": 0,
+  "robustness_separate": {"parent_cases": 40, "variants_per_parent": 3, "total_variants": 120},
+  "source_target": 40,
+  "authorship": "AI_authored_source_grounded_scenarios",
+  "label_status": "assistant_evidence_design_not_gold",
+  "human_confirmation_required": true,
+  "new_sources_to_RAG": false,
+  "old_holdout_or_reserve_inference": false,
+  "model_training": false,
+  "provider_calls": 0,
+  "human_labels_generated": 0,
+  "URL_policy": "Use a literal documented target only with scoped source evidence; otherwise reserved .example hostname with no label-coded words. Never fetch message destinations. Illustrative URLs cannot measure real URL-model quality.",
+  "selection_policy": "Fixed catalog positions, one injection and three robustness variants per source; no prediction, seed reroll or selection by model outcome.",
+  "analysis_units": "240 primary authored bases;40 paired injection variants;120 robustness variants. These are400 rows, not400 independent received messages.",
+  "test_policy": "Author-exposed holdout; not independent blind test. Do not tune on holdout. Existing120SMSreserve stays untouched.",
+  "reporting": "Primary vs injection vs robustness separately; report source components, URL provenance, labels pending people, source/RAG/historical overlap and coverage/errors. No claim of human authorship or accuracy from this collection."
+}

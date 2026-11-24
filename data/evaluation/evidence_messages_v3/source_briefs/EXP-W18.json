@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W18",
+  "primary_url": "https://www.mps.gov.vn/bai-viet/nang-cao-suc-de-khang-cho-nguoi-dan-tren-khong-gian-mang-1787277060",
+  "publisher": "Bộ Công an",
+  "evidence_excerpt": "tài khoản này có khả năng đã bị chiếm quyền sử dụng",
+  "assistant_paraphrase": "Chiếm tài khoản mạng xã hội, giả người quen vay tiền",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "91e2009b2b7d46bb8513087ef8080e4ce7c736bf9761b4b70b9287cb06092911",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

@@ -3,6 +3,8 @@
 | Thư mục | Nội dung |
 |---|---|
 | `evaluation/` | Thông điệp mô phỏng, tập hồi quy và truy vấn retrieval phiên bản hóa |
+| [evaluation/evidence_messages_v1/](evaluation/evidence_messages_v1/README.md) | 88 thông điệp dựng lại từ 34 nguồn và 12 biến thể injection; tham chiếu thiết kế, chưa phải nhãn người |
+| [evaluation/evidence_messages_v2/](evaluation/evidence_messages_v2/README.md) | 72 ca cơ sở (64 dựng/8 trích ngắn) +8 injection, 34 nguồn mới so v1; kênh/URL/nguồn có kiểm chứng, nhãn người vẫn trống |
 | [knowledge/](knowledge/README.md) | Corpus v1 25 nguồn, v2 37 nguồn và metadata/provenance |
 | [raw/](raw/README.md) | Archive dữ liệu và snapshot bên thứ ba cài cục bộ |
 | [annotation/vn_sms_v2/](annotation/vn_sms_v2/README.md) | 200 SMS nguồn ngoài, phiếu review |

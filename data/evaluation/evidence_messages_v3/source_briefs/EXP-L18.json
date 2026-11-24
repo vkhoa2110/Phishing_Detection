@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L18",
+  "primary_url": "https://shop.viettel.vn/tin-tuc/chi-tiet/lam-cach-nao-de-xac-dinh-sim-phai-chuan-hoa-thong-tin-thue-bao/13523052",
+  "publisher": "Viettel",
+  "evidence_excerpt": "Ra trực tiếp cửa hàng giao dịch",
+  "assistant_paraphrase": "Tự kiểm tra thuê bao và đến điểm giao dịch",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "ce5464b93eaf324210f89a690d998d7594979b45f751abce6ad7f60fe0b74e08",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

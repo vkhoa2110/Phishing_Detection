@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W04",
+  "primary_url": "https://bidv.com.vn/bidv/ca-nhan/thong-bao/thay-doi-mang-luoi/canh-bao-phan-mem-chua-ma-doc",
+  "publisher": "BIDV",
+  "evidence_excerpt": "chiếm đoạt quyền truy cập, kiểm soát thiết bị di động",
+  "assistant_paraphrase": "Cài ứng dụng chứa mã độc ngoài kho chính thức",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "4b1dc9d17fcac3d052b1a30c5e333bc494ae3aa06bf528d3b5e319b8a1ced240",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

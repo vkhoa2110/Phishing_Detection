@@ -1,0 +1,15 @@
+{
+  "id": "EXP-L01",
+  "primary_url": "https://support.google.com/accounts/answer/41078?hl=vi",
+  "publisher": "Google",
+  "evidence_excerpt": "Bạn có thể đổi mật khẩu vì lý do bảo mật",
+  "assistant_paraphrase": "Người dùng tự đổi hoặc đặt lại mật khẩu",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "8132962d8f799cec7864a7d442de25d0af2d3bb50e2d19d8717dda5e65f910d4",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

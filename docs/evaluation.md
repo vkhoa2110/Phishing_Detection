@@ -9,9 +9,128 @@
 | `data/annotation/url_context_v1` | 160 URL nguồn thực và 200 ca ngữ cảnh | Nhãn URL, hành vi và vai trò URL phải chấm riêng |
 | `data/annotation/fresh_messages_v1` | 200 SMS review mới và 40 ca stress | Cùng snapshot nguồn SMS cũ; spam không phải phishing |
 | `data/evaluation/rag_retrieval_*` | Chọn ngưỡng và chẩn đoán truy xuất | Câu do trợ lý soạn, chưa phải relevance gold |
+| [`data/evaluation/evidence_messages_v1`](../data/evaluation/evidence_messages_v1/README.md) | 40 tình huống lừa đảo, 40 hợp lệ, 8 thiếu thông tin và 12 biến thể injection; chia theo nhóm nguồn/miền/mẫu | Tất cả dựng lại, nhãn thiết kế chưa phải gold; 6 dương URL holdout trùng test URL lịch sử |
+| [`data/evaluation/evidence_messages_v2`](../data/evaluation/evidence_messages_v2/README.md) | 72 ca cơ sở và 8 injection; kênh và xuất xứ tách rõ, 34 trang mới so v1 | 64 ca dựng/8 trích đoạn thiếu, 0 nhãn người; 22/80 ca trùng miền PhishVN, holdout chỉ một nhóm dương có URL |
 | Gói prospective URL cục bộ | Chuẩn bị calibration/test tương lai theo thời gian, miền và campaign | Chưa đủ nhãn độc lập và quota để công bố test |
 
 Giữ nguyên manifest, phân chia dev/reserve và phiếu review. Không đưa nhãn nguồn, đáp án, tier hoặc lý do gán nhãn vào payload LLM. Gán nhãn người trên bản sao phiếu mù, phân xử bất đồng rồi khóa phiên bản. Nhãn AI phải ghi rõ là AI, không tự điền tên người đánh giá. Nguồn chính thức chỉ là tham chiếu xuất xứ, chưa đủ để gán mọi URL của nguồn là benign.
+
+### Khóa bộ bổ sung v2
+
+`evaluation.data.evidence_supplement` đọc protocol thu thập lập trước soạn mẫu, nguồn/brief và case. Kiểm channel SMS/EMAIL/UNKNOWN, căn cứ kênh, xuất xứ từng ca và URL; `documented_excerpt` phải khớp trích ngắn nguồn qua phép che đã khai báo và giữ tính không đầy đủ. Không chấp nhận khai `observed_exact`/`observed_redacted` để biến cảnh báo thành tin thực nhận. Hash nguồn/brief/parser/protocol, nhóm miền/template/nguồn/lineage được khóa trước suy luận, không tìm lại seed theo output.
+
+```bash
+.venv/bin/python -B -m evaluation.data.evidence_supplement verify \
+  --out artifacts/evaluations/supplement_collection_20261121/pack_v2
+```
+
+Giữ SHA manifest độc lập và truyền `--manifest-sha256 SHA_DA_LUU` khi cần chống thay cả pack. Các helper được khóa hash; muốn sửa phương pháp phải giữ source/pack cũ và tạo phiên bản mới. Quota thiếu được báo, không tự điền dữ liệu hoặc nhãn. Phiếu 80 dòng mới không thay bộ 122 dòng tuần 5; `human_review.registration.json` nằm ngoài thư mục phiếu gửi người chấm. [Hướng dẫn chấm và nhận lại](../artifacts/evaluations/supplement_collection_20261121/annotation_instructions.md).
+
+Chấm hành vi nhìn thấy và giữ INSUFFICIENT khi thiếu căn cứ. Nhãn kịch bản, nhãn hành vi và trạng thái URL lịch sử là các trục khác nhau. Nguồn URL đã được cảnh báo không tự khiến một đoạn nội dung ngắn có hành vi rõ, nguồn dịch vụ chính thức cũng không xác minh mọi email tương ứng an toàn. Không đưa metadata nhãn/nguồn vào payload phân loại để tạo lợi thế. Chưa đăng ký/chạy phép đánh giá mới hoặc đưa nguồn bổ sung vào RAG.
+
+### Nhận phiếu người chấm độc lập
+
+`evaluation.data.human_review` hỗ trợ ba hợp đồng: nhãn hành vi (`classification`), hai trục relevance/support 0–2 (`rag`) và tuân chỉ dẫn chèn (`injection`). Lệnh `freeze` nhận một phiếu trống đã kiểm tra, khóa ID/nội dung bằng inventory và hash riêng rồi tạo hai bản có thứ tự độc lập. Không suy inventory từ phiếu A sau khi người chấm sửa. Với classification, chỉ nhận mã mù, text đã che và các cột người chấm; metadata nguồn/nhãn AI/dự đoán không được đưa vào phiếu.
+
+```bash
+.venv/bin/python -m evaluation.data.human_review freeze \
+  --kind classification --source TRUSTED_BLANK.csv \
+  --source-sha256 SOURCE_SHA256 --out NEW_PACKET
+
+# Giữ manifest_sha256 do freeze trả về ở nơi riêng với các phiếu gửi đi.
+.venv/bin/python -m evaluation.data.human_review reconcile \
+  --inventory NEW_PACKET --manifest-sha256 MANIFEST_SHA256 \
+  --a RETURNED_A.csv --b RETURNED_B.csv --out NEW_REVIEW_STATUS
+```
+
+`SOURCE_SHA256` là digest của bản trống mà người quản lý đã xác nhận; `MANIFEST_SHA256` là giá trị in ra lúc freeze, không lấy lại từ một bản đã bị sửa. `reconcile` từ chối thiếu/trùng/thừa mã, thay text, nhãn ngoài schema, thiếu căn cứ hoặc dùng cùng mã người chấm. Mã danh tính chỉ là khai báo, không xác thực được hai người độc lập bằng phần mềm. Kết quả giữ PENDING/A_ONLY/B_ONLY/AGREEMENT/DISAGREEMENT và cột phân xử trống; INSUFFICIENT khác chưa chấm. RAG mới chấm một trục vẫn là chưa hoàn tất. Không có cặp đủ hai lượt thì agreement là `null`, không phải 100%.
+
+Công cụ không gán nhãn, không tự phân xử và không xuất gold. Giữ phiếu trả về nguyên vẹn, chạy mỗi lần ra thư mục mới. Các packet minh họa ngày 21/11 dùng đúng phiếu trống có sẵn: [122 ca, 8 cặp RAG và 64 dòng injection](../artifacts/evaluations/human_review_workflow_20261121/README.md); toàn bộ điểm người vẫn trống.
+
+Với packet đã chuẩn bị, có thể dùng registration do người quản lý giữ thay cho việc nhập hash bằng tay:
+
+```bash
+.venv/bin/python -m evaluation.data.human_review reconcile \
+  --registration artifacts/evaluations/human_review_workflow_20261121/classification.registration.json \
+  --a RETURNED_A.csv --b RETURNED_B.csv \
+  --out artifacts/evaluations/human_review_workflow_20261121/classification_review_v2
+```
+
+Đổi sang `rag.registration.json` hoặc `injection.registration.json` cho nhóm tương ứng. Chỉ gửi hai tệp annotator cho hai người chấm; không gửi registration/inventory/source snapshot hoặc kết quả chấm trước. Mã và nội dung classification giống phiếu tuần 5, không phải thêm 122 mẫu mới hoặc yêu cầu chấm lại nếu đã có phiếu trả về.
+
+### Chốt nhãn người và đánh giá đúng ứng dụng ngày 21/11
+
+Luồng mới tách ba việc: nhận nhãn người, so sánh cấu hình ứng dụng trên **dev**, và kiểm mức sẵn sàng. Chưa có nhãn người đã chốt hoặc kết quả API thật mới từ luồng này. Mặc định ứng dụng vẫn là stable; chuẩn bị thực nghiệm không đổi cấu hình triển khai. [Minh chứng hoàn thiện](../artifacts/evaluations/evaluation_completion_20261121/README.md) giữ phiếu khai báo/phân xử trống trong `human_review_setup/`, `readiness.json` và kết quả phần mềm trong `validation/checks.json`.
+
+Gói đang dùng là [`supplement_collection_20261121/pack_v2`](../artifacts/evaluations/supplement_collection_20261121/pack_v2/manifest.json); SHA độc lập đã lưu tại [pack_anchor_v2.json](../artifacts/evaluations/supplement_collection_20261121/pack_anchor_v2.json). Giữ riêng các SHA trả về khi finalize nhãn, prepare lượt chạy và xuất seal kết quả; không lấy SHA mới từ tệp đã sửa để bỏ qua lỗi xác minh. Mỗi đầu ra `NEW_*` phải chưa tồn tại.
+
+`evaluation.data.adjudicated_reference init` kiểm hai phiếu trả về, xuất tiến độ, mẫu `attestation.json` chưa xác nhận và `adjudication.csv` chỉ chứa bất đồng. Người quản lý xác nhận nguồn nhãn thực sự do người chấm độc lập và điền căn cứ phân xử; AI không điền thay tên người, xác nhận hoặc nhãn. `finalize` yêu cầu đủ hai lượt cho mọi mẫu, căn cứ/mã người hợp lệ, mọi bất đồng đã phân xử và khai báo rõ nguồn nhãn. INSUFFICIENT là một nhãn hoàn chỉnh, khác ô trống chưa chấm.
+
+```bash
+.venv/bin/python -B -m evaluation.data.adjudicated_reference init \
+  --registration artifacts/evaluations/supplement_collection_20261121/pack_v2/human_review.registration.json \
+  --a RETURNED_A.csv --b RETURNED_B.csv --out NEW_REVIEW_SETUP
+
+# Chỉ sau khi người quản lý hoàn tất khai báo và phân xử thực tế:
+.venv/bin/python -B -m evaluation.data.adjudicated_reference finalize \
+  --registration artifacts/evaluations/supplement_collection_20261121/pack_v2/human_review.registration.json \
+  --a RETURNED_A.csv --b RETURNED_B.csv \
+  --attestation COMPLETED_ATTESTATION.json --adjudication COMPLETED_ADJUDICATION.csv \
+  --out NEW_FINAL_REFERENCE
+.venv/bin/python -B -m evaluation.data.adjudicated_reference verify \
+  --out NEW_FINAL_REFERENCE --manifest-sha256 REFERENCE_SHA_DA_LUU
+```
+
+Nhãn chốt có trạng thái **người quản lý khai báo nhãn người đã phân xử, chưa xác thực độc lập danh tính**. Công cụ kiểm tính nhất quán ID/text/hash và phát lại quy trình, không chứng minh người chấm độc lập hoặc nhãn chắc chắn đúng. Giữ nhãn AI cũ thành tham chiếu riêng; không dùng chúng để vượt điều kiện nhãn người.
+
+`evaluation.messages.runtime_evaluation` dùng đúng factory `app.api.runtime.create_app`, preview và `/api/analyze`; giữ budget provider dùng chung tối đa 45 giây của từng lượt. Chỉ chọn dev từ pack đã khóa, không suy luận holdout hoặc 120 SMS dự trữ. Bốn arm là LLM / +metadata URL / +RAG / +cả hai; “không URL” chỉ nghĩa không thêm điểm model, URL trong nội dung vẫn được LLM đọc. Lưu yêu cầu và attempt trước gửi, trạng thái thực nạp, hash mã/model/corpus, payload fingerprint, thông tin kết thúc và usage; không lưu key, endpoint hoặc reasoning. Prepare từ chối nhãn chưa chốt trước khi nạp model; preview thay đổi nội dung đã chấm cũng phải dừng để review phiên bản mới.
+
+Đây là **so sánh cấu hình ứng dụng**, không phải ablation giữ nguyên mọi system prompt: stable đổi hướng dẫn RAG trước phân loại, còn focused/verifier-shadow truy xuất sau verdict để giải thích. Các lượt ứng dụng sinh độc lập dù classifier payload giống nhau; dao động F1 giữa chúng không xác định riêng tác dụng của RAG. Verifier-shadow chỉ đưa gợi ý, không thay kết luận chính. Muốn đối chứng thành phần bằng phản hồi classifier dùng chung phải đăng ký lượt riêng và ghi rõ phạm vi đó.
+
+```bash
+.venv/bin/python -B -m evaluation.messages.runtime_evaluation prepare \
+  --pack artifacts/evaluations/supplement_collection_20261121/pack_v2 \
+  --pack-sha256 PACK_SHA_DA_LUU \
+  --reference NEW_FINAL_REFERENCE --reference-sha256 REFERENCE_SHA_DA_LUU \
+  --profile stable --repeats 1 --out NEW_RUNTIME_DEV
+
+# Pilot vận hành: chỉ xem lỗi/usage, không chọn lại prompt hoặc mẫu theo điểm.
+.venv/bin/python -B -m evaluation.messages.runtime_evaluation run \
+  --out NEW_RUNTIME_DEV --manifest-sha256 RUN_SHA_DA_LUU --live --limit 12
+# Tiếp tục các ô chưa từng gửi nếu pilot không kích hoạt chặn vận hành:
+.venv/bin/python -B -m evaluation.messages.runtime_evaluation run \
+  --out NEW_RUNTIME_DEV --manifest-sha256 RUN_SHA_DA_LUU --live
+.venv/bin/python -B -m evaluation.messages.runtime_evaluation export \
+  --out NEW_RUNTIME_DEV --manifest-sha256 RUN_SHA_DA_LUU
+.venv/bin/python -B -m evaluation.messages.runtime_evaluation verify \
+  --out NEW_RUNTIME_DEV --manifest-sha256 RUN_SHA_DA_LUU \
+  --results-sha256 RESULTS_SHA_DA_LUU
+```
+
+CLI gọi provider phải có `--live`; chạy offline của runner chỉ dành transport giả được truyền bằng mã kiểm thử, không phải một lượt chất lượng LLM. Không retry, vá JSON hoặc gửi lại ô đã attempt; ô bị gián đoạn thành lỗi riêng. HTTP 429 và usage không xác định tạo chặn được giữ qua lần chạy tiếp; hết token budget cũng dừng. Không xóa gate/đổi registration để vượt chặn. Giới hạn token quan sát có thể vượt một lượt ứng dụng; usage thiếu không được tính như miễn phí. Chỉ xuất bảng điểm đủ ma trận khi mọi ô có phản hồi hoặc lỗi, chưa hoàn tất thì xuất tiến độ.
+
+Đích phân loại chính là `llm.verdict.risk_level` hợp lệ, không lấy headline URL/UI hoặc `verification.suggested_level` thay thế. Báo số đúng trên toàn bộ nhãn PHISHING/BENIGN; UNKNOWN ngữ nghĩa và lỗi kỹ thuật giữ riêng, vẫn tính sai trong Accuracy toàn tập. Dương chưa kết luận làm giảm Recall/F1; âm chưa kết luận không thành TN hoặc FP nên phải đọc F1 cùng coverage/lỗi. Nhãn INSUFFICIENT báo riêng. Phân tầng theo có URL, metadata thực gửi và tài liệu khả dụng; xuất từng mã sửa đúng/sai thêm. Mẫu cơ sở, injection ghép cặp và các lần lặp báo riêng; không tăng số mẫu độc lập bằng cách đếm lặp. Khớp mức bị lệnh chèn ép chỉ là chỉ số literal, chưa phải semantic attack success.
+
+`evaluation.project_readiness` kiểm các artifact chỉ định, không tự chạy test/inference hoặc điền nhãn. Tách `ready_for_human_annotation`, `ready_for_runtime_evaluation`, `ready_for_independent_quality_claim` và `ready_for_release`; nhiều test đạt không thay nhãn người, bằng chứng độc lập hoặc kiểm chứng cấu hình sử dụng thực tế. Phần mềm được đối chiếu returncode và từng testcase JUnit, không lấy collect-only làm số test đạt; một lượt cũ chưa chứng minh worktree hiện tại vừa được kiểm.
+
+```bash
+.venv/bin/python -B -m evaluation.project_readiness \
+  --pack artifacts/evaluations/supplement_collection_20261121/pack_v2 \
+  --pack-sha256 PACK_SHA_DA_LUU \
+  --checks artifacts/evaluations/evaluation_completion_20261121/validation/checks.json \
+  --out NEW_READINESS.json
+```
+
+Sau khi có nhãn/lượt chạy thật, thêm `--final-reference NEW_FINAL_REFERENCE --reference-sha256 REFERENCE_SHA_DA_LUU` và `--runtime-run NEW_RUNTIME_DEV --run-sha256 RUN_SHA_DA_LUU`. Trạng thái `blocked` với mã thoát 0 là kiểm thành công nhưng thiếu điều kiện; hash/tài liệu không hợp lệ mới là lỗi. Bộ bổ sung vẫn dựng có chủ đích và tác giả đã thấy; chấm người xong hoặc chạy đủ dev cũng không biến nó thành test dân số độc lập hay tự cho phép phát hành.
+
+### Đo thời gian xử lý một URL
+
+```bash
+.venv/bin/python -m evaluation.url.latency \
+  --out artifacts/evaluations/NEW_SINGLE_URL_RUN --rounds 20 --warmup 3 --cpu-cores 4
+```
+
+Runner ghi protocol trước khi nạp model, không ghi đè đầu ra cũ, dùng gói XGBoost/TF-IDF ký tự thật và 5 URL fixture cố định không có nhãn an toàn. Mỗi model có 100 quan sát/phạm vi: intake + đặc trưng + predict và API ASGI một URL. Không chia thời gian batch cho số URL; không loại lỗi để làm latency tốt hơn, không gọi LLM/RAG hoặc mở trang đích. [Raw, recovery và giới hạn của lượt 21/11](../artifacts/evaluations/url_single_latency_20261121/README.md). Đây là đo vận hành trên model đã nạp, không phải so sánh độ chính xác.
 
 ## So sánh công bằng
 
@@ -65,6 +184,32 @@ Tất cả chạy từ root; xem `--help` trước khi thực thi. `NEW_DIR` ph�
 ```
 
 Runner `evaluation.messages.interaction_pilot` cần gói nguồn có hash tương thích với mã hiện hành. Runner này chỉ gọi API khi `run --live`. Một số runner cũ như `evaluation.messages.improvement_pilot run` gọi API trực tiếp theo protocol; không chạy `run` để thử import. Dùng `--help` hoặc `prepare` thích hợp. Các scorer/validator lịch sử có thể từ chối mã sau refactor; xem [tái lập lịch sử](development.md#tai-lap-lich-su).
+
+### Pilot dev trên challenge có nguồn
+
+`evaluation.messages.evidence_pilot` giữ nhãn tác giả và tham chiếu từ hai phiên AI chỉ thấy ID/text thành hai phiên bản riêng. Hai phiên cùng họ model, không phải gold người. Chỉ chọn dev theo hash của nhóm nguồn/URL, không chọn theo nhãn/score; các bất đồng hoặc UNKNOWN giữ riêng. Tham chiếu phải khóa trước output. Nhãn tình huống và hành vi nhìn thấy là hai mục tiêu khác nhau.
+
+```bash
+# ROOT chứa blind_dev_inputs, reviewer_a/b và label_review_protocol đã chuẩn bị
+.venv/bin/python -B -m evaluation.messages.evidence_pilot review --root ROOT
+.venv/bin/python -B -m evaluation.messages.evidence_pilot prepare --root ROOT
+# run không có --live không gửi API. Segment đầu đúng4 request như đăng ký.
+.venv/bin/python -B -m evaluation.messages.evidence_pilot run --root ROOT --live --limit 4
+.venv/bin/python -B -m evaluation.messages.evidence_pilot run --root ROOT --live
+.venv/bin/python -B -m evaluation.messages.evidence_pilot report --root ROOT
+
+.venv/bin/python -B -m evaluation.rag.evidence_post_pilot prepare \
+  --parent ROOT/classification --out ROOT/post_rag
+.venv/bin/python -B -m evaluation.rag.evidence_post_pilot run --out ROOT/post_rag --live --limit 4
+.venv/bin/python -B -m evaluation.rag.evidence_post_pilot run --out ROOT/post_rag --live
+.venv/bin/python -B -m evaluation.rag.evidence_post_pilot report --out ROOT/post_rag
+```
+
+Trước khi tiếp tục segment, chỉ review trạng thái kỹ thuật/finish reason/usage, không sửa prompt/model/ngưỡng/nhãn theo output. Nếu RAG đăng ký ít hơn4 request, dùng đúng `pilot_unique_requests` đã khóa thay cho4; khi không có request thì hoàn tất offline. Giữ mọi lỗi, không gửi lại key đã thử.
+
+Bốn arm logic gồm LLM, +URL, +RAG sau phân loại, +URL+RAG sau phân loại. RAG dùng chung verdict nên không thể chứng minh lợi ích bằng F1 khác nhau; nguồn và ngữ nghĩa chấm riêng, alias không là mẫu độc lập. Lượt staged này chưa áp dụng presentation guard vào verdict của evidence selector và không đo deadline dùng chung/API/UI. [Kết quả và giới hạn ngày19/11](../artifacts/evaluations/evidence_pilot_20261119/README.md).
+
+Sao chép các phiếu review ra thư mục nhãn phiên bản mới trước khi điền; giữ nguyên bản trống thuộc gói đã khóa. Phiếu RAG có thể lặp một lựa chọn ở nhiều arm do alias: dùng request/pair mapping để báo số cặp vật lý, không coi mỗi dòng là bằng chứng độc lập.
 
 ## Kiểm chứng đầu ra compact v6.1
 

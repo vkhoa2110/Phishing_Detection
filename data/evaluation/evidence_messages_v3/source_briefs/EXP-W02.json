@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W02",
+  "primary_url": "https://www.momo.vn/blog/mao-danh-nhan-vien-momo-qua-cuoc-goi-cach-nhan-c198dt2675",
+  "publisher": "MoMo",
+  "evidence_excerpt": "MoMo không bao giờ hỏi những thông tin này",
+  "assistant_paraphrase": "Mạo danh nhân viên ví, lấy OTP và xác nhận giao dịch",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "8e50751424946db40fbfbf3c8189ec28176567fd9850e42b07477d66e85bac7e",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}

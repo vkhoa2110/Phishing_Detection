@@ -1,0 +1,15 @@
+{
+  "id": "EXP-W16",
+  "primary_url": "https://mps.gov.vn/chinh-sach-phap-luat/bai-viet/tai-san-ma-hoa-trong-khuon-kho-phap-luat-moi-nhung-rui-ro-nguoi-dan-doanh-nghiep-can-nhan-dien-1787647393",
+  "publisher": "Bộ Công an",
+  "evidence_excerpt": "khóa riêng tư hoặc cụm từ khôi phục ví",
+  "assistant_paraphrase": "Tài sản mã hóa và rủi ro lộ khóa bí mật",
+  "scope": "Source supports a mechanism/workflow, not the exact wording, every added cue, channel, or authenticity of the authored messages.",
+  "documented_urls": [],
+  "verification_method": "direct_primary_body",
+  "verification_details": "HTTPS primary article retrieved; HTML text or pdftotext extracted; no embedded link fetched.",
+  "local_primary_body_sha256": "454c36b2f45ff59b1efa872d1be651607c2e32bf397e59f84d621f4a4575ed8c",
+  "retrieved_date": "2026-11-22",
+  "current_destination_safety_verified": false,
+  "source_full_text_redistributed": false
+}
