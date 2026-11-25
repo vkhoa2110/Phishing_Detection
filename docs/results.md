@@ -1,6 +1,92 @@
 # Kết quả và giới hạn
 
-Các số dưới đây tóm tắt các lượt thực nghiệm theo từng mốc, cập nhật đến 24/11/2026. [Tài liệu lịch sử trước lần tổ chức cấu trúc](https://github.com/vkhoa2110/Phishing_Detection/tree/479c96612ca79d3e1de2d37df22d82ce19e09f23/docs) và các manifest/raw cục bộ giữ nguyên.
+Các số dưới đây tóm tắt các lượt thực nghiệm theo từng mốc, cập nhật đến 25/11/2026. [Tài liệu lịch sử trước lần tổ chức cấu trúc](https://github.com/vkhoa2110/Phishing_Detection/tree/479c96612ca79d3e1de2d37df22d82ce19e09f23/docs) và các manifest/raw cục bộ giữ nguyên.
+
+## Extension 0.7: giải thích AI, chụp trực tiếp và email — 25/11
+
+Phần Dấu hiệu có đoạn AI giải thích tổng hợp và lý do riêng cho từng quote. Lượt giải thích công khai là tùy chọn sau phân loại trong focused/shadow, đọc đúng bản đã duyệt và các chỉ số quote, dùng chung hạn chờ/slot, không thay verdict/quote/URL. API cũ không yêu cầu trường mới thì giữ một lượt phân loại như trước; lỗi giải thích chỉ tạo trạng thái bổ sung. Prompt/model/ngưỡng phân loại giữ nguyên.
+
+Khoanh vùng từ menu/nút nổi hiện trực tiếp trên trang trước cửa sổ đọc ảnh; có chụp toàn vùng website đang hiển thị. Gmail/Outlook có lấy thư đang mở và tùy chọn chuẩn bị bản duyệt khi chuyển thư; không gửi AI khi chưa consent, không lấy inbox/draft. Trích xuất DOM chỉ áp dụng thư mở rộng đã nhận diện, không đọc ảnh/tệp đính kèm; hiện kiểm bằng fixture, chưa kiểm hộp thư thật.
+
+Bộ kiểm mới có **1.648/1.648** test offline đạt, không fail/error/skipped, một Starlette deprecation; **364 tệp** không đổi trong lượt chạy. Chromium có **66 nhóm** đạt trên web/guest, trợ lý URL, ảnh, khoanh vùng, email DOM fixture, điểm/mức và kết nối tài khoản cũ. Trong đó **12 nhóm** kiểm khoanh/full viewport và OCR thật, **10 nhóm** kiểm Gmail/Outlook mô phỏng; không dùng hộp thư người dùng.
+
+Smoke API thật sau chỉnh payload đạt **2/2 lời gọi HTTP200/stop**: phân loại core 1.1 HIGH trên email khuyến mãi tự soạn, 1.089 token; giải thích hai quote, 995 token, tổng **2.084 token**. Không RAG/verifier/retry, không lưu lịch sử khách. Lượt đầu cap 1.024 kèm response_format bị length ở giải thích, giữ nguyên minh chứng; lượt sau đổi hợp đồng ngắn/cấu hình sinh theo core, cap tối đa 2.048. Không gộp hai lượt thành một tỷ lệ chất lượng. Đây là kiểm tích hợp, không phải F1 hoặc đánh giá độc lập. [Minh chứng và kiểm thử](../artifacts/evaluations/extension_mail_capture_20261125/README.md).
+
+## Giao diện web và extension 0.6 — 25/11
+
+Trang kiểm tra bỏ banner khách/khẩu hiệu và các ghi chú lặp; ví dụ dùng thử và cài extension nằm ở hai khối riêng. Thông tin model/token/profile chuyển vào phần kỹ thuật thu gọn. Có tải JSON trực tiếp và In/PDF cho kết quả. Tab URL mặc định chỉ kiểm cục bộ; tab tin nhắn chọn sẵn AI, nhớ lựa chọn riêng và luôn yêu cầu duyệt/đồng ý trước khi gửi. Launcher mở thẳng `/check`. Extension rút gọn nhãn/kết nối/hướng dẫn, tăng cỡ chữ nhỏ và bỏ nút submit đè lên tùy chọn.
+
+Kiểm offline mới đạt **1.638/1.638**, không fail/error/skipped, một Starlette deprecation; **359 tệp** không đổi trong lượt chạy. Chromium đạt **10 nhóm guest/web** (có 320/390 px, ví dụ, hướng dẫn và PDF), **14 nhóm trợ lý**, **6 nhóm tải/cắt/OCR ảnh**, **9 nhóm khoanh vùng/OCR thật**, **8 nhóm điểm/mức fixture**, **6 nhóm kết nối tài khoản cũ**. Các lượt dùng database/profile thử; provider được mô phỏng, **0 API LLM ngoài**. Luồng chụp vùng chạy headed với quyền host được cấp trước trong manifest thử, chưa tự động hộp thoại cấp quyền native. Đây là kiểm chức năng/giao diện, chưa phải nghiên cứu khả dụng với người dùng.
+
+Model, prompt, ngưỡng và dữ liệu đánh giá giữ nguyên; các snapshot cũ được bảo toàn. [Minh chứng, ảnh và giới hạn](../artifacts/evaluations/product_polish_20261125/README.md). Các mốc 0.5 trở về trước giữ theo snapshot lịch sử.
+
+## Dùng khách và extension 0.5 — 24/11
+
+Web vào thẳng kiểm tra khi chưa đăng nhập; extension tự kết nối localhost, bỏ UI lấy/nhập mã. Khách có URL, preview/consent AI và OCR; không tạo user/history hoặc nhận quyền cookie web. Tài khoản giữ dữ liệu riêng và lịch sử cho lượt tiếp theo. CSRF/Origin, private API, quota AI khách dùng chung theo client và giới hạn OCR vẫn áp dụng; token cũ giữ tương thích có thu hồi, không tự hạ bearer sai thành khách trong cùng request.
+
+Snapshot mới có **1.638/1.638 test offline đạt**, 0 fail/error/skipped, một deprecation; **359 tệp** không đổi trong lượt chạy. Có **14 ca guest API**, **8 nhóm guest UI** (URL/RAG thật, hai phản hồi AI giả, 0 API ngoài), **9 nhóm region/OCR thật**, **8 nhóm điểm/mức fixture**. Các lượt dùng database/profile riêng, không phải F1 hoặc nhãn người. Đã restart demo cổng 8001, kiểm root→check và guest extension HTTP200, history private HTTP401; chín bảng dữ liệu cũ giữ nguyên hàng/hash. [Minh chứng và giới hạn](../artifacts/evaluations/guest_access_20261124/README.md). Các mốc 0.4 trở về trước giữ theo snapshot lịch sử.
+
+## Extension 0.4: bảng điều khiển và trợ lý theo ngữ cảnh — 24/11
+
+Đã thiết kế lại ba khu Kiểm tra/Trợ lý/Kết nối, sáng/tối, nút khoanh vùng chính và thao tác nhanh. Nút nổi kéo/bám mép được, có menu bàn phím, tạm nghỉ một giờ và ẩn website. Tùy chọn tự kiểm URL mặc định tắt; khi bật, worker xử lý sự kiện điều hướng/chọn tab/đổi URL SPA, chỉ gọi model URL qua localhost, không đọc DOM/gọi AI/lưu lịch sử nền. Có cache, giới hạn đồng thời, hủy kết quả muộn và trạng thái lỗi riêng; không chặn trang đích.
+
+Bộ kiểm offline mới đạt **1.624/1.624**, 0 failed/error/skipped, một deprecation; **357 tệp** nguồn/test/asset/cấu hình không đổi trong lượt chạy. Browser trợ lý đạt **14 nhóm** với API/tài khoản thật trên database thử, model URL fixture, **0 provider call, 0 history, 0 AI usage**. Có kiểm quyền mặc định chưa cấp, đóng bảng vẫn chấm URL, SPA, kéo/ẩn/tạm nghỉ, lỗi dịch vụ và gửi đồng thời không trùng. Luồng khoanh vùng/OCR thật đạt **9 nhóm**, model URL/RAG thật và một provider giả; regression cũ **6 nhóm**, một provider giả; điểm/mức cảnh báo **8 nhóm** fixture HTTP. Các lượt dùng profile/database thử riêng, không có API ngoài hoặc F1/nhãn người mới.
+
+Manifest phân phối vẫn dùng quyền toàn trang tùy chọn; bản test trợ lý/capture cấp trước quyền này, không tự động hộp thoại quyền native hoặc toolbar/phím tắt OS. Chưa kiểm Edge/Windows/macOS, chưa có nghiên cứu khả dụng người dùng. [Minh chứng và nguồn tham khảo thiết kế](../artifacts/evaluations/extension_redesign_20261124/README.md). Các mục 0.3/0.3.1 bên dưới là snapshot lịch sử.
+
+## Extension 0.3.1: cách hiển thị điểm và mức cảnh báo — 24/11
+
+Kết quả có thang ba mức Thấp / Cần kiểm tra / Cao, để UNKNOWN không chọn mức nào. Điểm URL hợp lệ hiển thị dạng score×100%, ghi rõ **Điểm mô hình URL**, chưa phải xác suất lừa đảo đã kiểm chứng. Chỉ đưa điểm lên banner khi kiểm một URL ở URL mode; trong text mode giữ điểm ở phần URL và từng đường dẫn. Nhiều URL không có điểm tổng hợp tự đặt. Không đổi score, ngưỡng, prompt hoặc verdict.
+
+AI vẫn dùng hợp đồng phân loại theo mức, hiển thị **Chưa có ước lượng %** và giải thích thu gọn. Không gán HIGH=90% hoặc UNKNOWN=0%, không suy độ tin cậy từ số đoạn trích. Điểm URL thiếu/sai kiểu/ngoài [0,1]/lỗi không được đổi thành 0%.
+
+Kiểm Chromium với endpoint được chặn và trả fixture tường minh đạt **8 nhóm kiểm**, gồm cảnh báo không URL, tách AI LOW với URL HIGH, nhiều URL, UNKNOWN và điểm lỗi, biên 0/1, sáng/tối 320px. Đây là fixture giao diện, không có model/provider/backend thật. Test API/đóng gói liên quan đạt **27/27**, một deprecation. Mốc full suite 1.624 bên dưới thuộc snapshot 0.3; không ghi là chạy full mới cho thay đổi giao diện này. [Minh chứng](../artifacts/evaluations/extension_scores_20261124/README.md), [8 nhóm UI](../artifacts/ui/extension_scores_20261124_attempt1/checks.json).
+
+## Extension 0.3: khoanh trực tiếp trên trang và ghi nhớ — 24/11
+
+Đã tách **Khoanh vùng trên trang** khỏi tải/drop/paste ảnh. Người dùng kéo hình chữ nhật trực tiếp trên trang, extension chụp/cắt trong bộ nhớ, tự OCR và mở bản duyệt chữ; AI chỉ chạy sau consent. Esc hủy; đổi trang/cuộn/thay đổi kích thước trong khi chọn làm hủy để tránh lấy nhầm vùng. Có menu trang/ảnh, phím cấu hình Alt+Shift+S, nút nổi tùy chọn và kết nối ghi nhớ 30 ngày qua lần mở lại trình duyệt. Backend vẫn cần chạy. Kết nối ghi nhớ tiếp tục có hiệu lực khi đăng xuất web; có thể thu hồi, hết hạn hoặc bị xóa khi đổi/đặt lại mật khẩu/khóa tài khoản.
+
+Quyền toàn trang chỉ xin khi bật nút nổi; helper tạo nút, không tự đọc/phân loại trang. Storage chỉ cho trusted contexts, helper không đọc token. Không lưu screenshot trong storage/server; chỉ crop tới OCR localhost. Mã nonce dùng một lần và kiểm tab/document/frame/viewport. Schema 3 giữ dữ liệu tài khoản/lịch sử/kết nối phiên cũ.
+
+Bộ kiểm mới **1.624/1.624 test offline đạt**, 0 fail/error/skipped, một deprecation; **354 tệp** nguồn/test/asset/cấu hình không đổi trong lượt chạy. Có 10 test mới cho token ghi nhớ, giới hạn/thu hồi/ràng buộc origin và di trú schema 2→3 giữ dữ liệu. Đây là kiểm phần mềm, không phải Accuracy/F1 mới.
+
+Kiểm region đạt **9 luồng** trên Chromium có cửa sổ thật trong màn hình ảo Linux, captureVisibleTab và OCR vie+eng thật, tỷ lệ hiển thị 150%. Crop kiểm được 1.200×387 px từ vùng CSS 800×257,77 px; phần text ngoài vùng không tới OCR/provider. Có tự preview, consent với một provider giả, chặn replay, helper không đọc được token, hủy/Esc/cuộn, khôi phục ghép nối sau restart và hết phiên web, tắt nút/thu hồi. Test dùng bản sao manifest cấp trước quyền host tùy chọn; JS giống bản phát hành. Chưa tự động native permission dialog, toolbar/menu OS hoặc phím tắt. Kiểm tải ảnh và account/text cũ đều đạt 6 luồng riêng. Tổng ba lượt dùng 3 phản hồi provider giả, **0 API ngoài**; chưa có benchmark OCR hoặc nhãn người mới.
+
+[Minh chứng 0.3](../artifacts/evaluations/extension_region_20261124/README.md) · [9 luồng region](../artifacts/ui/extension_region_20261124_verified2/checks.json) · [JUnit](../artifacts/evaluations/extension_region_20261124/validation/checks.json). Các mốc 0.1/0.2 dưới đây được giữ theo snapshot lịch sử.
+
+## Extension 0.2: giao diện, bảng cạnh trang và ảnh — 24/11
+
+Đã thiết kế lại giao diện với ba thẻ URL / Tin nhắn / Hình ảnh, sáng/tối, onboarding lấy mã, bản nháp theo thẻ trong bộ nhớ, keyboard/focus và kết quả hai nhận định/căn cứ/hướng xử lý. Có chi tiết URL/nguồn thu gọn, JSON và sao chép tóm tắt không kèm input/URL. Toolbar dùng Side Panel API, có cửa sổ tách riêng; Chrome 116+, chưa kiểm Edge/Windows/macOS hoặc phát hành store.
+
+Ảnh có chọn/kéo thả/paste, nút chụp phần tab hiện tại, preview và crop vùng chữ. OCR vie+eng bằng Tesseract tại máy; chỉ chữ sửa/che/đồng ý mới gửi AI. Không lưu ảnh, chưa có vision/QR. Text/ảnh chọn sẵn AI nhưng không gửi trước consent; URL mặc định cục bộ. [OCR và giới hạn](guides/OCR.md).
+
+Full suite cuối **1.614/1.614 test offline đạt**, 0 fail/error/skipped, 1 deprecation; **346 tệp** nguồn/test/asset/cấu hình không đổi trong lượt chạy. 11 test mới kiểm auth ảnh, MIME/dimensions/byte limit, stdin/timeout/slot, thiếu engine, text dài/empty và OCR không tính AI/history.
+
+Browser ảnh đạt **6 luồng**: extension/OCR vie+eng thật, provider giả, 0 API ngoài. Có crop bằng pointer, sửa chữ/preview/redaction/consent, sáng/tối 320 px, paste/drop sai và giao input tới panel mở. Regression cũ đạt 6 luồng riêng. Menu/clipboard được phát bằng chương trình. SidePanel kiểm cấu hình API, chưa tự động bấm toolbar/menu OS hoặc kiểm capture với activeTab thật trong headless. Nút chụp dùng Chrome API, đã kiểm thông báo ở trang bị hạn chế; không tuyên bố capture đã được kiểm trên mọi trang.
+
+Smoke giao diện mới: **1 provider request thật, HTTP200/stop, 988 token**, core 1.1 HIGH trên tin demo OTP nhận thưởng; không RAG/verifier/retry, chỉ lưu metadata. Đây là text từ menu, không phải benchmark OCR/vision. Không có F1, nhãn người, fit phishing hoặc inference holdout mới. [Minh chứng 0.2](../artifacts/evaluations/extension_v2_completion_20261124/README.md).
+
+## Extension, launcher và phản hồi ngày 24/11
+
+Đã có extension MV3 cài cục bộ: kiểm URL tab, menu link/đoạn chọn, ghép nối bằng mã một lần, xem/sửa/che lại/xác nhận trước gửi AI, nhận định URL/nội dung riêng, lịch sử theo lựa chọn và JSON. Token riêng trong phiên trình duyệt, backend vẫn ở localhost. Launcher kiểm hiện diện asset, mở/tái sử dụng ứng dụng, có shortcut Linux; không phải bộ cài tự mang model và chưa phát hành extension store.
+
+Đã có phản hồi từ kết quả/lịch sử, người gửi theo dõi/xóa, admin lọc/phân trang/xử lý và trả lời. Mặc định chỉ chia sẻ metadata và góp ý; nội dung đã che phải được chọn riêng. Xóa lịch sử xóa phản hồi liên quan. Xử lý phản hồi không tạo nhãn người hoặc cập nhật model.
+
+Bộ kiểm tại snapshot extension 0.1 **1.603/1.603 node offline đạt**, 0 fail/error/skipped, một Starlette/httpx deprecation; **339 tệp** nguồn/test/asset/cấu hình không đổi trong lượt chạy. Có 17 test bổ sung cho API extension/nguồn yêu cầu/phạm vi token/đổi mã đồng thời/thu hồi/quota/feedback/quyền chia sẻ/ZIP và 2 test socket thật cho launcher, gồm khởi động lại sau TIME_WAIT. **146 tệp core và dữ liệu canonical đang được Git theo dõi không đổi so HEAD**; các snapshot thực nghiệm cũ giữ nguyên.
+
+Kiểm bằng extension MV3 thật trên Chromium đạt **6 luồng**, dùng model URL/RAG cục bộ thật và một phản hồi provider giả, **0 API ngoài**. Gồm launcher dùng lại server, ghép nối/chấm URL/lịch sử, chọn text/che/xác nhận lại, menu link, phản hồi/admin/XSS dạng chữ/mobile 390 và 320 px, thu hồi token chặn cửa sổ extension đang mở. Handler menu được gọi bằng chương trình trong kiểm browser; chưa khẳng định đã tự động bấm menu hệ điều hành hoặc kiểm trên Edge/Windows.
+
+Smoke riêng qua extension với một tài khoản/database/profile trình duyệt thử mới đã gọi **1 request provider thật**, HTTP200, `finish_reason=stop`, **988 token** (898 input + 90 output), core 1.1 trả HIGH trên tin demo yêu cầu gửi OTP nhận thưởng. Có preview/consent, không RAG/verifier, không retry, chỉ lưu metadata. Đây là kiểm tích hợp, không có F1 mới hoặc nhãn người. [Minh chứng và giới hạn](../artifacts/evaluations/extension_completion_20261124/README.md).
+
+## Lớp ứng dụng có tài khoản ngày 24/11
+
+Đã bổ sung phần mềm cục bộ có đăng ký/đăng nhập/đăng xuất, dashboard, đổi mật khẩu và hồ sơ, lịch sử riêng, tìm có/không dấu, đánh dấu/ghi chú/xóa/xuất JSON, quản trị quyền/khóa tài khoản và quota AI. Snapshot nội dung chỉ lưu khi được chọn; mặc định chỉ có metadata. Không đổi model, prompt core, ngưỡng hoặc số liệu chất lượng đã lưu.
+
+Bộ kiểm ở snapshot lớp tài khoản **1.584/1.584 node đạt**, 0 fail/error/skipped, một Starlette/httpx deprecation; **311 tệp** mã/test/asset/cấu hình không đổi trong lượt chạy. Gồm 17 test API mới về auth, CSRF, phân quyền, dữ liệu riêng, session, quota và backup. Đây là kiểm phần mềm, không phải Accuracy/F1. Luồng browser hai tài khoản dùng model URL thật, không provider, đã qua đăng ký/lưu/sửa/đánh dấu/xuất/tìm, đổi mật khẩu, khóa/mở khóa, đăng nhập và đăng xuất; dữ liệu nằm trong database thử riêng.
+
+Lượt browser riêng sau đăng nhập/xác nhận đã gọi **một provider request thật**, HTTP200/stop, **1.012 token**, nhận HIGH trên tình huống minh họa phí nhận thưởng. Lưu metadata thành công, không lưu nội dung. Chỉ là smoke tích hợp, không suy tỷ lệ đúng của ứng dụng. Bản này ưu tiên localhost/demo, chưa có xác minh email/SMTP/MFA hay đánh giá triển khai công khai.
+
+[Minh chứng phần mềm](../artifacts/evaluations/workspace_completion_20261124/README.md) · [Kiểm phần mềm cuối](../artifacts/evaluations/workspace_completion_20261124/validation_final/checks.json) · [Browser hai tài khoản](../artifacts/ui/workspace_trial_20261124_02/browser/checks.json) · [API thật sau đăng nhập](../artifacts/evaluations/workspace_completion_20261124/live_ui/checks.json).
 
 ## Sửa preview và kiểm đầu ra core 1.1 ngày 24/11
 

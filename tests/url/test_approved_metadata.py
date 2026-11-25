@@ -5,6 +5,7 @@ import json
 import pytest
 
 from app.services.llm.client import LLMFailure, approved_ml_metadata
+from app.services.url.parsing import MAX_URLS
 
 
 def scored(url, **overrides):
@@ -103,9 +104,9 @@ def test_metadata_retains_model_order_and_only_the_existing_contract_fields():
                for row in result)
 
 
-def test_more_than_five_visible_urls_still_rejects_the_request():
-    with pytest.raises(LLMFailure, match="5 URL"):
-        approved_ml_metadata(" ".join(f"https://site{i}.example/" for i in range(6)), [])
+def test_visible_urls_above_limit_still_reject_the_request():
+    with pytest.raises(LLMFailure, match=f"{MAX_URLS} URL"):
+        approved_ml_metadata(" ".join(f"https://site{i}.example/" for i in range(MAX_URLS + 1)), [])
 
 
 def test_dotted_prose_does_not_exhaust_metadata_url_budget():
@@ -113,15 +114,15 @@ def test_dotted_prose_does_not_exhaust_metadata_url_budget():
     assert approved_ml_metadata(text, []) == []
 
 
-def test_known_url_metadata_survives_more_than_five_ambiguous_bare_candidates():
-    text = " ".join(f"item{i}.unknownsuffix" for i in range(6)) + " https://EXAMPLE.org/A"
+def test_known_url_metadata_survives_ambiguous_bare_candidates_beyond_limit():
+    text = " ".join(f"item{i}.unknownsuffix" for i in range(MAX_URLS + 1)) + " https://EXAMPLE.org/A"
     result = approved_ml_metadata(text, [scored("https://example.org/A")])
     assert [row["url"] for row in result] == ["https://EXAMPLE.org/A"]
 
 
-def test_more_than_five_known_bare_domains_still_exceeds_budget():
-    with pytest.raises(LLMFailure, match="5 URL"):
-        approved_ml_metadata(" ".join(f"site{i}.org" for i in range(6)), [])
+def test_known_bare_domains_above_limit_still_exceed_budget():
+    with pytest.raises(LLMFailure, match=f"{MAX_URLS} URL"):
+        approved_ml_metadata(" ".join(f"site{i}.org" for i in range(MAX_URLS + 1)), [])
 
 
 @pytest.mark.parametrize("visible", [

@@ -11,6 +11,7 @@ from app.api import focused, interaction, legacy, stable
 from app.core.settings import ROOT, Settings
 from app.services.url import intake as intake_module
 from app.services.url.domain_reference import reference_manifest
+from app.services.url.parsing import MAX_URLS
 from tests.api.test_baseline import FakeML, api_response
 from tests.api.test_candidate_app import OrderedRAG
 
@@ -133,7 +134,7 @@ def test_more_than_five_unscored_candidates_pass_preview_and_approved_analysis(t
         assert calls[0]["text"] == text
         assert [row["url"] for row in calls[0]["url_results"]] == ["example.com"]
         assert result["llm"]["status"] == "ok" and ml.seen == [["example.com"]]
-        scored_overflow = " ".join(f"site{i}.com" for i in range(6))
+        scored_overflow = " ".join(f"site{i}.com" for i in range(MAX_URLS + 1))
         assert client.post("/api/preview", json={"text": scored_overflow}).status_code == 422
         assert client.post("/api/analyze", json={"text": scored_overflow, "consent": True}).status_code == 422
         assert len(calls) == 1
@@ -183,8 +184,13 @@ def test_historical_profiles_keep_their_existing_bare_candidate_rules(tmp_path, 
 
     app = factory(replace(Settings(), root=tmp_path), httpx.MockTransport(provider), ml, OrderedRAG([]))
     with TestClient(app) as client:
-        assert client.post("/api/preview", json={"text": " ".join(UNSCORED)}).status_code == 422
-        assert client.post("/api/analyze", json={"text": " ".join(UNSCORED), "use_llm": False}).status_code == 422
+        # Legacy/stable still treat ambiguous bare spellings as URL candidates;
+        # the shared capacity changed, their bare-domain policy did not.
+        preview = client.post("/api/preview", json={"text": " ".join(UNSCORED)})
+        assert preview.status_code == 200 and preview.json()["url_count"] == len(UNSCORED)
+        many_bare = " ".join(f"item{i}.unknownsuffix" for i in range(MAX_URLS + 1))
+        assert client.post("/api/preview", json={"text": many_bare}).status_code == 422
+        assert client.post("/api/analyze", json={"text": many_bare, "use_llm": False}).status_code == 422
         result = client.post("/api/analyze", json={"text": "tu.tu", "use_llm": False}).json()
         assert [row["url"] for row in result["urls"]] == ["tu.tu"]
         assert "url_intake" not in result and not calls

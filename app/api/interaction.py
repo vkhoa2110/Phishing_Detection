@@ -29,6 +29,7 @@ from app.domain.schemas import InputData, MessageVerdict
 from app.services.url.intake import VERSION as INTAKE_VERSION, extract_urls_v2, inspect_url_intake
 from app.services.url.domain_reference import reference_manifest
 from app.services.url.policy import VERSION as URL_POLICY
+from app.services.url.parsing import MAX_URLS
 
 
 PIPELINE = "analysis-pipeline-6.1-candidate"
@@ -252,7 +253,7 @@ def create_app(settings=None, transport=None, model_service=None, rag_service=No
                 "explanation_parser_version": rag_evidence_v3.PARSER_VERSION if selection_only else PARSER_VERSION,
                 "explanation_mode": explanation_mode,
             },
-            "limits": {"characters": 8000, "urls": 5,
+            "limits": {"characters": 8000, "urls": MAX_URLS,
                        "llm_timeout_seconds": settings.timeout_seconds},
         }
 

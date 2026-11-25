@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Không gian của bạn · PhishLens</title><link rel="icon" href="/static/shield.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/styles.css?v=guest-access1"><link rel="stylesheet" href="/static/workspace.css?v=guest-access1">
+  <script src="/static/workspace.js?v=guest-access1" defer></script><script src="/static/product.js?v=guest-access1" defer></script><script src="/static/portal.js?v=guest-access1" defer></script>
+</head>
+<body class="portal-page">
+  <a class="skip-link" href="#portal-content">Đến nội dung chính</a>
+  <header class="site-header"><div class="header-inner portal-header">
+    <a class="brand" href="/dashboard"><img src="/static/shield.svg" alt="" width="34" height="38"><span>Phish<span class="brand-light">Lens</span><span class="brand-dot">.</span></span></a>
+    <nav class="header-nav" aria-label="Điều hướng chính"><a class="nav-link" data-nav href="/dashboard">Tổng quan</a><a class="nav-link" data-nav href="/check">Kiểm tra</a><a class="nav-link" data-nav href="/history">Lịch sử</a><a class="nav-link" data-nav href="/feedback">Phản hồi</a><a class="nav-link" data-nav data-admin href="/admin" hidden>Quản trị</a></nav>
+    <div class="account-navigation"><a class="account-link" href="/account" data-account-name>Tài khoản</a><button class="logout-button" data-logout type="button">Đăng xuất</button></div>
+  </div></header>
+  <main class="portal-main">
+    <div class="portal-heading"><div><span class="portal-eyebrow" id="portal-eyebrow">KHÔNG GIAN CỦA BẠN</span><h1 id="portal-title">Đang tải…</h1><p class="portal-muted" id="portal-description"></p></div><a class="primary-button" href="/check">+ Kiểm tra mới</a></div>
+    <div id="portal-error" class="error-box" role="alert" hidden></div>
+    <div id="portal-content" aria-live="polite" aria-busy="true"><p class="portal-muted">Đang mở không gian PhishLens…</p></div>
+    <footer class="portal-footer">PhishLens · Kết quả hỗ trợ nhận diện, không thay thế việc xác minh qua kênh chính thức.</footer>
+  </main>
+  <dialog id="record-dialog" class="record-dialog" aria-labelledby="record-heading"><div class="dialog-body">
+    <div class="record-dialog-heading"><div><span class="portal-eyebrow">KẾT QUẢ ĐÃ LƯU</span><h2 id="record-heading">Chi tiết lượt kiểm tra</h2></div><button id="close-record" type="button" class="secondary-button">Đóng</button></div>
+    <div id="record-content"></div>
+    <form id="record-form" class="portal-form"><label for="record-title">Tên lượt kiểm tra</label><input id="record-title" maxlength="120" required>
+      <label for="record-note">Ghi chú của bạn</label><textarea id="record-note" maxlength="1000" rows="3" placeholder="Điều bạn muốn ghi nhớ…"></textarea>
+      <div class="portal-actions"><button class="primary-button" type="submit">Lưu thay đổi</button><button id="favorite-record" class="secondary-button" type="button">Đánh dấu</button><button id="export-record" class="secondary-button" type="button">Tải JSON</button><button id="delete-record" class="danger-button" type="button">Xóa kết quả</button></div>
+    </form>
+  </div></dialog>
+</body>
+</html>

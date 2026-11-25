@@ -17,5 +17,6 @@ if __name__ == "__main__":
     profile = os.getenv("PHISHLENS_PROFILE", "stable")
     if profile not in profiles:
         raise SystemExit("PHISHLENS_PROFILE phải là " + ", ".join(profiles) + ".")
-    uvicorn.run(profiles[profile], factory=True, host="127.0.0.1", port=int(os.getenv("PORT", "8000")), access_log=False)
+    factory = profiles[profile] if os.getenv("PHISHLENS_ACCOUNTS", "1") == "0" else "app.api.workspace:create_app"
+    uvicorn.run(factory, factory=True, host="127.0.0.1", port=int(os.getenv("PORT", "8000")), access_log=False, proxy_headers=False)
 

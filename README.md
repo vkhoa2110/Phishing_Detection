@@ -15,6 +15,24 @@ cp .env.example .env
 
 Mở **http://127.0.0.1:8000**. Đặt gói XGBoost trong `models/inference_XGBoost_d6_s42/` theo [hướng dẫn model](models/README.md); thêm API key trong `.env` để dùng LLM. [Cách sử dụng và xử lý lỗi](docs/guides/USAGE.md).
 
+Ứng dụng qua `run.py` hiện có **đăng ký/đăng nhập, trang tổng quan, lịch sử riêng, đánh dấu, ghi chú, lọc/tìm kiếm, tải JSON, hồ sơ và đổi mật khẩu**. **Không cần đăng nhập để kiểm tra URL, OCR hoặc dùng AI.** Mở ứng dụng vào thẳng trang kiểm tra khách; tài khoản dùng cho lịch sử và các chức năng cá nhân. Khi cần, tạo tài khoản trên trang đăng nhập; tài khoản đầu tiên trên database mới có quyền quản trị để quản lý quyền và khóa/mở khóa thành viên. Không có tài khoản hoặc mật khẩu mặc định.
+
+Tài khoản và lịch sử dùng SQLite tại `data/application/phishlens.sqlite3`, bị Git ignore. Lịch sử mặc định chỉ lưu thông tin tổng quát; lưu bản nội dung đã che là lựa chọn riêng trước mỗi lượt. Web khách dùng CSRF cấp tự động, không lưu lịch sử. API lịch sử/tài khoản/quản trị vẫn yêu cầu đăng nhập. Model/prompt vẫn theo profile đã chọn; lớp tài khoản không đổi kết luận lõi. [Vận hành, quyền và sao lưu](docs/guides/USAGE.md#tài-khoản-và-lịch-sử-cục-bộ).
+
+Để mở bản demo sau khi cài môi trường/model, dùng **`make demo`**, `./start_phishlens.sh` trên Linux hoặc `start_phishlens.bat` trên Windows. Launcher kiểm asset/phụ thuộc, mở trình duyệt và tái sử dụng PhishLens nếu đã chạy; mặc định cổng **8001** (lệnh `run.py` vẫn mặc định 8000). `make shortcut` thêm mục PhishLens vào menu ứng dụng Linux của người dùng hiện tại; không tạo dịch vụ tự khởi động.
+
+**Extension trình duyệt:** chuột phải vào link hoặc đoạn bôi đen, hoặc bấm biểu tượng để lấy URL tab; kiểm URL cục bộ, duyệt/xác nhận trước khi dùng AI, giữ hai nhận định riêng. Tải ZIP ngay từ trang kiểm tra khách hoặc Tài khoản, cài bằng **Load unpacked**, rồi mở extension: tự kết nối localhost, **không cần mã hoặc đăng nhập**. Extension mới dùng khách, không lưu lịch sử. Backend phải đang chạy; chưa phát hành trên store. [Cài extension và phạm vi quyền](extensions/chromium/README.md).
+
+Extension **0.8** có bảng Kiểm tra / Trợ lý / Kết nối, sáng/tối và nút nổi kéo được, menu nhanh, tạm nghỉ một giờ, ẩn theo website. **Khoanh vùng trên trang**: kéo trực tiếp → tự cắt/OCR tại máy → duyệt chữ → đồng ý phân tích; tải/drop/paste ảnh vẫn riêng. Có tùy chọn **tự kiểm URL cục bộ khi mở trang**, kể cả đóng bảng; mặc định tắt, không đọc nội dung trang/gọi AI/lưu lịch sử nền. Quyền toàn trang chỉ xin khi bật nút nổi hoặc tự kiểm URL. Backend cần đang chạy; mở extension là tự kết nối. Chỉ chữ đã duyệt gửi AI, ảnh gốc không đến provider. OCR cần Tesseract/Pillow: [hướng dẫn](docs/guides/OCR.md). Cập nhật: **Reload** extension rồi tải lại tab web. Phím **Alt+Shift+P** mở bảng, **Alt+Shift+S** khoanh vùng, **Ctrl+Enter** thao tác chính; trình duyệt/OS có thể chiếm phím.
+
+Bản 0.8 giữ nút thao tác chính ở thanh dưới, bảo toàn bản nháp/lựa chọn AI khi đổi thẻ, tách Sửa nội dung và Kiểm tra nội dung khác, đồng thời cho tìm trong danh sách URL. Tin nhắn/email nhận tối đa **50 URL khác nhau** trong 8.000 ký tự; URL trùng chỉ tính một lần. [Các luồng và phím tắt](extensions/chromium/README.md#mới-ở-08-thao-tác-liền-mạch).
+
+Giao diện kiểm tra ưu tiên nội dung và kết quả; có ví dụ dùng thử, hướng dẫn cài extension thu gọn, tải JSON trực tiếp và **In / PDF**. Thông tin model, token và phạm vi phép kiểm nằm trong phần chi tiết. Tab URL mặc định chỉ kiểm tại máy, tab tin nhắn chọn sẵn AI nhưng luôn chờ duyệt và đồng ý gửi.
+
+Extension 0.7 thêm giải thích AI cho từng dấu hiệu, công cụ khoanh xuất hiện trước bản đọc ảnh, chụp toàn vùng website đang hiển thị và lấy email đang mở trên Gmail/Outlook. Bật trợ lý email để tự chuẩn bị bản duyệt khi đổi thư; AI vẫn cần xác nhận. [Phạm vi và cách dùng](extensions/chromium/README.md#mới-ở-07-giải-thích-chụp-nhanh-và-email).
+
+**Phản hồi kết quả:** gửi góp ý từ kết quả/lịch sử, theo dõi trong mục **Phản hồi**; quản trị viên xử lý tại **Quản trị**. Mặc định không gửi nội dung cho quản trị viên. Chia sẻ snapshot đã che phải được chọn riêng; xử lý góp ý không tự tạo nhãn chuẩn hoặc huấn luyện model.
+
 Mặc định chạy chính sách v4. Thử candidate v6.1 bằng `make run-candidate` hoặc `PHISHLENS_PROFILE=candidate .venv/bin/python run.py`. Candidate cần gói URL ký tự riêng, chưa đủ bằng chứng để thay bản mặc định. RAG mặc định tắt; xem [cài đặt RAG](docs/guides/RAG.md).
 
 `make run-focused` chạy bản verdict lõi thử nghiệm. Các profile qua `run.py` dùng kết nối AI do máy chủ quản lý, một ngân sách chờ tối đa 45 giây cho phân loại và giải thích; người dùng xem và xác nhận nội dung trước khi gửi. [Yêu cầu và minh chứng FR/NFR](docs/requirements.md).
@@ -35,6 +53,8 @@ app/
   domain/         # Schema, kiểm tra bằng chứng, quy tắc kết luận
   services/       # Luồng phân tích; llm/, rag/, url/
   static/         # HTML, CSS, JavaScript
+extensions/chromium/ # Extension MV3, kết nối backend cục bộ
+launch.py         # Launcher demo, kiểm cài đặt và mở trình duyệt
 evaluation/
   common/         # Chỉ số đánh giá dùng chung
   data/           # Chuẩn bị dữ liệu, nhãn và protocol
@@ -60,6 +80,8 @@ make clean
 ```
 
 `make test` chạy offline. `make clean` dọn cache, giữ dữ liệu/model/kết quả. Mỗi thực nghiệm mới dùng thư mục đầu ra mới; các snapshot đã khóa hash được giữ nguyên.
+
+Các factory `app.api.runtime` tiếp tục phục vụ nghiên cứu và kiểm thử không có tài khoản. Nếu cần chạy các script replay UI cũ, dùng `PHISHLENS_ACCOUNTS=0 PORT=8003 make run-focused` trên cổng riêng; đây là chế độ nghiên cứu, không phải cấu hình ứng dụng có tài khoản.
 
 - [Kiến trúc và các profile](docs/architecture.md).
 - [Quy ước phát triển, đường dẫn mới và tái lập lịch sử](docs/development.md).

@@ -23,6 +23,7 @@ from app.services.rag.retrieval import RAGService
 from app.core.settings import Settings
 from app.services.url.character import CharURLService
 from app.services.url.policy import VERSION as URL_POLICY
+from app.services.url.parsing import MAX_URLS
 
 
 PIPELINE = "analysis-pipeline-5.0-candidate"
@@ -210,7 +211,7 @@ def create_app(settings=None, transport=None, model_service=None, rag_service=No
                                 "explanation_profile": rag_evidence_v3.PROFILE if explanation_mode == "span_selection" else EXPLANATION_PROFILE,
                                 "explanation_parser_version": rag_evidence_v3.PARSER_VERSION if explanation_mode == "span_selection" else PARSER_VERSION,
                                 "explanation_mode": explanation_mode},
-            "limits": {"characters": 8000, "urls": 5, "llm_timeout_seconds": settings.timeout_seconds},
+            "limits": {"characters": 8000, "urls": MAX_URLS, "llm_timeout_seconds": settings.timeout_seconds},
         }
 
     return app

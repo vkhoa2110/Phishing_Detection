@@ -11,6 +11,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.services.llm.client import LLMFailure, approved_ml_metadata, parse_verdict
+from app.services.url.parsing import MAX_URLS
 from app.api.legacy import create_app
 from app.services.rag.retrieval import DIMENSION, RAGService, RetrievalIndex, build_index, rank_chunks, read_jsonl, sha_file, write_json
 from app.core.settings import Settings
@@ -57,8 +58,8 @@ def test_url_deleted_from_preview_cannot_reappear_through_metadata():
     assert approved_ml_metadata("Chỉ gửi câu này", urls) == []
     out = approved_ml_metadata("https://example.org/?token=REDACTED", urls)
     assert len(out) == 1 and "secret123" not in json.dumps(out)
-    with pytest.raises(LLMFailure, match="5 URL"):
-        approved_ml_metadata(" ".join(f'https://site{i}.example/' for i in range(6)), urls)
+    with pytest.raises(LLMFailure, match=f"{MAX_URLS} URL"):
+        approved_ml_metadata(" ".join(f'https://site{i}.example/' for i in range(MAX_URLS + 1)), urls)
 
 
 def test_rank_deduplicates_documents_filters_threshold_and_uses_multiple_windows():

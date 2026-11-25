@@ -16,6 +16,7 @@ from app.services.url.features import ModelService
 from app.services.rag.retrieval import RAGService
 from app.core.settings import Settings
 from app.services.url.policy import ConservativeURLModel, VERSION as URL_POLICY
+from app.services.url.parsing import MAX_URLS
 
 PIPELINE = "analysis-pipeline-4.0"
 
@@ -58,7 +59,7 @@ def create_app(settings=None, transport=None, model_service=None, rag_service=No
             "analysis_policy": {"version": POLICY_VERSION, "default_include_ml": False,
                 "message_prompt_profile": PROFILE, "pipeline_version": PIPELINE, "headline_target": "message_actions",
                 "url_decision_policy": URL_POLICY},
-            "limits": {"characters": 8000, "urls": 5, "llm_timeout_seconds": settings.timeout_seconds}}
+            "limits": {"characters": 8000, "urls": MAX_URLS, "llm_timeout_seconds": settings.timeout_seconds}}
 
     return app
 

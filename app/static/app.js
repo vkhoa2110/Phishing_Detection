@@ -1,7 +1,12 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
-const state = {mode: "text", phase: "input", busy: false, pending: null, result: null, hasKey: false, mlReady: false, ragReady: false, experimental: false, serverManaged: true, serverEndpoint: "", llmBudgetSeconds: null, llmTimeoutSeconds: 60, drafts: {text: "", url: ""}};
+const state = {mode: "text", phase: "input", busy: false, pending: null, result: null, hasKey: false, mlReady: false, ragReady: false, experimental: false, serverManaged: true, serverEndpoint: "", llmBudgetSeconds: null, llmTimeoutSeconds: 60, drafts: {text: "", url: ""}, aiPreferences: {text: true, url: false}};
 const labels = {HIGH: "Nguy cơ cao", WARNING: "Cần kiểm tra thêm", LOW: "Chưa thấy dấu hiệu rõ ràng", UNKNOWN: "Chưa đủ thông tin"};
+function updateInputHint() {
+  const limit = state.urlLimit;
+  $("input-hint").textContent = state.mode === "url" ? "Dán URL đầy đủ, gồm http:// hoặc https://" :
+    Number.isInteger(limit) && limit > 0 ? `Tối đa ${limit} URL khác nhau trong tin nhắn/email` : "Kiểm tra được cả nội dung không có đường dẫn";
+}
 // These are examples of input, never precomputed model results or clickable links.
 const samples = {
   text: {
@@ -48,11 +53,12 @@ function updateOptions() {
   const ai = $("use-llm").checked;
   $("use-rag").disabled = !ai || !state.ragReady || state.mode === "url" || state.busy;
   $("include-ml").disabled = !ai || state.busy;
+  if ($("save-content")) $("save-content").disabled = state.busy || !$("save-history").checked;
   ["endpoint", "llm-model", "api-key", "show-key"].forEach(id => { $(id).disabled = state.serverManaged || !ai || state.busy; });
-  document.querySelector(".privacy-note").hidden = !ai;
+  $("submit-caption").textContent = ai ? "Bạn sẽ duyệt nội dung trước khi gửi AI." : "Kiểm tra URL tại máy.";
   $("local-only-note").hidden = ai || state.mode === "url";
-  $("ai-label").textContent = state.mode === "url" ? "Nhờ AI giải thích thêm" : "Thêm góc nhìn từ AI";
-  $("ai-description").textContent = state.mode === "url" ? "Nhận xét từ chuỗi đường dẫn, không truy cập trang đích." : "Giải thích dấu hiệu và gợi ý cách xử lý bằng tiếng Việt.";
+  $("ai-label").textContent = state.mode === "url" ? "Nhờ AI giải thích thêm" : "Phân tích nội dung bằng AI";
+  $("ai-description").textContent = state.mode === "url" ? "Nhận xét từ chuỗi đường dẫn, không truy cập trang đích." : "Xem dấu hiệu và hướng xử lý.";
   updateCount(); updateWorkflow();
 }
 function busy(value) {
@@ -67,10 +73,15 @@ async function api(path, data, timeoutMs = 65000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(path, {method: data === undefined ? "GET" : "POST", headers: {"Content-Type": "application/json"}, body: data === undefined ? undefined : JSON.stringify(data), signal: controller.signal, cache: "no-store"});
+    const headers = {"Content-Type": "application/json"};
+    if (data !== undefined && window.PhishLensWorkspace?.enabled) headers["X-CSRF-Token"] = window.PhishLensWorkspace.csrf;
+    const response = await fetch(path, {method: data === undefined ? "GET" : "POST", headers, body: data === undefined ? undefined : JSON.stringify(data), signal: controller.signal, cache: "no-store"});
     let body;
     try { body = await response.json(); } catch { throw new Error("Chưa đọc được phản hồi từ ứng dụng. Vui lòng thử lại."); }
-    if (!response.ok) throw new Error(typeof body.detail === "string" ? body.detail : "Chưa xử lý được yêu cầu. Vui lòng thử lại.");
+    if (!response.ok) {
+      if (response.status === 401 && window.PhishLensWorkspace?.enabled) location.assign("/login?next=/check");
+      throw new Error(typeof body.detail === "string" ? body.detail : "Chưa xử lý được yêu cầu. Vui lòng thử lại.");
+    }
     return body;
   } catch (err) {
     if (err.name === "AbortError") throw new Error("Đã hết thời gian chờ. Bạn có thể thử lại hoặc tắt AI để chỉ kiểm tra đường dẫn.");
@@ -82,14 +93,19 @@ function modelStatus(ml) {
   state.mlReady = Boolean(ml.ready);
   $("model-status").textContent = ml.ready ? `${ml.run_id || ml.kind} · ${ml.feature_count} đặc trưng` : ml.message;
   $("model-status").title = ml.message || "";
-  $("service-status").textContent = (state.mlReady ? "Sẵn sàng kiểm tra đường dẫn" : "Kiểm tra đường dẫn chưa sẵn sàng") + (state.experimental ? " · Bản thử nghiệm" : "");
+  $("service-status").textContent = (state.mlReady ? "Sẵn sàng kiểm tra đường dẫn" : "Kiểm tra đường dẫn chưa sẵn sàng");
   $("service-dot").classList.toggle("ready", state.mlReady);
   $("service-dot").classList.toggle("warning", !state.mlReady);
 }
 async function init() {
   try {
+    if (window.PhishLensWorkspace) await window.PhishLensWorkspace.ready;
+    if (window.PhishLensWorkspace?.enabled && !window.PhishLensWorkspace.user && !window.PhishLensWorkspace.guest) return;
     const status = await api("/api/status", undefined, 30000);
+    state.urlLimit = status.limits?.urls;
+    updateInputHint();
     state.experimental = status.analysis_policy?.experimental === true;
+    $("runtime-profile").textContent = (status.runtime?.profile || "Chưa có định danh") + (state.experimental ? " · Bản thử nghiệm" : "");
     state.serverManaged = status.runtime?.connection_mode === "server_managed";
     state.serverEndpoint = status.llm.endpoint;
     const totalBudget = Number(status.limits?.llm_request_budget_seconds);
@@ -130,19 +146,21 @@ function setMode(mode) {
   if (mode === state.mode || state.busy) return;
   state.drafts[state.mode] = $("input-text").value;
   state.mode = mode;
+  $("use-llm").checked = state.aiPreferences[mode];
   for (const kind of ["text", "url"]) {
     $("tab-" + kind).classList.toggle("active", mode === kind);
     $("tab-" + kind).setAttribute("aria-pressed", String(mode === kind));
   }
   $("input-label").textContent = mode === "url" ? "Đường dẫn cần kiểm tra" : "Nội dung cần kiểm tra";
-  $("input-hint").textContent = mode === "url" ? "Dán URL đầy đủ, gồm http:// hoặc https://" : "Kiểm tra được cả nội dung không có đường dẫn";
-  $("input-text").placeholder = mode === "url" ? "https://example.org/\n\nChỉ dán đường dẫn. Bạn không cần mở trang đó." : "Dán tin nhắn hoặc email bạn nhận được…\n\nGiữ cả lời yêu cầu và đường dẫn để có đủ ngữ cảnh kiểm tra.";
+  updateInputHint();
+  $("input-text").placeholder = mode === "url" ? "https://example.org/…" : "Dán tin nhắn hoặc email vào đây…";
   $("input-text").setAttribute("inputmode", mode === "url" ? "url" : "text");
   $("input-text").value = state.drafts[mode];
   document.querySelectorAll("[data-sample]").forEach(button => {
     const name = mode === "url" ? button.dataset.sample === "suspicious" ? "URL minh họa đáng ngờ" : "URL minh họa đơn giản" : button.dataset.sample === "suspicious" ? "Tin nhắn đáng ngờ" : "Tin nhắn thông thường";
     const dot = node("span", "sample-dot " + button.dataset.sample); dot.setAttribute("aria-hidden", "true");
     button.replaceChildren(dot, node("span", "", name));
+    const arrow = node("span", "", "↗"); arrow.setAttribute("aria-hidden", "true"); button.append(arrow);
   });
   resetResult(); errorBox("form-error"); errorBox("clipboard-status"); updateOptions();
 }
@@ -153,6 +171,7 @@ function resetResult() {
   $("result-content").replaceChildren();
   $("loading-state").hidden = true;
   $("result-announcement").textContent = "";
+  $("print-result").disabled = true;
   updateWorkflow("input");
 }
 function revealResult() {
@@ -250,6 +269,58 @@ function renderClarification(main, data) {
   panel.append(message, button); main.append(panel);
 }
 
+function renderAIAnalysis(main, data) {
+  const llm = data.llm;
+  const panel = section(data.mode === "url" ? "Nhận xét đường dẫn bằng AI" : "Phân tích nội dung bằng AI");
+  panel.id = "ai-analysis"; panel.classList.add("ai-analysis");
+  const heading = panel.querySelector("h4"); heading.id = "ai-analysis-title"; heading.prepend(icon("spark"));
+  panel.setAttribute("aria-labelledby", heading.id);
+  const status = node("div", "ai-analysis-status");
+  status.append(node("span", "ai-status " + llm.status, llm.status === "ok" ? "Đã nhận kết quả AI" : llm.status === "disabled" ? "AI đang tắt" : "AI chưa hoàn tất"));
+
+  panel.append(status);
+  if (llm.status !== "ok") {
+    panel.append(node("p", "result-subtle", llm.status === "disabled"
+      ? "Bật tùy chọn AI phía trên rồi xem và xác nhận bản gửi để phân tích. Hiện chỉ có kết quả kiểm tra URL tại máy."
+      : "Chưa có phân tích AI hợp lệ cho lượt này. " + (llm.message || "Bạn có thể kiểm tra thông báo lỗi và thử lại khi dịch vụ sẵn sàng.")));
+    main.append(panel); return;
+  }
+  const verdict = llm.verdict;
+  panel.append(node("p", "ai-assessment", "Nhận định: " + (labels[verdict.risk_level] || verdict.risk_level)),
+    node("p", "analysis-summary", verdict.summary));
+  const contexts = {
+    scam_request: "Yêu cầu cần cảnh giác và xác minh",
+    legitimate_workflow: "Quy trình được AI nhận định là thông thường",
+    quoted_example: "Trích dẫn hoặc ví dụ trong nội dung",
+    routine: "Thông báo hoặc trao đổi thông thường",
+    insufficient: "Chưa đủ ngữ cảnh",
+  };
+  if (data.mode === "text" && contexts[verdict.context_kind]) {
+    const context = node("p", "ai-context");
+    context.append(node("strong", "", "Ngữ cảnh AI nhận định: "), document.createTextNode(contexts[verdict.context_kind]));
+    panel.append(context);
+  }
+  const explanation = llm.evidence_explanation?.status === "ok" ? llm.evidence_explanation : null;
+  if (explanation) { const note = section("AI giải thích"); note.append(node("p", "analysis-summary", explanation.summary)); panel.append(note); }
+  const evidence = section("Đoạn AI dùng làm căn cứ", verdict.evidence.length);
+  evidence.classList.add("ai-evidence");
+  if (!verdict.evidence.length) evidence.append(node("p", "result-subtle", verdict.risk_level === "LOW"
+    ? "AI không nêu đoạn trích về hành vi nguy hiểm trong phản hồi này. Kết luận này không xác nhận người gửi hoặc đường dẫn an toàn."
+    : "AI chưa cung cấp đoạn trích đủ để làm rõ nhận định. Cần thêm ngữ cảnh hoặc xác minh qua kênh đã biết."));
+  for (const [index, item] of verdict.evidence.entries()) {
+    const reason = explanation?.evidence.find(note => note.index === index)?.explanation || item.reason;
+    const el = node("div", "evidence-item");
+    el.append(node("blockquote", "", `“${item.quote}”`), node("p", "", reason)); evidence.append(el);
+  }
+  panel.append(evidence);
+  (llm.warnings || []).forEach(w => panel.append(node("p", "inline-warning", w)));
+  renderClarification(panel, data);
+  panel.append(node("p", "ai-scope result-subtle", data.mode === "url"
+    ? "Nhận xét dựa trên chuỗi URL đã gửi, không kiểm tra trang đích."
+    : "Phân tích áp dụng cho bản nội dung bạn đã xác nhận gửi. Điểm URL và nguồn tham khảo được trình bày riêng."));
+  main.append(panel);
+}
+
 function render(data) {
   state.result = data;
   const target = $("result-content"); target.replaceChildren();
@@ -295,9 +366,7 @@ function render(data) {
   if (urlBanner && !urlAlarm) main.append(urlBanner);
   if (data.final.review_reason) main.append(node("p", "conflict-note", data.final.review_reason));
   if (llm.status === "ok" && llm.input_modified) main.append(node("p", "inline-warning", "Bạn đã sửa bản gửi AI. Nhận định nội dung chỉ áp dụng cho bản đã sửa; đường dẫn từ bản gốc vẫn được kiểm tra riêng."));
-  if (llm.status === "error") main.append(node("p", "inline-warning", "Chưa nhận được giải thích từ AI. " + llm.message));
-  if (llm.status === "disabled" && data.mode === "text") main.append(node("p", "inline-warning", "AI đang tắt nên hành vi trong tin nhắn chưa được đánh giá. Bạn có thể bật AI rồi kiểm tra lại."));
-  renderClarification(main, data);
+  renderAIAnalysis(main, data);
   const actions = section("Bạn nên làm gì tiếp theo?"); actions.classList.add("actions-section");
   const list = node("ol", "actions-list");
   const recommendations = llm.status === "ok" ? [...llm.verdict.recommended_actions] : [];
@@ -306,15 +375,6 @@ function render(data) {
   [...new Set(recommendations)].forEach(action => list.append(node("li", "", action)));
   actions.append(list); main.append(actions);
   if (llm.status === "ok") {
-    const analysis = section("Vì sao có kết quả này?");
-    analysis.append(node("p", "analysis-summary", llm.verdict.summary));
-    llm.warnings.forEach(w => analysis.append(node("p", "inline-warning", w))); main.append(analysis);
-    const evidence = section("Dấu hiệu trong nội dung", llm.verdict.evidence.length);
-    if (!llm.verdict.evidence.length) evidence.append(node("p", "result-subtle", "Không có dấu hiệu cụ thể được trích từ bản nội dung đã gửi. Điều này không bảo đảm nội dung an toàn."));
-    for (const item of llm.verdict.evidence) {
-      const el = node("div", "evidence-item"); el.append(node("blockquote", "", `“${item.quote}”`), node("p", "", item.reason)); evidence.append(el);
-    }
-    main.append(evidence);
     if (llm.verdict.interaction) {
       const interaction = section("Cấu trúc yêu cầu trong hội thoại");
       const rows = [
@@ -395,7 +455,7 @@ function render(data) {
     if (retrieval.sources.length) sources.append(node("p", "result-subtle", "Tài liệu hỗ trợ giải thích dấu hiệu, không xác nhận tên miền an toàn. Các đoạn trên là bản tóm lược, không phải trích nguyên văn bài gốc."));
     aside.append(sources);
   }
-  const technical = node("details", "technical-details"); technical.append(node("summary", "", "Chi tiết phân tích và tải kết quả"));
+  const technical = node("details", "technical-details"); technical.append(node("summary", "", "Thông tin kỹ thuật"));
   const parts = node("div", "components"), count = data.urls.filter(u => u.status === "ok").length;
   parts.append(component("KIỂM TRA ĐƯỜNG DẪN", count ? `${labels[urlAssessment.risk_level]} · ${count} / ${urlAssessment.total} URL` : data.urls.length ? "Chưa có kết quả" : unscoredCandidates.length ? "Có chuỗi chưa được chấm URL" : "Không có URL hợp lệ", count ? `${data.ml.run_id} · ${data.ml.feature_count} đặc trưng` : data.urls.length ? data.ml.message : "Không chạy mô hình URL cho đầu vào này."));
   parts.append(component("PHÂN TÍCH AI", llm.status === "ok" ? labels[llm.verdict.risk_level] : llm.status === "disabled" ? "Đang tắt" : "Chưa có kết quả", llm.status === "ok" ? `${llm.model} · ${llm.included_ml ? "Có" : "Không kèm"} điểm URL · ${llm.rag ? "Có" : "Không"} tài liệu tham khảo` : llm.message)); technical.append(parts);
@@ -404,9 +464,14 @@ function render(data) {
     if (llm.usage && llm.usage.total_tokens) technical.append(node("p", "result-subtle", `${llm.usage.total_tokens.toLocaleString("vi-VN")} token · ${llm.prompt_version}`));
   }
   const download = node("button", "text-button"); download.append(icon("download"), node("span", "", "Tải dữ liệu kết quả (.json)")); download.type = "button"; download.id = "download-result";
-  download.addEventListener("click", downloadResult); technical.append(download); target.append(technical);
+  download.addEventListener("click", downloadResult); const downloadActions = node("div", "result-downloads"); downloadActions.append(download); target.append(downloadActions, technical);
+  if (data.history?.status === "saved") {
+    const saved = node("p", "history-saved", data.history.content_saved ? "Đã lưu kết quả và nội dung đã che vào lịch sử riêng. " : "Đã lưu thông tin lượt kiểm tra; không lưu nội dung. ");
+    const link = node("a", "source-link", "Mở trong lịch sử →"); link.href = "/history?id=" + encodeURIComponent(data.history.id); saved.append(link); target.append(saved);
+    if (window.PhishLensProduct) target.append(window.PhishLensProduct.feedbackForm(data.history.id, data.history.content_saved));
+  } else if (data.history?.status === "error") target.append(node("p", "inline-warning", data.history.message));
   target.append(node("div", "result-note", data.notice));
-  $("loading-state").hidden = true; target.hidden = false;
+  $("loading-state").hidden = true; target.hidden = false; $("print-result").disabled = false;
   updateWorkflow("result");
   $("result-announcement").textContent = `Đã kiểm tra. ${data.final.label}.${urlAlarm ? " Đường dẫn: " + labels[urlAssessment.risk_level] + "." : ""}`;
 }
@@ -415,6 +480,7 @@ async function analyze(payload) {
   updateWorkflow("loading");
   $("result-content").hidden = true; $("result-content").replaceChildren(); $("loading-state").hidden = false;
   $("result-announcement").textContent = "";
+  $("print-result").disabled = true;
   $("loading-message").textContent = state.experimental && payload.use_llm && payload.use_rag && payload.mode === "text"
     ? "Đang phân tích nội dung, sau đó bổ sung nguồn giải thích bằng lượt AI riêng…"
     : payload.use_llm ? "Đang kiểm tra đường dẫn và chờ giải thích từ dịch vụ AI…" : "Đang kiểm tra chuỗi đường dẫn tại máy chạy ứng dụng…";
@@ -428,6 +494,10 @@ $("analysis-form").addEventListener("submit", async event => {
   const text = $("input-text").value.trim(); errorBox("form-error");
   if (!text) { errorBox("form-error", "Bạn chưa nhập nội dung cần kiểm tra."); $("input-text").focus(); return; }
   const payload = {mode: state.mode, text, use_llm: $("use-llm").checked, include_ml: $("include-ml").checked, use_rag: $("use-rag").checked && !$("use-rag").disabled, consent: false};
+  if (window.PhishLensWorkspace?.enabled) {
+    payload.save_history = Boolean(window.PhishLensWorkspace.user && $("save-history").checked);
+    payload.save_content = payload.save_history && $("save-content").checked;
+  }
   if (!state.serverManaged) Object.assign(payload, {endpoint: $("endpoint").value.trim(), model: $("llm-model").value.trim(), api_key: $("api-key").value.trim()});
   if (!payload.use_llm) { await analyze(payload); return; }
   if (!payload.api_key && !state.hasKey) {
@@ -505,7 +575,8 @@ $("paste-button").addEventListener("click", async () => {
   } finally { $("paste-button").disabled = state.busy; }
 });
 $("new-check").addEventListener("click", () => { resetResult(); $("input-text").focus(); $("input-text").select(); $("analysis-form").scrollIntoView({block: "start"}); });
-$("use-llm").addEventListener("change", () => { updateOptions(); resetResult(); });
+$("use-llm").addEventListener("change", () => { state.aiPreferences[state.mode] = $("use-llm").checked; updateOptions(); resetResult(); });
+$("save-history")?.addEventListener("change", updateOptions);
 ["use-rag", "include-ml"].forEach(id => $(id).addEventListener("change", resetResult));
 $("api-key").addEventListener("input", keyStatus);
 $("show-key").addEventListener("click", () => { const hidden = $("api-key").type === "password"; $("api-key").type = hidden ? "text" : "password"; $("show-key").textContent = hidden ? "Ẩn" : "Hiện"; $("show-key").setAttribute("aria-label", hidden ? "Ẩn API key" : "Hiện API key"); });
@@ -526,4 +597,7 @@ function downloadResult() {
   const link = node("a"); link.href = url; link.download = `phishlens_${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
   link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+$("print-result").addEventListener("click", () => { if (state.result && !state.busy) window.print(); });
+$("footer-help").addEventListener("click", () => $("how-dialog").showModal());
+$("install-guide").addEventListener("click", () => { $("extension-install").open = true; $("how-dialog").showModal(); $("extension-install").scrollIntoView({block: "nearest"}); });
 updateCount(); updateOptions(); init();

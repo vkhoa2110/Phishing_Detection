@@ -5,6 +5,7 @@ from contextvars import ContextVar
 from dataclasses import dataclass, replace
 import hashlib
 import math
+import time
 
 from fastapi import HTTPException, Request
 
@@ -12,6 +13,7 @@ from app.core.settings import ROOT, Settings
 from app.domain.claim_grounding import VERSION as PRESENTATION_VERSION, guard_presentation
 from app.domain.schemas import AnalyzeInput
 from app.services.llm.client import LLMFailure
+from app.services.llm import decision_explanation
 
 VERSION = "server-managed-runtime-1.0"
 PRESENTATION_SHA256 = hashlib.sha256((ROOT / "app/domain/claim_grounding.py").read_bytes()).hexdigest()
@@ -56,7 +58,8 @@ class BudgetedLLM:
         budget.calls += 1
         try:
             async with asyncio.timeout(remaining):
-                result = await getattr(self.service, stage)(**kwargs)
+                result = (await decision_explanation.describe(self.service, **kwargs) if stage == "describe_evidence"
+                          else await getattr(self.service, stage)(**kwargs))
                 if stage == "analyze" and self.guard_reasons:
                     result = guard_presentation(result)
                 if isinstance(result, dict) and result.get("code") == "TIMEOUT":
@@ -90,6 +93,12 @@ class BudgetedLLM:
             # A failed shadow opinion cannot invalidate a completed analysis.
             return {"status": "error", "code": exc.code, "usage": {}, "usage_available": False}
 
+    async def describe_evidence(self, **kwargs):
+        try:
+            return await self.invoke("describe_evidence", **kwargs)
+        except LLMFailure as exc:
+            return {"status": "error", "code": exc.code, "classification_changed": False}
+
 
 class ManagedAnalysis:
     def __init__(self, service, seconds, profile):
@@ -100,6 +109,14 @@ class ManagedAnalysis:
         token = ACTIVE_BUDGET.set(budget)
         try:
             result = await self.service.analyze(data)
+            llm = result["llm"]
+            if (decision_explanation.REQUESTED.get() and data.mode == "text" and llm.get("status") == "ok"
+                    and llm.get("core_decision") and llm["verdict"].get("evidence")):
+                explanation_started = time.perf_counter()
+                llm["evidence_explanation"] = await self.service.llm.describe_evidence(llm=llm)
+                elapsed = round((time.perf_counter() - explanation_started) * 1000, 1)
+                result["timing"]["evidence_explanation_ms"] = elapsed
+                result["timing"]["total_ms"] += elapsed
             result["execution"]["runtime"] = {"version": VERSION, "profile": self.profile,
                 "connection_mode": "server_managed", "provider_budget_seconds": self.seconds,
                 "budget_scope": budget_scope(self.profile),
@@ -157,6 +174,7 @@ def create_app(profile="stable", settings=None, transport=None, model_service=No
         data["runtime"] = {"version": VERSION, "profile": profile, "connection_mode": "server_managed",
             "client_connection_overrides": False, "default_changed_by_this_runtime": False}
         data["runtime"]["reason_presentation"] = PRESENTATION_VERSION if profile in FOCUSED_PROFILES else None
+        data["runtime"]["evidence_explanation_available"] = profile in FOCUSED_PROFILES
         data["runtime"]["reason_presentation_sha256"] = PRESENTATION_SHA256 if profile in FOCUSED_PROFILES else None
         # Read loaded settings after each preserved factory applies its cap.
         # Explicit allowlist: no endpoint, headers, keys, input or raw response.

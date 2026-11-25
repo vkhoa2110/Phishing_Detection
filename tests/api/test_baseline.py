@@ -10,7 +10,7 @@ from app.services.llm.client import LLMFailure, normalize_endpoint, parse_verdic
 from app.api.legacy import create_app
 from app.core.privacy import redact
 from app.core.settings import Settings
-from app.services.url.parsing import extract_urls
+from app.services.url.parsing import MAX_URLS, extract_urls
 
 
 class FakeML:
@@ -70,7 +70,7 @@ def test_invalid_and_too_many_urls():
     with pytest.raises(ValueError):
         extract_urls("javascript:alert(1)", "url")
     with pytest.raises(ValueError):
-        extract_urls(" ".join(f"https://site{i}.example/" for i in range(6)), "text")
+        extract_urls(" ".join(f"https://site{i}.example/" for i in range(MAX_URLS + 1)), "text")
 
 
 @pytest.mark.parametrize("ml,llm,mode,expected", [

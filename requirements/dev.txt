@@ -1,3 +1,4 @@
 -r base.txt
+-r ocr.txt
 -r rag-collection.txt
 pytest>=8,<10

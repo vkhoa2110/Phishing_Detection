@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.services.analysis import PIPELINE_VERSION
+from app.services.url.parsing import MAX_URLS
 from app.api.legacy import create_app
 from app.core.settings import Settings
 from tests.api.test_baseline import FakeML, api_response, completion
@@ -30,7 +31,7 @@ def test_invalid_approved_text_is_rejected_before_any_component_runs(tmp_path):
                                                      "llm_text": "   ", "use_rag": True})
         assert response.status_code == 422
         response = client.post("/api/analyze", json={"text": "https://example.org", "consent": True,
-            "llm_text": " ".join(f"https://site{i}.example" for i in range(6)), "use_rag": True})
+            "llm_text": " ".join(f"https://site{i}.example" for i in range(MAX_URLS + 1)), "use_rag": True})
         assert response.status_code == 422
         assert not rag.seen
 

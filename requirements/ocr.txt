@@ -1,0 +1,2 @@
+# Optional local image-to-text support. Install Tesseract + vie/eng data separately.
+Pillow==13.0.0

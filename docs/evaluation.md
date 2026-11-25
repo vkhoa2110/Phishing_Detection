@@ -371,6 +371,8 @@ Tham chiếu có 1.436 TLD, phiên bản `2026111600`, tải từ [IANA](https:/
 
 Ưu tiên giữ token có authority hợp lệ nguyên vẹn trước khi tách dấu phân cách rõ như `|`, ngoặc vuông/ngoặc nhọn và mũi tên. Không cắt tùy ý tiền tố Unicode, không sửa authority tường minh sai cú pháp, không thay path/query hợp lệ để cứu mẫu đã xem. Mã metadata kiểm ranh giới literal để tránh regex lấy tiền tố ASCII rồi phục hồi authority có ký tự ẩn. Chuỗi trần mơ hồ không chiếm giới hạn năm URL, kể cả ở bước tạo metadata.
 
+Từ 25/11, giới hạn vận hành tăng từ 5 lên 50 URL khác nhau. Runner mặc định dùng `data/evaluation/url_intake_boundary_v2.jsonl` (32 ca regression, cập nhật ca tràn thành 51 URL); bộ v1 và artifact lịch sử được giữ nguyên. Tương tự, runner `runtime_parity` dùng `runtime_parity_v2.jsonl`, giữ 16 ca × 4 arm và đổi ca tràn PARITY-12 thành 51 URL; bản v1 không sửa. Không suy latency hoặc chất lượng phát hiện cho 50 URL từ benchmark cũ.
+
 `data/evaluation/url_intake_boundary_v1.jsonl` gồm 32 ca do trợ lý soạn cho chính sách này. Các ca là regression phát triển, không phải benchmark độc lập hoặc nhãn phishing. Runner `evaluation.url.intake_audit` đối chiếu kết quả intake cũ đúng hash và mã hiện tại; lưu từng ca, thay đổi trên đúng 80 SMS dev đã biết, source/reference/input hashes và cả lỗi. Kết quả cũ không bị sửa; 120 SMS reserve không được suy luận. Rà ngữ cảnh 10 SMS khác intake là nhận định AI về trích URL, có phiếu người còn trống, không tạo nhãn phishing mới.
 
 TLD hợp lệ vẫn có thể trùng viết tắt hoặc tên tệp. Bộ ca kiểm hợp đồng đạt không chứng minh Precision/Recall trích xuất ngoài thực tế; thay đổi số URL/metadata càng không phải thay đổi F1 phishing. [Đầu ra và giới hạn](../artifacts/evaluations/url_intake_audit_20261117/README.md).

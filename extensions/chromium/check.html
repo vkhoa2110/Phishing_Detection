@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PhishLens · Trợ lý kiểm tra khi duyệt web</title><link rel="icon" href="icons/48.png"><link rel="stylesheet" href="check.css"><script src="images.js" defer></script><script src="check.js" defer></script></head><body data-view="check" data-stage="edit">
+<svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-6 6-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 0 1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0"/></symbol>
+<symbol id="i-text" viewBox="0 0 24 24"><path d="M5 5h14v14H5zM8 9h8m-8 4h8m-8 3h5"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m3 17 6-6 6 6 3-3 3 3"/><circle cx="16" cy="8" r="1"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3z"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="4"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 8 3v6c0 5-8 11-8 11S4 16 4 11V5l8-3zM8 11l3 3 5-6"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="16" cy="17" r="3"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 13a9 9 0 0 1-10-10 9 9 0 1 0 10 10z"/></symbol>
+<symbol id="i-expand" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6-8 8M10 4H4v16h16v-6"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+<symbol id="i-scan" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M6 12h12"/></symbol>
+</defs></svg>
+<header class="app-header"><a class="brand" id="home-link" href="#"><img src="icons/48.png" width="32" height="32" alt=""><span>PhishLens<span class="brand-dot">.</span><small>Kiểm tra trước khi tin</small></span></a><div class="header-actions">
+<button id="theme-toggle" class="icon-button" type="button" aria-label="Đổi giao diện sáng / tối" title="Sáng / tối"><svg><use href="#i-moon"/></svg></button>
+<button id="detach" class="icon-button" type="button" aria-label="Mở cửa sổ riêng" title="Mở cửa sổ riêng"><svg><use href="#i-expand"/></svg></button>
+<button id="settings-toggle" class="icon-button" type="button" aria-label="Thiết lập kết nối" title="Kết nối"><svg><use href="#i-settings"/></svg></button></div></header>
+<nav class="workspace-nav" aria-label="PhishLens"><button id="nav-check" type="button" data-view-target="check" aria-current="page"><svg><use href="#i-scan"/></svg>Kiểm tra</button><button id="nav-assistant" type="button" data-view-target="assistant"><svg><use href="#i-shield"/></svg>Trợ lý</button><button id="nav-connection" type="button" data-view-target="connection"><svg><use href="#i-settings"/></svg>Kết nối</button></nav>
+<main>
+<button id="connection-pill" class="connection-pill" type="button"><span id="connection-dot" class="dot"></span><span id="connection-status">Đang kết nối…</span><span class="pill-arrow">›</span></button>
+<div id="error" class="error" role="alert" hidden></div>
+<section id="connection" class="surface connection-card" hidden>
+<div class="connection-illustration"><svg><use href="#i-link"/></svg><span></span><img src="icons/48.png" width="42" height="42" alt=""></div>
+<h2>Kết nối ứng dụng</h2>
+<p class="muted">Mở PhishLens trên máy rồi thử kết nối lại.</p>
+<form id="connect-form"><label for="base-url" class="field-label">Địa chỉ ứng dụng</label><input id="base-url" type="url" value="http://127.0.0.1:8001" required autocomplete="off"><button id="connect" class="primary full-width" type="submit">Kết nối và dùng ngay <svg><use href="#i-arrow"/></svg></button></form>
+<button id="open-app" class="secondary full-width" type="button">Mở ứng dụng trên máy ↗</button>
+<div class="connection-info"><span>Chế độ sử dụng</span><strong id="connection-mode">Khách</strong></div><details class="connection-about"><summary>Dữ liệu và phiên bản</summary><p id="guest-history-note" class="micro" hidden>Khách không lưu lịch sử. Bạn có thể tải JSON hoặc đăng nhập trên web để lưu các lượt tiếp theo.</p><p class="micro">PhishLens 0.8 · Kết nối với ứng dụng trên cùng máy.</p></details><button id="disconnect" class="disconnect-button" type="button" hidden>Tạm ngừng kết nối</button>
+</section>
+<section id="assistant-screen" hidden>
+<div class="page-heading"><h1>Trợ lý trình duyệt</h1></div>
+<div class="assistant-status surface"><span class="assistant-emblem"><svg><use href="#i-shield"/></svg></span><div><strong id="assistant-status-title">Trợ lý sẵn sàng</strong><p id="assistant-status-note">Bật nút nổi để gọi kiểm tra từ bất kỳ trang web nào.</p></div></div>
+<section class="surface preference-list">
+<label class="preference-row"><span class="preference-icon"><svg><use href="#i-camera"/></svg></span><span class="option-copy"><strong>Nút PhishLens trên trang</strong><small>Khoanh vùng, mở bảng và kiểm tra nhanh.</small></span><input id="floating-enabled" type="checkbox" role="switch"><span class="switch-track" aria-hidden="true"></span></label>
+
+<label class="preference-row"><span class="preference-icon mint"><svg><use href="#i-globe"/></svg></span><span class="option-copy"><strong>Tự kiểm URL khi mở trang</strong><small>Kiểm tra tại máy, báo khi URL có dấu hiệu.</small></span><input id="auto-check-enabled" type="checkbox" role="switch"><span class="switch-track" aria-hidden="true"></span></label>
+
+<label class="preference-row"><span class="option-copy"><strong>Trợ lý Gmail / Outlook</strong><small>Tự lấy thư đang mở vào bản duyệt. AI chờ xác nhận.</small></span><input id="mail-assist-enabled" type="checkbox" role="switch"><span class="switch-track" aria-hidden="true"></span></label>
+</section>
+<div class="assistant-actions"><button id="pause-assistant" class="secondary" type="button"><svg><use href="#i-pause"/></svg><span>Tạm nghỉ 1 giờ</span></button><button id="reset-hidden-sites" class="text-button" type="button">Hiện lại trên các trang đã ẩn</button></div>
+<details class="surface assistant-guide"><summary>Phím tắt</summary><p><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd><span>Khoanh vùng để kiểm tra</span></p><p><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd><span>Mở bảng PhishLens</span></p><small>Đổi trong phần quản lý extension của trình duyệt.</small></details>
+<details class="surface assistant-guide"><summary>Quyền truy cập và dữ liệu</summary><p id="floating-note">Kéo nút nổi để đổi vị trí.</p><p>Tự kiểm URL chỉ gửi URL tới ứng dụng trên máy, không đọc nội dung trang hoặc gọi AI. Bạn có thể tạm nghỉ hoặc ẩn nút theo website.</p></details>
+</section>
+<ol class="flow-steps view-check" aria-label="Tiến trình kiểm tra"><li data-step="edit" aria-current="step"><span>1</span>Nội dung</li><li data-step="review"><span>2</span>Duyệt gửi</li><li data-step="result"><span>3</span>Kết quả</li></ol>
+<div id="intro" class="intro view-check check-launchpad"><h1>Kiểm tra nội dung</h1></div>
+<div class="view-check check-launchpad">
+<div id="mail-actions" class="mail-actions" hidden><button id="read-email" type="button" class="secondary full-width">✉ Đọc email đang mở</button></div>
+<div class="capture-tools"><button id="quick-capture" class="region-action" type="button"><svg><use href="#i-scan"/></svg><strong>Khoanh vùng</strong></button><button id="quick-viewport" type="button" class="secondary"><svg><use href="#i-camera"/></svg>Vùng hiển thị</button></div>
+<section id="current-page" class="current-page"><span id="page-indicator" class="page-indicator"></span><div><strong id="page-host">Chọn một tab web</strong><span id="page-status">Mở trang cần kiểm tra.</span></div><button id="quick-page" class="inline-link" type="button">Kiểm tra URL</button></section>
+</div>
+<div class="input-tabs view-check" role="tablist" aria-label="Nội dung cần kiểm tra">
+<button id="tab-url" type="button" role="tab" aria-selected="true" aria-controls="input-area" data-mode="url"><svg><use href="#i-link"/></svg>Đường dẫn</button>
+<button id="tab-text" type="button" role="tab" aria-selected="false" aria-controls="input-area" data-mode="text"><svg><use href="#i-text"/></svg>Tin nhắn</button>
+<button id="tab-image" type="button" role="tab" aria-selected="false" aria-controls="input-area" data-mode="image"><svg><use href="#i-image"/></svg>Hình ảnh</button>
+</div>
+<form id="check-form" class="view-check">
+<section id="input-area" class="surface input-surface" role="tabpanel" aria-labelledby="tab-url">
+<div id="image-input" hidden>
+<button id="capture-tab" type="button" class="secondary full-width"><svg><use href="#i-camera"/></svg>Khoanh trực tiếp trên trang</button>
+<p class="image-separator">HOẶC DÙNG ẢNH CÓ SẴN</p>
+<div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-label="Chọn, kéo thả hoặc dán ảnh"><div class="upload-mark"><svg><use href="#i-image"/></svg></div><strong>Thả ảnh vào đây</strong><span>hoặc <b>chọn từ máy</b> · Ctrl+V để dán</span><small>PNG, JPG, WebP · Tối đa 5 MB</small></div>
+<input id="image-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+<div id="image-preview" hidden><div class="image-heading"><span id="image-name">Ảnh đã chọn</span><button id="remove-image" type="button" class="icon-button" aria-label="Xóa ảnh"><svg><use href="#i-close"/></svg></button></div>
+<div id="crop-wrap" class="crop-wrap"><canvas id="image-canvas" aria-label="Ảnh xem trước; kéo chuột để chọn vùng chữ"></canvas><div id="crop-selection" hidden></div></div>
+<div class="crop-toolbar"><span>Kéo trên ảnh để chọn vùng chữ</span><button id="reset-crop" class="inline-link" type="button">Toàn ảnh</button></div>
+<button id="read-image" class="secondary full-width" type="button"><svg><use href="#i-text"/></svg>Đọc chữ từ ảnh</button></div>
+<p id="ocr-status" class="image-notice" role="status">Ảnh được đọc tại máy. Chưa gửi ảnh đến AI.</p>
+</div>
+<div id="text-input"><div class="field-heading"><label for="input-text" id="input-label">Đường dẫn cần kiểm tra</label><div class="editor-tools"><button id="use-current-tab" type="button" class="inline-link">Dùng tab hiện tại</button><button id="clear-input" type="button" class="inline-link">Xóa</button></div></div>
+<textarea id="input-text" rows="3" maxlength="8000" placeholder="https://duong-dan-ban-muon-kiem-tra…" required spellcheck="false"></textarea>
+<div class="input-foot"><span id="input-hint">Kiểm tra chuỗi URL, không mở trang đích.</span><span><span id="input-count">0</span>/8.000</span></div></div>
+<div id="examples" class="examples" hidden><span>Thử mẫu</span><button type="button" data-example="suspicious">Yêu cầu OTP</button><button type="button" data-example="normal">Lịch họp nhóm</button></div>
+</section>
+<section class="surface analysis-options"><label class="ai-option" for="use-ai"><span class="option-icon"><svg><use href="#i-spark"/></svg></span><span class="option-copy"><strong>Phân tích bằng AI</strong><small id="ai-description">Xem dấu hiệu và hướng xử lý.</small></span><input type="checkbox" id="use-ai" role="switch"><span class="switch-track" aria-hidden="true"></span></label>
+<details id="advanced-options" class="advanced"><summary>Tùy chọn phân tích & lưu kết quả</summary><label class="check"><input type="checkbox" id="explain-evidence" checked>AI giải thích thêm từng dấu hiệu</label><label class="check"><input type="checkbox" id="include-ml" disabled>Tham khảo thêm điểm URL cho AI</label><label class="check"><input type="checkbox" id="use-rag" disabled>Đối chiếu tài liệu có nguồn</label><label class="check" id="history-option"><input type="checkbox" id="save-history" checked>Lưu thông tin lượt kiểm tra</label><label class="check" id="content-option"><input type="checkbox" id="save-content">Kèm nội dung đã che và kết quả chi tiết</label></details>
+</section>
+</form>
+<section id="review" class="surface review-card view-check" hidden><h2>Duyệt nội dung gửi AI</h2><p id="provider-note" class="muted"></p><p id="masked-note" class="privacy-notice"></p><label for="approved-text" class="field-label">Nội dung gửi · có thể chỉnh sửa</label><textarea id="approved-text" rows="8" maxlength="8000"></textarea><label class="check consent-label"><input type="checkbox" id="consent"><span>Tôi đồng ý gửi bản nội dung này tới dịch vụ AI.</span></label></section>
+<div id="progress" class="surface progress-card view-check" role="status" hidden><div class="scan-orbit"><svg><use href="#i-shield"/></svg></div><strong id="progress-title">Đang kiểm tra…</strong><p id="progress-description">Kết quả sẽ xuất hiện tại đây.</p><div class="progress-track"><span></span></div></div>
+<section id="result" class="view-check" aria-live="polite" hidden></section>
+<details class="extension-guide"><summary>Hướng dẫn sử dụng</summary><ol><li>Chọn URL, tin nhắn hoặc hình ảnh.</li><li>Dán nội dung hoặc khoanh vùng trên trang.</li><li>Nếu dùng AI, duyệt nội dung rồi xác nhận gửi.</li><li>Xem nhận định, dấu hiệu và hướng xử lý.</li></ol></details>
+</main>
+<footer id="action-dock" class="action-dock view-check">
+<div id="submit-area" class="submit-area"><button id="analyze" type="submit" form="check-form" class="primary analyze-button" disabled><span id="analyze-label">Kiểm tra đường dẫn</span><svg><use href="#i-arrow"/></svg></button><div class="submit-note"><span id="submit-hint">Chạy tại máy</span><kbd>Ctrl ↵</kbd></div></div>
+<div id="review-actions" hidden><button id="confirm" class="primary full-width" type="button" disabled>Đồng ý và phân tích <svg><use href="#i-spark"/></svg></button><button id="cancel" class="text-button full-width" type="button">← Quay lại chỉnh nội dung</button></div>
+<div id="result-navigation" class="result-navigation" hidden><button id="edit-result" class="secondary" type="button">Sửa nội dung</button><button id="new-analysis" class="primary new-check" type="button">Kiểm tra nội dung khác</button></div>
+</footer>
+<div id="toast" class="toast" role="status" hidden></div></body></html>

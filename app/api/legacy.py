@@ -17,7 +17,7 @@ from app.core.privacy import redact
 from app.services.rag.retrieval import RAGService
 from app.domain.schemas import AnalyzeInput, InputData
 from app.core.settings import ROOT, Settings
-from app.services.url.parsing import extract_urls
+from app.services.url.parsing import MAX_URLS, extract_urls
 
 STATIC = ROOT / "app/static"
 
@@ -62,7 +62,7 @@ def create_app(settings: Settings | None = None, transport=None, model_service=N
     @app.exception_handler(RequestValidationError)
     async def invalid_request(request: Request, exc: RequestValidationError):
         # Không trả lại body/API key trong lỗi validation.
-        return JSONResponse({"detail": "Dữ liệu chưa hợp lệ. Giới hạn 8.000 ký tự, tối đa 5 URL; kiểm tra các trường nhập."}, status_code=422)
+        return JSONResponse({"detail": f"Dữ liệu chưa hợp lệ. Giới hạn 8.000 ký tự, tối đa {MAX_URLS} URL; kiểm tra các trường nhập."}, status_code=422)
 
     @app.get("/")
     def index():
@@ -76,7 +76,7 @@ def create_app(settings: Settings | None = None, transport=None, model_service=N
             "analysis_policy": {"version": POLICY_VERSION, "default_include_ml": False,
                                 "message_prompt_profile": MESSAGE_PROFILE, "pipeline_version": PIPELINE_VERSION,
                                 "headline_target": "message_actions"},
-            "limits": {"characters": 8000, "urls": 5, "llm_timeout_seconds": settings.timeout_seconds}}
+            "limits": {"characters": 8000, "urls": MAX_URLS, "llm_timeout_seconds": settings.timeout_seconds}}
 
     @app.post("/api/model/reload")
     async def reload_model():

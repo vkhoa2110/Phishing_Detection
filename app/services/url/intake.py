@@ -10,12 +10,12 @@ from __future__ import annotations
 import re
 import unicodedata
 
-from app.services.url.parsing import URL_PATTERN, extract_urls, trim_url, valid_url
+from app.services.url.parsing import MAX_URLS, URL_PATTERN, extract_urls, trim_url, valid_url
 from app.services.url.authority import IDNA_POLICY, inspect_authority
 from app.services.url.domain_reference import has_delegated_tld, reference_manifest
 
 
-VERSION = "url-intake-2.2"
+VERSION = "url-intake-2.3"
 ZERO_WIDTH = "\u200b\u200c\u200d\u2060\ufeff"
 DEFANGED_DOT = re.compile(r"(?i)(?:\[\s*\.\s*\]|\(\s*\.\s*\)|\{\s*\.\s*\})")
 TOKEN = re.compile(r"[^\s<>\"']{4,4096}")
@@ -93,7 +93,7 @@ def inspect_url_intake(text: str, mode: str) -> dict:
         except ValueError as exc:
             strict, invalid, strict_failure = [], [], exc
     else:
-        # Harvest without the legacy five-candidate limit. Ordinary dotted
+        # Apply the URL limit after filtering candidates. Ordinary dotted
         # prose must not exhaust the model's budget before policy filtering.
         strict, invalid = [], []
         for value in dict.fromkeys(trim_url(match.group()) for match in URL_PATTERN.finditer(text)):
@@ -139,8 +139,8 @@ def inspect_url_intake(text: str, mode: str) -> dict:
     urls = list(dict.fromkeys([*accepted, *recovered]))
     if mode == "url" and (not urls or rejected):
         raise strict_failure or ValueError("Nhập một URL HTTP/HTTPS hợp lệ, ví dụ https://example.org/.")
-    if len(urls) + len(rejected) > 5:
-        raise ValueError("Mỗi lần kiểm tra hỗ trợ tối đa 5 URL khác nhau, kể cả URL được viết che dấu.")
+    if len(urls) + len(rejected) > MAX_URLS:
+        raise ValueError(f"Mỗi lần kiểm tra hỗ trợ tối đa {MAX_URLS} URL khác nhau, kể cả URL được viết che dấu.")
     return {
         "version": VERSION, "idna_policy": IDNA_POLICY,
         "urls": urls, "strict_urls": accepted, "recovered_urls": recovered,

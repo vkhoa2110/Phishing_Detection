@@ -126,9 +126,9 @@ def main():
             expect(page.locator("#results-panel")).to_be_hidden()
             expect(page.locator("#service-status")).to_contain_text("Sẵn sàng")
             if status.get("analysis_policy", {}).get("experimental") is True:
-                expect(page.locator("#service-status")).to_contain_text("Bản thử nghiệm")
+                expect(page.locator("#runtime-profile")).to_contain_text("Bản thử nghiệm")
             else:
-                expect(page.locator("#service-status")).not_to_contain_text("Bản thử nghiệm")
+                expect(page.locator("#runtime-profile")).not_to_contain_text("Bản thử nghiệm")
             no_overflow()
             screenshot("initial")
 
@@ -382,10 +382,10 @@ def main():
             assert timeout == expected_timeout, (experimental, timeout)
             assert page.evaluate("analysisTimeout({mode: 'text', use_llm: false, use_rag: true})") == 65000
             if experimental:
-                expect(page.locator("#service-status")).to_contain_text("Bản thử nghiệm")
+                expect(page.locator("#runtime-profile")).to_contain_text("Bản thử nghiệm")
                 assert page.evaluate("analysisTimeout({mode: 'url', use_llm: true, use_rag: true})") == 105000
             else:
-                expect(page.locator("#service-status")).not_to_contain_text("Bản thử nghiệm")
+                expect(page.locator("#runtime-profile")).not_to_contain_text("Bản thử nghiệm")
             timing_checks.append({"experimental": experimental, "two_stage_timeout_ms": timeout})
             page.close()
         browser.close()

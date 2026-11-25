@@ -9,7 +9,7 @@ from app.core.settings import ROOT
 from app.services.url import intake
 from app.services.url.domain_reference import reference_manifest
 
-DEFAULT_CASES = ROOT / "data/evaluation/url_intake_boundary_v1.jsonl"
+DEFAULT_CASES = ROOT / "data/evaluation/url_intake_boundary_v2.jsonl"
 
 
 def sha(path):

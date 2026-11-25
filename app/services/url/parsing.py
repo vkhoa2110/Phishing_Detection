@@ -1,6 +1,8 @@
 import re
 from urllib.parse import urlsplit
 
+MAX_URLS = 50
+
 # Không phân giải tên miền, không gọi WHOIS và không mở URL được kiểm tra.
 URL_PATTERN = re.compile(
     r"(?i)(?:https?://|www\.)[^\s<>\"']+|"
@@ -38,7 +40,7 @@ def extract_urls(text: str, mode: str) -> tuple[list[str], list[str]]:
         (good if valid_url(item) else invalid).append(item)
     if mode == "url" and invalid:
         raise ValueError("Nhập một URL HTTP/HTTPS hợp lệ, ví dụ https://example.org/.")
-    if len(good) + len(invalid) > 5:
-        raise ValueError("Mỗi lần kiểm tra hỗ trợ tối đa 5 URL khác nhau.")
+    if len(good) + len(invalid) > MAX_URLS:
+        raise ValueError(f"Mỗi lần kiểm tra hỗ trợ tối đa {MAX_URLS} URL khác nhau.")
     return good, invalid
 

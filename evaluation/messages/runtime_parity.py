@@ -23,7 +23,7 @@ from app.services.url.parsing import extract_urls
 from app.services.url.policy import operating_prediction
 from evaluation.data.sms import read_jsonl, sha, write_json, write_jsonl
 
-DEFAULT_CASES = ROOT / "data/evaluation/runtime_parity_v1.jsonl"
+DEFAULT_CASES = ROOT / "data/evaluation/runtime_parity_v2.jsonl"
 ARMS = {"llm_only": (False, False), "llm_url": (True, False),
         "llm_rag": (False, True), "llm_url_rag": (True, True)}
 
