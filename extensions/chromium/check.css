@@ -84,8 +84,8 @@ body[data-busy=true] #check-form, body[data-busy=true] .check-launchpad { displa
 .field-label { display: block; margin: 12px 0 8px; }
 .inline-link { padding: 0; color: var(--accent); font-size: 11px; font-weight: 600; }
 .inline-link:hover { text-decoration: underline; }
-textarea, input:not([type=checkbox]):not([type=file]) { width: 100%; min-width: 0; background: var(--soft); border: 1px solid var(--line); border-radius: 9px; padding: 11px; font-size: 13px; line-height: 1.7; outline: none; }
-textarea:focus, input:not([type=checkbox]):focus { border-color: #a29aea; box-shadow: 0 0 0 3px #6c5fd511; }
+textarea, input:not([type=checkbox]):not([type=file]):not([type=radio]) { width: 100%; min-width: 0; background: var(--soft); border: 1px solid var(--line); border-radius: 9px; padding: 11px; font-size: 13px; line-height: 1.7; outline: none; }
+textarea:focus, input:not([type=checkbox]):not([type=radio]):focus { border-color: #a29aea; box-shadow: 0 0 0 3px #6c5fd511; }
 textarea { resize: vertical; min-height: 106px; }
 .input-foot { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-top: 8px; font-size: 10px; color: var(--muted); }
 .input-foot > span:last-child { white-space: nowrap; }
@@ -196,6 +196,15 @@ body[data-busy=true] .action-dock .primary::before { content: ""; width: 13px; h
 .result-actions .secondary { flex: 1; text-decoration: none; }
 .new-check { display: block; font-size: 12px; color: var(--accent); padding: 8px 0; }
 .connection-card { padding: 20px; }
+.send-settings { border: 0; padding: 0 0 20px; margin: 16px 0 20px; min-width: 0; border-bottom: 1px solid var(--line); }
+.send-settings legend { font-size: 14px; font-weight: 650; padding: 0 0 10px; }
+.send-choice { display: flex; align-items: flex-start; gap: 10px; padding: 12px; margin-bottom: 8px; border: 1px solid var(--line); border-radius: 11px; cursor: pointer; background: var(--soft); }
+.send-choice:has(input:checked) { border-color: var(--accent); background: var(--tint); }
+.send-choice input { flex-shrink: 0; width: 17px; height: 17px; margin: 3px 0 0; accent-color: var(--accent-strong); }
+.send-choice input:focus-visible { outline: 3px solid #a89bfa; outline-offset: 3px; }
+.send-choice strong { display: block; font-size: 12px; font-weight: 650; }
+.send-choice small { display: block; font-size: 11px; color: var(--muted); margin-top: 3px; }
+.send-settings p { margin-top: 8px; }
 .connection-illustration { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; color: var(--accent); }
 .connection-illustration > svg { width: 40px; height: 40px; padding: 9px; background: var(--tint); border-radius: 10px; }
 .connection-illustration span { width: 32px; border-top: 2px dashed var(--line); }
@@ -208,6 +217,9 @@ body[data-busy=true] .action-dock .primary::before { content: ""; width: 13px; h
 .disconnect-button { width: 100%; margin-top: 15px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; color: var(--red); font-size: 12px; }
 .page-heading { margin-bottom: 16px; }
 .assistant-status { padding: 15px; display: flex; align-items: center; gap: 11px; }
+.mail-result-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; margin: 10px 0 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.mail-result-tools .secondary { flex: 1; font-size: 12px; }
+.mail-result-tools small { flex-basis: 100%; font-size: 11px; }
 .assistant-emblem { width: 38px; height: 38px; display: grid; place-items: center; background: var(--tint); color: var(--accent); border-radius: 12px; flex-shrink: 0; }
 .assistant-status strong { font-size: 13px; }
 .assistant-status p { font-size: 12px; margin-top: 5px; color: var(--muted); }

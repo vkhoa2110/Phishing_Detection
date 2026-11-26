@@ -1,6 +1,8 @@
 """Narrow extension API: public guest analysis and legacy scoped account bearers."""
 import inspect
 import re
+import hashlib
+from contextlib import asynccontextmanager
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -10,6 +12,7 @@ from starlette.concurrency import run_in_threadpool
 from app.domain.schemas import InputData
 from app.services.workspace import WorkspaceError
 from app.services.image_text import ImageTextService, MAX_BYTES, MIMES
+from app.services.analysis_jobs import AnalysisJobs
 
 
 class PairInput(BaseModel):
@@ -30,13 +33,26 @@ class ExtensionAnalyze(InputData):
     explain_evidence: bool = False
 
 
+class JobStatus(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    client_key: str = Field(pattern=r"^[a-f0-9]{64}$")
+    id: str = Field(pattern=r"^[a-f0-9-]{36}$")
+
+
+class JobStart(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    client_key: str = Field(pattern=r"^[a-f0-9]{64}$")
+    request_key: str = Field(pattern=r"^[a-f0-9-]{36}$")
+    payload: ExtensionAnalyze
+
+
 async def extension_access(request, call_next, products):
     identity = request.headers.get("x-phishlens-extension", "")
     origin = request.headers.get("origin", "")
     if not identity and request.method == "OPTIONS" and re.fullmatch(r"chrome-extension://[a-p]{32}", origin):
         identity = origin.rsplit("/", 1)[-1]
     expected = "chrome-extension://" + identity
-    allowed = {"/api/extension/connect", "/api/extension/session", "/api/extension/preview", "/api/extension/analyze", "/api/extension/disconnect", "/api/extension/image-text"}
+    allowed = {"/api/extension/connect", "/api/extension/session", "/api/extension/preview", "/api/extension/analyze", "/api/extension/disconnect", "/api/extension/image-text", "/api/extension/jobs/start", "/api/extension/jobs/status"}
 
     def response(message, status):
         return JSONResponse({"detail": message}, status_code=status)
@@ -110,6 +126,18 @@ async def extension_access(request, call_next, products):
 
 def install_extension(app, products, analyze, analyze_type):
     app.state.extension_ocr = ImageTextService()
+    jobs = app.state.extension_jobs = AnalysisJobs()
+    original_lifespan = app.router.lifespan_context
+
+    @asynccontextmanager
+    async def lifespan(instance):
+        async with original_lifespan(instance):
+            try:
+                yield
+            finally:
+                await jobs.close()
+
+    app.router.lifespan_context = lifespan
     preview = next(r.endpoint for r in app.routes if getattr(r, "path", None) == "/api/preview")
     status = next(r.endpoint for r in app.routes if getattr(r, "path", None) == "/api/status")
 
@@ -124,7 +152,7 @@ def install_extension(app, products, analyze, analyze_type):
         user = request.state.account
         return {"guest": user is None, "user": {"display_name": user["display_name"] if user else "Chế độ khách"}, "ml_ready": data["ml"]["ready"],
             "llm_ready": data["llm"]["has_api_key"], "model": data["llm"]["model"], "rag_ready": data.get("rag", {}).get("ready", False),
-            "evidence_explanation_available": data.get("runtime", {}).get("evidence_explanation_available", False),
+            "evidence_explanation_available": data.get("runtime", {}).get("evidence_explanation_available", False), "analysis_jobs": True,
             "limits": data["limits"],
             "ocr": await run_in_threadpool(app.state.extension_ocr.status)}
 
@@ -137,6 +165,28 @@ def install_extension(app, products, analyze, analyze_type):
         if data.use_llm and (not data.consent or not data.llm_text or not data.llm_text.strip()):
             raise WorkspaceError(422, "Hãy xem trước và xác nhận bản nội dung gửi AI.")
         return await analyze(analyze_type.model_validate(data.model_dump()), request)
+
+    def owner(request, key):
+        user = request.state.account
+        identity = user["id"] if user else "guest:" + (request.client.host if request.client else "unknown")
+        return hashlib.sha256((identity + "|" + request.state.extension_origin + "|" + key).encode()).hexdigest()
+
+    @app.post("/api/extension/jobs/start")
+    async def start_job(data: JobStart, request: Request):
+        payload = data.payload
+        if payload.use_llm and (not payload.consent or not payload.llm_text or not payload.llm_text.strip()):
+            raise WorkspaceError(422, "Hãy xem trước và xác nhận bản nội dung gửi AI.")
+        validated = analyze_type.model_validate(payload.model_dump())
+        # Retain only the scope needed by analysis, not a connection/receive task.
+        scope = dict(request.scope)
+        scope["state"] = dict(request.scope.get("state", {}))
+        detached = Request(scope)
+        return jobs.start(owner(request, data.client_key), data.request_key, payload.model_dump(),
+                          lambda: analyze(validated, detached))
+
+    @app.post("/api/extension/jobs/status")
+    async def job_status(data: JobStatus, request: Request):
+        return jobs.get(owner(request, data.client_key), data.id)
 
     @app.post("/api/extension/disconnect")
     def disconnect(request: Request):

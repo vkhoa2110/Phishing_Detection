@@ -92,8 +92,7 @@ globalThis.PhishLensAssistant = (() => {
   }
   function open(tab, autoLocal = false) {
     // Do not await anything before opening: preserve Chrome's user gesture.
-    return chrome.sidePanel.open({windowId: tab.windowId}).then(() => chrome.storage.session.set({panelInput: {
-      mode: "url", text: tab.url || "", autoLocal, created: Date.now(), windowId: tab.windowId, nonce: crypto.randomUUID()}}));
+    return PhishLensWorkspace.open({mode: "url", text: tab.url || "", autoLocal}, tab.windowId);
   }
   async function scheduleResume() {
     const {assistantPausedUntil} = await chrome.storage.local.get("assistantPausedUntil");

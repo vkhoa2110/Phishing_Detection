@@ -33,7 +33,7 @@
       function submit(selected) {
         if (cleaned) return;
         cleanup();
-        const helpers = [...document.querySelectorAll("[data-phishlens-dock],[data-phishlens-mail]")].map(el => [el, el.style.visibility]);
+        const helpers = [...document.querySelectorAll("[data-phishlens-dock],[data-phishlens-mail],[data-phishlens-annotations]")].map(el => [el, el.style.visibility]);
         helpers.forEach(([el]) => { el.style.visibility = "hidden"; });
         const restore = () => helpers.forEach(([el, visibility]) => { el.style.visibility = visibility; });
         requestAnimationFrame(() => requestAnimationFrame(() => {

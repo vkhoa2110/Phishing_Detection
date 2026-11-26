@@ -69,7 +69,7 @@ globalThis.PhishLensCapture = (() => {
     if (stored.reviewInWindow) {
       // Opening a review window after capture avoids sidePanel's transient
       // user-gesture requirement and preserves the original viewport.
-      const win = await chrome.windows.create({url: chrome.runtime.getURL("check.html?capture=1"), type: "popup", width: 590, height: 860});
+      const win = await PhishLensWorkspace.popup(null);
       destination = win.id;
     }
     buffers.set(destination, result);
@@ -96,9 +96,10 @@ globalThis.PhishLensCapture = (() => {
       if (message.type === "START_REGION") {
         if (panelSender(sender)) {
           const tab = await chrome.tabs.get(message.tabId);
-          const windowId = (await chrome.windows.get(sender.tab?.windowId || tab.windowId)).id;
-          if (tab.windowId !== windowId || !tab.active) throw new Error("Chọn tab web đang xem để khoanh vùng.");
-          return start(tab, false, message.captureMode === "viewport" ? "viewport" : "region");
+          const source = await chrome.windows.get(sender.tab?.windowId || tab.windowId);
+          if (tab.windowId !== source.id && source.type !== "popup" || !tab.active) throw new Error("Chọn tab web đang xem để khoanh vùng.");
+          if (source.type === "popup") await chrome.windows.update(tab.windowId, {focused: true});
+          return start(tab, source.type === "popup", message.captureMode === "viewport" ? "viewport" : "region");
         }
         if (pageSender(sender)) return start(sender.tab, true, message.captureMode === "viewport" ? "viewport" : "region");
         throw new Error("Hãy mở PhishLens để chọn vùng.");

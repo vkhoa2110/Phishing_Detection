@@ -1,6 +1,47 @@
-# PhishLens Browser Extension — bản cục bộ 0.8.0
+# PhishLens Browser Extension — bản cục bộ 0.12.0
 
 Extension Manifest V3 với bảng bên cạnh trang, sáng/tối và ba thẻ Đường dẫn / Tin nhắn / Hình ảnh, dùng với PhishLens đang chạy trên máy, không cần đăng nhập. Model URL, RAG và kết nối LLM nằm ở backend; extension không chứa API key và không tự đọc toàn trang.
+
+## Mới ở 0.12: email và kết quả cạnh nhau
+
+Bấm **Chi tiết** mở bảng bên trong trình duyệt khi hỗ trợ. Thao tác mở bảng chạy ngay trong lần bấm, trước bước đọc/đối chiếu email để giữ quyền mở Side Panel. Vị trí bảng native tuân theo cài đặt trái/phải của trình duyệt.
+
+Nếu không dùng được Side Panel (chẳng hạn trên một số cấu hình Brave), PhishLens tự xếp hai cửa sổ trong vùng cửa sổ mail hiện tại: **mail bên trái, kết quả bên phải**, cùng chiều cao. Không thêm quyền trình duyệt. Bấm lại Chi tiết dùng cùng cửa sổ và không thu nhỏ mail thêm lần nữa. Đóng cửa sổ kết quả khôi phục kích thước/trạng thái trước đó của cửa sổ mail; nếu bạn đã tự di chuyển hoặc đổi kích thước mail thì giữ bố cục bạn chọn. Cửa sổ hẹp dưới 900 px xếp hai vùng trên/dưới. Nút mở cửa sổ riêng trên header trả lại kích thước mail và giữ một cửa sổ PhishLens.
+
+Kiểm bố cục và khôi phục: `scripts/evaluation/check_extension_docked_ui.py --out <thư-mục-mới>` dùng mã JS thật với browser-window API giả lập trong Chromium; chưa thay thế kiểm vị trí cửa sổ trên desktop/Brave thật.
+
+## Mới ở 0.11: kiểm email gọn, dùng lại cửa sổ
+
+- Với chế độ **Gửi ngay khi tôi yêu cầu kiểm tra**, bấm **Kiểm tra email này** để phân tích ngay trên thư: trạng thái chờ rồi mức cảnh báo, số dấu hiệu và liên kết. Kết quả không tự bật cửa sổ hoặc lấy focus. Bấm mức cảnh báo để xem thẻ dấu hiệu; **Chi tiết** mới mở bảng đầy đủ.
+- Chế độ **Xem trước và xác nhận** vẫn mở bản duyệt và chờ bạn đồng ý. Không gửi AI chỉ vì mở hoặc chuyển email.
+- Bảng chi tiết ưu tiên Side Panel khi trình duyệt hỗ trợ. Cửa sổ tách riêng, menu chuột phải và kết quả ảnh dùng lại một cửa sổ PhishLens; trình duyệt không mở được Side Panel cũng dùng cửa sổ này.
+- Bấm lặp khi đang chạy sẽ dùng lượt đang chờ. Mở lại kết quả không gọi AI thêm; nút **↻ Kiểm tra lại email** chủ động chạy lượt mới. Đổi thư trong lúc chờ không tô kết quả vào thư khác. Cùng email/nội dung/đường dẫn hộp thư được kiểm lại bằng kết quả còn hạn, kể cả sau khi tải lại tab.
+- Lượt AI chạy ở backend nên đóng bảng vẫn tiếp tục khi ứng dụng trên máy còn mở. Mở lại bảng lấy kết quả gần nhất. Kết quả tác vụ giữ trong RAM tối đa 15 phút sau khi hoàn tất, xóa khi backend dừng; không phải lịch sử lâu dài của khách. Extension chỉ giữ định danh tác vụ và dấu vân tay nội dung trong phiên trình duyệt, không lưu bản email hoặc kết quả đầy đủ vào storage. Tối đa 10 tham chiếu email gần đây mỗi tab. Đổi cài đặt phân tích rồi muốn đo lại cần bấm Kiểm tra lại.
+
+Sau cập nhật, khởi động lại backend, **Reload** extension và tải lại tab Gmail/Outlook. Đóng những cửa sổ phiên bản cũ đang mở một lần. Kiểm luồng riêng: `scripts/evaluation/check_extension_quiet_mail_ui.py --out <thư-mục-mới>`; dùng Chromium với hộp thư/provider giả, chưa thay thế thử trực tiếp trên Brave hay hộp thư thật.
+
+## Mới ở 0.10: chọn cách gửi AI
+
+Vào **Cài đặt → Gửi nội dung tới AI**:
+
+- **Xem trước và xác nhận** (mặc định): giữ bản duyệt, chỉnh sửa và ô đồng ý cho từng lượt.
+- **Gửi ngay khi tôi yêu cầu kiểm tra**: đồng ý trước cho các thao tác kiểm tra chủ động. Bấm Phân tích ngay, Ctrl+Enter, Đọc email đang mở hoặc chủ động khoanh/chụp vùng → che nội dung tại máy chủ → gửi bản đã che tới AI, không hỏi lại từng lượt. Ảnh gốc vẫn chỉ đến OCR cục bộ. Chọn/tải ảnh hoặc chỉ bấm Đọc chữ vẫn chỉ chuẩn bị nội dung.
+
+Lựa chọn được giữ trong `storage.local`, đồng bộ giữa các cửa sổ extension trên trình duyệt này, không thêm quyền. Thay cài đặt không tự gửi bản đang mở. Chế độ gửi ngay chỉ áp dụng khi có thao tác yêu cầu kiểm tra: mở extension, kết nối lại, bật trợ lý email hoặc chuyển thư không gọi AI; email mới chỉ điền vào ô nội dung chờ bấm Phân tích ngay. Tắt AI vẫn chỉ kiểm URL cục bộ. Nếu che nội dung thất bại thì không gửi; lỗi AI không tự retry. Có thể chọn lại Xem trước và xác nhận bất kỳ lúc nào.
+
+Các bước duyệt/xác nhận trong hướng dẫn bên dưới mô tả chế độ mặc định; chế độ gửi ngay dùng sự đồng ý đã lưu và luôn che nội dung trước khi gọi AI. Backend vẫn yêu cầu `consent=true` và `llm_text` hợp lệ, không mở API bỏ qua điều kiện này. Kiểm luồng riêng: `scripts/evaluation/check_extension_send_mode_ui.py --out <thư-mục-mới>`.
+
+## Mới ở 0.9: xem dấu hiệu ngay trên email
+
+1. Mở một thư trên Gmail/Outlook → **Đọc email đang mở** (hoặc **Kiểm tra email này** khi đã bật trợ lý).
+2. Duyệt chữ, đồng ý và phân tích. Khi có kết quả, những trích dẫn khớp phần nội dung thư được tô vàng ngay trên email. Bấm đoạn được tô để đọc giải thích; **Xem dấu hiệu trên thư** mở danh sách có thể thao tác bằng bàn phím.
+3. Bấm liên kết trong thư đã đánh dấu để xem **chữ hiển thị → tên miền đích**, đường dẫn đầy đủ và mức URL đã chấm. Google redirect/Safe Links được giải mã bằng chuỗi, không truy cập trang đích. Khi đang đánh dấu, bấm liên kết mở thẻ đối chiếu; chọn **Ẩn đánh dấu** để dùng liên kết theo hành vi của hộp thư.
+
+Đánh dấu dùng lại kết quả đã hoàn tất, không gọi AI thêm hoặc thêm quyền trình duyệt. Chỉ đối chiếu trích dẫn với chữ nhìn thấy trong phần thư đang mở; không tô inbox, thư ẩn, biểu mẫu hoặc đoạn đã bị sửa/xóa nên không còn khớp. Dùng CSS Highlight/Range, giữ nguyên HTML nội dung email. Tên miền khác chữ hiển thị là thông tin đối chiếu, không tự tạo kết luận lừa đảo.
+
+Kết quả gắn với tab, document, route và nội dung email lúc lấy. Đổi thư, sửa nội dung hoặc thay đích liên kết sẽ xóa đánh dấu; phản hồi AI về muộn không được tô lên thư mới. Có nút Ẩn, Esc thu gọn thẻ giải thích; đánh dấu tự hết sau 15 phút. Từ 0.11, quay lại đúng email hoặc tải lại tab có thể dựng lại đánh dấu từ tác vụ còn hạn; các dấu Range/Highlight không lưu vào storage/lịch sử. Lượt kiểm chỉ URL vẫn có đối chiếu liên kết, không sinh dấu hiệu AI.
+
+Kiểm Chromium bằng fixture Gmail/Outlook và provider giả: `scripts/evaluation/check_extension_mail_annotations_ui.py --out <thư-mục-mới>`. Chưa thay thế thử trực tiếp trên tài khoản Gmail/Outlook thật, Edge/Windows/macOS hoặc đánh giá độ đúng của model.
 
 ## Mới ở 0.8: thao tác liền mạch
 
@@ -26,9 +67,9 @@ Hỗ trợ `mail.google.com`, `outlook.live.com`, `outlook.office.com`, `outlook
 
 ## Dùng ngay, không cần mã hoặc tài khoản
 
-Mở ứng dụng PhishLens trên máy, rồi bấm biểu tượng extension. Extension tự thử địa chỉ đã lưu và hai cổng mặc định `http://127.0.0.1:8001`, `http://127.0.0.1:8000`; không quét mạng. Không có bước lấy/dán mã ghép nối. Nếu chạy cổng khác, vào **Kết nối**, nhập địa chỉ và bấm **Kết nối và dùng ngay**. Backend phải đang chạy.
+Mở ứng dụng PhishLens trên máy, rồi bấm biểu tượng extension. Extension tự thử địa chỉ đã lưu và hai cổng mặc định `http://127.0.0.1:8001`, `http://127.0.0.1:8000`; không quét mạng. Không có bước lấy/dán mã ghép nối. Nếu chạy cổng khác, vào **Cài đặt**, nhập địa chỉ và bấm **Kết nối và dùng ngay**. Backend phải đang chạy.
 
-**Chế độ khách** có kiểm URL, OCR và AI/RAG khi máy chủ đã cấu hình. AI vẫn cần xem/sửa bản đã che và đồng ý gửi. Không lưu lịch sử hoặc nội dung của khách; tải JSON để giữ kết quả. Không tự tạo tài khoản hoặc nhận quyền của tài khoản đang đăng nhập web. Muốn lưu lịch sử riêng cho các lượt tiếp theo, đăng nhập trên web. Kết quả khách trước đó không được tự chuyển vào tài khoản.
+**Chế độ khách** có kiểm URL, OCR và AI/RAG khi máy chủ đã cấu hình. AI dùng xác nhận mỗi lượt hoặc lựa chọn gửi ngay đã lưu. Không ghi lịch sử/nội dung khách vào cơ sở dữ liệu; tác vụ giữ kết quả trong RAM trong thời hạn nêu trên, tải JSON để giữ lâu hơn. Không tự tạo tài khoản hoặc nhận quyền của tài khoản đang đăng nhập web. Muốn lưu lịch sử riêng cho các lượt tiếp theo, đăng nhập trên web. Kết quả khách trước đó không được tự chuyển vào tài khoản.
 
 **Tạm ngừng kết nối** được nhớ qua reload/mở lại trình duyệt; bấm Kết nối và dùng ngay để tiếp tục. Khởi động lại backend không cần mã hoặc đăng nhập lại. Extension chỉ nhớ địa chỉ/trạng thái khách, không cấp hay lưu token xác thực mới.
 
@@ -40,7 +81,7 @@ Bỏ các banner/ghi chú lặp về khách, kết nối và AI; nhãn ngắn, c
 
 - **Kiểm tra:** Khoanh vùng và Vùng hiển thị ở cạnh nhau; trang hiện tại có nút Kiểm tra URL. Dán nội dung ở thẻ Tin nhắn, hoặc đọc thư đang mở trên Gmail/Outlook. Kết quả có Sửa nội dung/Kiểm tra nội dung khác và thao tác khoanh vùng khác.
 - **Trợ lý:** bật riêng nút nổi hoặc tự kiểm URL; xem trạng thái, tạm nghỉ một giờ và khôi phục các website đã ẩn. Cả hai tùy chọn mặc định tắt.
-- **Kết nối:** trạng thái ứng dụng, đổi địa chỉ/cổng và thử kết nối lại. Header giữ nút đổi sáng/tối và mở cửa sổ riêng; giao diện dùng được ở chiều rộng 320 px.
+- **Cài đặt:** chọn cách gửi AI, xem trạng thái ứng dụng, đổi địa chỉ/cổng và thử kết nối lại. Header giữ nút đổi sáng/tối và mở cửa sổ riêng; giao diện dùng được ở chiều rộng 320 px.
 
 Nút nổi có thể **kéo đổi vị trí**, tự bám mép trái/phải và nhớ vị trí. Bấm phần chính để khoanh vùng; bấm dấu ba chấm để mở menu kiểm URL, mở bảng, tạm nghỉ hoặc ẩn trên website này. Menu hỗ trợ phím mũi tên/Esc. Website đã ẩn cũng được bỏ qua trong chế độ tự kiểm.
 
@@ -69,7 +110,7 @@ Extension hoạt động theo sự kiện của trình duyệt, không cần gi�
 
 ## Giao diện và cách cập nhật
 
-Nếu đã cài bản cũ, mở `chrome://extensions` / `edge://extensions`, bấm **Reload** trên thẻ PhishLens, đóng bảng cũ và tải lại tab web. **Khởi động lại backend** để nạp API khách; backend bản cũ vẫn yêu cầu token. Cần Chromium có Side Panel API (Chrome 116+). Quyền không đổi so bản 0.4: quyền toàn trang vẫn tùy chọn, chỉ xin khi bật nút nổi hoặc tự kiểm URL.
+Nếu đã cài bản cũ, mở `chrome://extensions` / `edge://extensions` / `brave://extensions`, bấm **Reload** trên thẻ PhishLens, đóng bảng cũ và tải lại tab web. **Khởi động lại backend** để nạp API tác vụ. Cần Chromium 116+; khi không mở được Side Panel, extension dùng một cửa sổ tách. Không thêm quyền trình duyệt ở 0.11; quyền toàn trang vẫn tùy chọn.
 
 - Bấm biểu tượng mở bảng bên cạnh trang. Nút mở rộng trên header mở cửa sổ riêng.
 - Thẻ Hình ảnh: **khoanh trực tiếp trên trang** hoặc chọn/kéo thả/Ctrl+V ảnh có sẵn. Hai thao tác độc lập.
@@ -96,17 +137,17 @@ Nếu đã cài bản cũ, mở `chrome://extensions` / `edge://extensions`, b�
 
 ## Dữ liệu và quyền
 
-Quyền bắt buộc: `activeTab`, `contextMenus`, `storage`, `sidePanel`, `scripting`, `alarms`, kết nối backend HTTP tại `127.0.0.1` / `localhost`. `activeTab` cho phép chọn vùng từ biểu tượng/menu/phím tắt. Quyền host `<all_urls>` chỉ xin khi bật nút nổi hoặc tự kiểm URL; capture từ nút trên trang cần quyền này. Helper động chỉ đăng ký HTTP/HTTPS và duy trì qua phiên. Worker chạy theo sự kiện, không polling/heartbeat; alarm chỉ dùng một lần cho tạm nghỉ. Tự kiểm URL không chặn trang và chỉ hoạt động khi người dùng bật.
+Quyền bắt buộc: `activeTab`, `contextMenus`, `storage`, `sidePanel`, `scripting`, `alarms`, kết nối backend HTTP tại `127.0.0.1` / `localhost`. `activeTab` cho phép chọn vùng từ biểu tượng/menu/phím tắt. Quyền host `<all_urls>` chỉ xin khi bật nút nổi hoặc tự kiểm URL; capture từ nút trên trang cần quyền này. Helper động chỉ đăng ký HTTP/HTTPS và duy trì qua phiên. Worker chạy theo sự kiện; chỉ khi có tác vụ người dùng đã gửi, bảng/email đang hiện mới hỏi trạng thái trong lúc chờ, không giữ heartbeat thường trực. Alarm chỉ dùng một lần cho tạm nghỉ. Tự kiểm URL không chặn trang và chỉ hoạt động khi người dùng bật.
 
 Địa chỉ, theme, trạng thái khách/tạm ngừng, tùy chọn trợ lý, vị trí nút và hash hostname đã ẩn (tối đa 100) nằm trong `storage.local`; cache URL nền và đầu vào menu chờ dùng `storage.session`. Hai storage giới hạn `TRUSTED_CONTEXTS`; helper trên trang không đọc được thông tin kết nối. Không đồng bộ Chrome. Token tài khoản cũ nếu có vẫn giữ trong local/session theo lựa chọn cũ, có hạn và có thể thu hồi; token sai/hết hạn không được server âm thầm coi thành khách trong cùng yêu cầu.
 
 API khách vẫn kiểm ID/Origin extension và giới hạn ảnh/JSON. POST trên web vẫn cần CSRF token cấp tự động. API lịch sử/tài khoản/quản trị vẫn yêu cầu đăng nhập; extension khách không nhận cookie web. Giới hạn AI khách dùng chung web/extension theo địa chỉ client, tối đa số lượt `PHISHLENS_DAILY_AI_LIMIT` trong cửa sổ 24 giờ (mặc định 100); không tạo user/ai_usage cá nhân. Xóa cookie/đổi ID extension không tạo quota khách riêng. OCR giới hạn 30/giờ theo client. Launcher không tin proxy header; triển khai qua proxy phải cấu hình riêng và nhiều người chung địa chỉ có thể chia sẻ quota. Tài khoản có quota riêng theo cơ chế cũ.
 
-Ảnh toàn viewport chỉ ở bộ nhớ worker để cắt, crop chờ nhận tối đa 30 giây trong RAM; chỉ crop đến OCR localhost. Không lưu screenshot trong storage/server. Đầu vào menu quá 8.000 ký tự bị từ chối; chờ tối đa 10 phút. Ảnh/bản nháp/kết quả trên bảng mất khi đóng/reload; tải JSON là thao tác chủ động.
+Ảnh toàn viewport chỉ ở bộ nhớ worker để cắt, crop chờ nhận tối đa 30 giây trong RAM; chỉ crop đến OCR localhost. Không lưu screenshot trong storage/server. Đầu vào menu quá 8.000 ký tự bị từ chối; chờ tối đa 10 phút. Ảnh/bản nháp trên bảng mất khi đóng/reload. Kết quả AI có thể lấy lại từ RAM backend trong 15 phút sau hoàn tất; tải JSON là thao tác chủ động để giữ kết quả lâu hơn. Tác vụ dùng khóa phiên riêng, ràng buộc với danh tính khách/tài khoản và origin extension; phiên khác không đọc được chỉ bằng ID tác vụ.
 
 Backend phải đang chạy. Đây là bản demo cục bộ; chưa kiểm nghiệm triển khai công khai, chưa phát hành Chrome/Edge store. LOW không chứng nhận URL/người gửi an toàn. Cài extension không làm tăng độ chính xác mô hình hoặc biến nhãn AI thành nhãn người.
 
-Tài liệu API trình duyệt: [activeTab](https://developer.chrome.com/docs/extensions/develop/concepts/activeTab), [contextMenus](https://developer.chrome.com/docs/extensions/reference/api/contextMenus), [storage](https://developer.chrome.com/docs/extensions/reference/api/storage), [kết nối khác origin](https://developer.chrome.com/docs/extensions/develop/concepts/network-requests).
+Tài liệu API trình duyệt: [activeTab](https://developer.chrome.com/docs/extensions/develop/concepts/activeTab), [contextMenus](https://developer.chrome.com/docs/extensions/reference/api/contextMenus), [storage](https://developer.chrome.com/docs/extensions/reference/api/storage), [nhận diện trang thuộc extension](https://developer.chrome.com/docs/extensions/reference/api/runtime#method-getContexts), [kết nối khác origin](https://developer.chrome.com/docs/extensions/develop/concepts/network-requests).
 
 Khi thả vùng chọn, OCR tự chạy tại máy; gọi LLM luôn chờ duyệt/đồng ý. Ảnh tĩnh PNG/JPEG/WebP tối đa 5 MiB/12 triệu điểm ảnh; OCR chưa phân tích thị giác hoặc QR. Chưa kiểm Edge/Windows/macOS.
 

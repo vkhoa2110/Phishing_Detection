@@ -51,7 +51,7 @@ def main():
 
     @app.middleware("http")
     async def observe(request, call_next):
-        if request.url.path == "/api/extension/analyze": attempts.append(True)
+        if request.url.path in ["/api/extension/analyze", "/api/extension/jobs/start"]: attempts.append(True)
         if not args.audit_only and request.url.path == "/api/extension/session" and first_session[0]:
             first_session[0] = False
             await asyncio.sleep(3)

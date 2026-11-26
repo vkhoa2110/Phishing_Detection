@@ -21,18 +21,23 @@
 <header class="app-header"><a class="brand" id="home-link" href="#"><img src="icons/48.png" width="32" height="32" alt=""><span>PhishLens<span class="brand-dot">.</span><small>Kiểm tra trước khi tin</small></span></a><div class="header-actions">
 <button id="theme-toggle" class="icon-button" type="button" aria-label="Đổi giao diện sáng / tối" title="Sáng / tối"><svg><use href="#i-moon"/></svg></button>
 <button id="detach" class="icon-button" type="button" aria-label="Mở cửa sổ riêng" title="Mở cửa sổ riêng"><svg><use href="#i-expand"/></svg></button>
-<button id="settings-toggle" class="icon-button" type="button" aria-label="Thiết lập kết nối" title="Kết nối"><svg><use href="#i-settings"/></svg></button></div></header>
-<nav class="workspace-nav" aria-label="PhishLens"><button id="nav-check" type="button" data-view-target="check" aria-current="page"><svg><use href="#i-scan"/></svg>Kiểm tra</button><button id="nav-assistant" type="button" data-view-target="assistant"><svg><use href="#i-shield"/></svg>Trợ lý</button><button id="nav-connection" type="button" data-view-target="connection"><svg><use href="#i-settings"/></svg>Kết nối</button></nav>
+<button id="settings-toggle" class="icon-button" type="button" aria-label="Cài đặt" title="Cài đặt"><svg><use href="#i-settings"/></svg></button></div></header>
+<nav class="workspace-nav" aria-label="PhishLens"><button id="nav-check" type="button" data-view-target="check" aria-current="page"><svg><use href="#i-scan"/></svg>Kiểm tra</button><button id="nav-assistant" type="button" data-view-target="assistant"><svg><use href="#i-shield"/></svg>Trợ lý</button><button id="nav-connection" type="button" data-view-target="connection"><svg><use href="#i-settings"/></svg>Cài đặt</button></nav>
 <main>
 <button id="connection-pill" class="connection-pill" type="button"><span id="connection-dot" class="dot"></span><span id="connection-status">Đang kết nối…</span><span class="pill-arrow">›</span></button>
 <div id="error" class="error" role="alert" hidden></div>
 <section id="connection" class="surface connection-card" hidden>
-<div class="connection-illustration"><svg><use href="#i-link"/></svg><span></span><img src="icons/48.png" width="42" height="42" alt=""></div>
-<h2>Kết nối ứng dụng</h2>
+<h2>Cài đặt</h2>
+<fieldset class="send-settings" aria-describedby="send-provider send-scope"><legend>Gửi nội dung tới AI</legend>
+<label class="send-choice"><input id="send-review" type="radio" name="ai-send-mode" value="review" checked><span><strong>Xem trước và xác nhận</strong><small>Duyệt, sửa nội dung trước mỗi lần gửi.</small></span></label>
+<label class="send-choice"><input id="send-direct" type="radio" name="ai-send-mode" value="direct"><span><strong>Gửi ngay khi tôi yêu cầu kiểm tra</strong><small>Đồng ý gửi nội dung đã che, không hỏi lại từng lượt.</small></span></label>
+<p id="send-provider" class="micro">Nội dung được che trước khi gửi tới dịch vụ AI đã cấu hình.</p><p id="send-scope" class="micro">Chuyển email hoặc mở extension không tự gửi AI.</p>
+</fieldset>
+<h3>Kết nối ứng dụng</h3>
 <p class="muted">Mở PhishLens trên máy rồi thử kết nối lại.</p>
 <form id="connect-form"><label for="base-url" class="field-label">Địa chỉ ứng dụng</label><input id="base-url" type="url" value="http://127.0.0.1:8001" required autocomplete="off"><button id="connect" class="primary full-width" type="submit">Kết nối và dùng ngay <svg><use href="#i-arrow"/></svg></button></form>
 <button id="open-app" class="secondary full-width" type="button">Mở ứng dụng trên máy ↗</button>
-<div class="connection-info"><span>Chế độ sử dụng</span><strong id="connection-mode">Khách</strong></div><details class="connection-about"><summary>Dữ liệu và phiên bản</summary><p id="guest-history-note" class="micro" hidden>Khách không lưu lịch sử. Bạn có thể tải JSON hoặc đăng nhập trên web để lưu các lượt tiếp theo.</p><p class="micro">PhishLens 0.8 · Kết nối với ứng dụng trên cùng máy.</p></details><button id="disconnect" class="disconnect-button" type="button" hidden>Tạm ngừng kết nối</button>
+<div class="connection-info"><span>Chế độ sử dụng</span><strong id="connection-mode">Khách</strong></div><details class="connection-about"><summary>Dữ liệu và phiên bản</summary><p id="guest-history-note" class="micro" hidden>Khách không lưu lịch sử. Bạn có thể tải JSON hoặc đăng nhập trên web để lưu các lượt tiếp theo.</p><p class="micro">PhishLens 0.10 · Kết nối với ứng dụng trên cùng máy.</p></details><button id="disconnect" class="disconnect-button" type="button" hidden>Tạm ngừng kết nối</button>
 </section>
 <section id="assistant-screen" hidden>
 <div class="page-heading"><h1>Trợ lý trình duyệt</h1></div>
@@ -89,7 +94,7 @@
 </main>
 <footer id="action-dock" class="action-dock view-check">
 <div id="submit-area" class="submit-area"><button id="analyze" type="submit" form="check-form" class="primary analyze-button" disabled><span id="analyze-label">Kiểm tra đường dẫn</span><svg><use href="#i-arrow"/></svg></button><div class="submit-note"><span id="submit-hint">Chạy tại máy</span><kbd>Ctrl ↵</kbd></div></div>
-<div id="review-actions" hidden><button id="confirm" class="primary full-width" type="button" disabled>Đồng ý và phân tích <svg><use href="#i-spark"/></svg></button><button id="cancel" class="text-button full-width" type="button">← Quay lại chỉnh nội dung</button></div>
+<div id="review-actions" hidden><button id="confirm" class="primary full-width" type="button" disabled><span id="confirm-label">Đồng ý và phân tích</span> <svg><use href="#i-spark"/></svg></button><button id="cancel" class="text-button full-width" type="button">← Quay lại chỉnh nội dung</button></div>
 <div id="result-navigation" class="result-navigation" hidden><button id="edit-result" class="secondary" type="button">Sửa nội dung</button><button id="new-analysis" class="primary new-check" type="button">Kiểm tra nội dung khác</button></div>
 </footer>
 <div id="toast" class="toast" role="status" hidden></div></body></html>
