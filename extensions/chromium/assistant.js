@@ -2,7 +2,9 @@
 // Optional background URL assistance. Only localhost is contacted; no page DOM,
 // OCR, AI or history writes. Event-driven, bounded and independent of panel life.
 globalThis.PhishLensAssistant = (() => {
-  const running = new Map(), prefix = "assistant-tab-", alarm = "phishlens-resume", preferences = ["floatingEnabled", "autoCheckEnabled", "assistantPausedUntil", "hiddenSites", "dockPosition"];
+  const running = new Map(), prefix = "assistant-tab-", alarm = "phishlens-resume", preferences = ["dockPinned", "autoCheckEnabled", "assistantPausedUntil", "hiddenSites", "dockPosition"];
+  const noticeStore = "assistant-notices", noticeCooldown = 30 * 60000;
+  let noticeQueue = Promise.resolve();
   const panel = sender => sender.id === chrome.runtime.id && sender.url?.split(/[?#]/)[0] === chrome.runtime.getURL("check.html");
   const page = sender => sender.id === chrome.runtime.id && sender.frameId === 0 && sender.tab && /^https?:\/\//.test(sender.url || "");
   const digest = async text => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)))].map(byte => byte.toString(16).padStart(2, "0")).join("");
@@ -10,9 +12,37 @@ globalThis.PhishLensAssistant = (() => {
     const local = await chrome.storage.local.get(preferences);
     const allowed = await chrome.permissions.contains({origins: ["<all_urls>"]});
     const hidden = tab?.url && (local.hiddenSites || []).includes(await digest(new URL(tab.url).hostname));
-    return {floatingEnabled: Boolean(local.floatingEnabled && allowed), autoCheckEnabled: Boolean(local.autoCheckEnabled && allowed),
+    // Pinning is a new explicit preference. Older always-visible docks become
+    // quiet without changing the user's opt-in to local background URL checks.
+    return {floatingEnabled: Boolean(local.dockPinned && allowed), autoCheckEnabled: Boolean(local.autoCheckEnabled && allowed),
       pausedUntil: local.assistantPausedUntil > Date.now() ? local.assistantPausedUntil : 0, visible: !hidden, hiddenCount: (local.hiddenSites || []).length,
       position: local.dockPosition || {edge: "right", ratio: .88}};
+  }
+  function applicationSurface(value) {
+    const u = new URL(value);
+    if (u.protocol !== "https:" || u.username || u.password || u.port) return false;
+    // Address bars of these exact application shells are poor phishing signals.
+    // This is notification policy, NOT a reputation verdict or a blanket domain
+    // allowlist: links inside them and manual checks still use the URL model.
+    const routes = {
+      "drive.google.com": /^\/drive(?:\/|$)/, "mail.google.com": /^\/mail(?:\/|$)/,
+      "www.google.com": /^\/(?:search)?$/, "google.com": /^\/(?:search)?$/,
+      "www.messenger.com": /^\/(?:e2ee\/)?t(?:\/|$)|^\/$/, "messenger.com": /^\/(?:e2ee\/)?t(?:\/|$)|^\/$/,
+      "www.facebook.com": /^\/messages(?:\/|$)/, "web.facebook.com": /^\/messages(?:\/|$)/,
+      "chat.zalo.me": /^\/$/, "web.telegram.org": /^\/(?:[ak](?:\/|$))?$/,
+      "outlook.live.com": /^\/mail(?:\/|$)/, "outlook.office.com": /^\/mail(?:\/|$)/
+    };
+    return Boolean(routes[u.hostname]?.test(u.pathname));
+  }
+  async function claimNotice(tab) {
+    const config = await state(tab), record = config.page;
+    if (!tab?.active || !config.visible || config.pausedUntil || !config.autoCheckEnabled || !record.noticeEligible) return {show: false};
+    const key = await digest(new URL(tab.url).hostname);
+    const {[noticeStore]: previous = {}} = await chrome.storage.session.get(noticeStore), now = Date.now();
+    if (now - (previous[key] || 0) < noticeCooldown) return {show: false};
+    const entries = Object.entries(previous).filter(([, date]) => now - date < noticeCooldown).slice(-99);
+    await chrome.storage.session.set({[noticeStore]: {...Object.fromEntries(entries), [key]: now}});
+    return {show: true, digest: record.digest, duration: 8000};
   }
   async function credentials() {
     const [local, session] = await Promise.all([chrome.storage.local.get("connection"), chrome.storage.session.get("connection")]);
@@ -38,7 +68,7 @@ globalThis.PhishLensAssistant = (() => {
     const current = await chrome.tabs.get(tab.id).catch(() => null);
     if (!current || current.url !== tab.url) return;
     await chrome.storage.session.set({[prefix + tab.id]: record});
-    const text = record.status === "ok" ? ({HIGH: "!", WARNING: "!", UNKNOWN: "?"}[record.risk] || "") : "";
+    const text = record.status === "ok" && record.noticeEligible ? "!" : "";
     await chrome.action.setBadgeText({tabId: tab.id, text});
     if (text) await chrome.action.setBadgeBackgroundColor({tabId: tab.id, color: record.risk === "HIGH" ? "#c14451" : "#b77a23"});
     broadcast(tab.id, await state(current));
@@ -48,6 +78,10 @@ globalThis.PhishLensAssistant = (() => {
     const config = await settings(tab);
     if (!manual && (!config.autoCheckEnabled || config.pausedUntil || !config.visible)) return {status: "paused"};
     const hash = await digest(tab.url), saved = (await chrome.storage.session.get(prefix + tab.id))[prefix + tab.id];
+    if (!manual && applicationSurface(tab.url)) {
+      const record = {digest: hash, created: Date.now(), status: "app_surface"};
+      await publish(tab, record); return record;
+    }
     if (!manual && saved?.digest === hash && saved.status !== "checking" && Date.now() - saved.created < (saved.status === "ok" ? 300000 : 15000)) { await publish(tab, saved); return saved; }
     const connection = await credentials();
     if (!connection) { const record = {digest: hash, created: Date.now(), status: "disconnected"}; await publish(tab, record); return record; }
@@ -65,7 +99,8 @@ globalThis.PhishLensAssistant = (() => {
       if (!response.ok) throw new Error(response.status === 401 ? "disconnected" : "unavailable");
       const data = await response.json(), url = data.urls?.[0];
       if (url?.status !== "ok" || !["HIGH", "WARNING", "LOW", "UNKNOWN"].includes(url.risk_level) || typeof url.score !== "number" || !Number.isFinite(url.score) || url.score < 0 || url.score > 1) throw new Error("unavailable");
-      const record = {digest: hash, created: Date.now(), status: "ok", risk: url.risk_level, score: url.score};
+      const record = {digest: hash, created: Date.now(), status: "ok", risk: url.risk_level, score: url.score,
+        noticeEligible: !applicationSurface(tab.url) && url.risk_level === "HIGH" && url.score >= .85};
       // Recheck opt-in after awaiting the network: pausing/revoking must win.
       const latest = await settings(tab);
       if (!manual && (!latest.autoCheckEnabled || latest.pausedUntil || !latest.visible)) return {status: "paused"};
@@ -100,7 +135,7 @@ globalThis.PhishLensAssistant = (() => {
     else { await chrome.alarms.clear(alarm); if (assistantPausedUntil) await chrome.storage.local.remove("assistantPausedUntil"); }
   }
   chrome.runtime.onMessage.addListener((message, sender, respond) => {
-    if (!["GET_ASSISTANT", "CONFIGURE_ASSISTANT", "ASSISTANT_PAUSE", "DOCK_POSITION", "HIDE_SITE", "RESET_HIDDEN_SITES", "OPEN_ASSISTANT", "CHECK_PAGE"].includes(message?.type)) return;
+    if (!["GET_ASSISTANT", "CLAIM_ASSISTANT_NOTICE", "CONFIGURE_ASSISTANT", "ASSISTANT_PAUSE", "DOCK_POSITION", "HIDE_SITE", "RESET_HIDDEN_SITES", "OPEN_ASSISTANT", "CHECK_PAGE"].includes(message?.type)) return;
     const trustedPanel = panel(sender), trustedPage = page(sender);
     if (!trustedPanel && !trustedPage) { respond({error: "Nguồn yêu cầu không hợp lệ."}); return; }
     if (message.type === "OPEN_ASSISTANT" && trustedPage) {
@@ -109,10 +144,15 @@ globalThis.PhishLensAssistant = (() => {
     (async () => {
       const tab = trustedPage ? sender.tab : Number.isInteger(message.tabId) ? await chrome.tabs.get(message.tabId).catch(() => null) : null;
       if (message.type === "GET_ASSISTANT") return state(tab);
+      if (message.type === "CLAIM_ASSISTANT_NOTICE") {
+        if (!trustedPage) throw new Error("Nguồn yêu cầu không hợp lệ.");
+        const result = noticeQueue.then(() => claimNotice(tab));
+        noticeQueue = result.catch(() => {}); return result;
+      }
       if (message.type === "CONFIGURE_ASSISTANT") {
         if (!trustedPanel || !["autoCheckEnabled", "floatingEnabled"].includes(message.key) || typeof message.enabled !== "boolean") throw new Error("Tùy chọn không hợp lệ.");
         if (message.enabled && !await chrome.permissions.contains({origins: ["<all_urls>"]})) throw new Error("Cần cấp quyền trang web để bật hỗ trợ này.");
-        await chrome.storage.local.set({[message.key]: message.enabled}); await refresh();
+        await chrome.storage.local.set({[message.key]: message.enabled, ...(message.key === "floatingEnabled" ? {dockPinned: message.enabled} : {})}); await refresh();
         if (message.enabled && message.key === "autoCheckEnabled") (await chrome.tabs.query({active: true})).forEach(item => { check(item).catch(() => {}); });
       } else if (message.type === "ASSISTANT_PAUSE") {
         if (!trustedPanel && !trustedPage) throw new Error("Nguồn yêu cầu không hợp lệ.");

@@ -79,15 +79,15 @@ globalThis.PhishLensCapture = (() => {
     } finally { captures.delete(sender.tab.id); }
   }
   async function syncDock() {
-    const {floatingEnabled} = await chrome.storage.local.get("floatingEnabled");
+    const {dockPinned, autoCheckEnabled} = await chrome.storage.local.get(["dockPinned", "autoCheckEnabled"]);
     const allowed = await chrome.permissions.contains({origins});
-    const enabled = Boolean(floatingEnabled && allowed);
+    const enabled = Boolean((dockPinned || autoCheckEnabled) && allowed);
     const existing = await chrome.scripting.getRegisteredContentScripts({ids: [helperID]});
     if (enabled && !existing.length) await chrome.scripting.registerContentScripts([{id: helperID, js: ["floating.js"], matches: ["http://*/*", "https://*/*"], persistAcrossSessions: true, runAt: "document_idle"}]);
     if (!enabled && existing.length) await chrome.scripting.unregisterContentScripts({ids: [helperID]});
     const tabs = await chrome.tabs.query({});
     await Promise.allSettled(tabs.filter(tab => !enabled || /^https?:\/\//.test(tab.url || "")).map(tab => enabled ? chrome.scripting.executeScript({target: {tabId: tab.id}, files: ["floating.js"]}) : chrome.tabs.sendMessage(tab.id, {type: "HIDE_FLOATING"})));
-    if (!allowed && floatingEnabled) await chrome.storage.local.set({floatingEnabled: false});
+    if (!allowed && dockPinned) await chrome.storage.local.set({floatingEnabled: false, dockPinned: false});
     return {enabled};
   }
   chrome.runtime.onMessage.addListener((message, sender, respond) => {
@@ -123,7 +123,7 @@ globalThis.PhishLensCapture = (() => {
       }
       if (message.type === "SET_FLOATING") {
         if (message.enabled && !await chrome.permissions.contains({origins})) throw new Error("Cấp quyền trang web để bật nút nổi.");
-        await chrome.storage.local.set({floatingEnabled: Boolean(message.enabled)});
+        await chrome.storage.local.set({floatingEnabled: Boolean(message.enabled), dockPinned: Boolean(message.enabled)});
         return syncDock();
       }
     })().then(respond, reason => { error(sender.tab?.windowId, reason.message); respond({error: reason.message}); });

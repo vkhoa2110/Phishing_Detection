@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560">
+  <rect width="1100" height="560" rx="22" fill="#f2f0ff"/>
+  <rect x="34" y="34" width="1032" height="492" rx="16" fill="#ffffff"/>
+  <rect x="72" y="72" width="200" height="36" rx="18" fill="#eeebff"/>
+  <g font-family="DejaVu Sans, Arial, sans-serif">
+    <text x="91" y="96" font-size="17" fill="#6c58b8">MẪU ẢNH TỰ SOẠN</text>
+    <text x="72" y="164" font-size="25" fill="#686078">AN GIA STORE · ƯU ĐÃI CUỐI NĂM</text>
+    <text x="72" y="232" font-size="48" font-weight="700" fill="#40305e">Quà tặng 3.000.000 đồng</text>
+    <text x="72" y="296" font-size="26" fill="#4b4960">Thanh toán trước 49.000 đồng phí nhận quà.</text>
+    <text x="72" y="345" font-size="26" fill="#4b4960">Gửi mã OTP ngân hàng cho nhân viên để kích hoạt.</text>
+    <text x="72" y="402" font-size="24" fill="#6650b6">https://example.com/nhan-qua</text>
+    <text x="72" y="474" font-size="21" fill="#8b7a9d">Ưu đãi chỉ còn 15 phút. Vui lòng xác nhận ngay.</text>
+  </g>
+</svg>

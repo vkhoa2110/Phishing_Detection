@@ -28,7 +28,13 @@
     button.addEventListener("mouseenter", () => { button.style.background = "#f2f3fb"; }); button.addEventListener("mouseleave", () => { button.style.background = "transparent"; });
     button.addEventListener("click", event => { if (event.isTrusted) action(); }); menu.append(button); items.push(button); return {button, text};
   }
-  let config = null, opened = false, dismissed = null, drag = null, ignoreClick = false, position = {edge: "right", ratio: .88};
+  let config = null, opened = false, attempted = null, noticeActive = false, noticeTimer, disposed = false, drag = null, ignoreClick = false, position = {edge: "right", ratio: .88};
+  function renderVisibility() {
+    host.style.display = config?.visible && (config.floatingEnabled || noticeActive) ? "block" : "none";
+    notice.style.display = noticeActive && !opened ? "block" : "none";
+  }
+  function hideNotice() { clearTimeout(noticeTimer); noticeActive = false; closeMenu(); renderVisibility(); }
+  function expireNotice() { clearTimeout(noticeTimer); noticeTimer = setTimeout(hideNotice, 8000); }
   function closeMenu() { menu.style.display = "none"; opened = false; more.setAttribute("aria-expanded", "false"); }
   function layout() {
     const top = Math.max(12, Math.min(innerHeight - 62, innerHeight * position.ratio - 25));
@@ -37,10 +43,10 @@
     menu.style.bottom = top > 365 ? "62px" : "auto"; menu.style.top = top > 365 ? "auto" : "62px";
     notice.style.bottom = top > 180 ? "62px" : "auto"; notice.style.top = top > 180 ? "auto" : "62px";
   }
-  function toggleMenu() { opened = !opened; menu.style.display = opened ? "block" : "none"; notice.style.display = "none"; more.setAttribute("aria-expanded", String(opened)); if (opened) { layout(); items[0].focus(); } }
+  function toggleMenu() { opened = !opened; menu.style.display = opened ? "block" : "none"; notice.style.display = "none"; more.setAttribute("aria-expanded", String(opened)); if (opened) { clearTimeout(noticeTimer); layout(); items[0].focus(); } else if (noticeActive) expireNotice(); }
   function error(message) { status.textContent = message; menu.style.display = "block"; opened = true; more.setAttribute("aria-expanded", "true"); layout(); }
   function send(type, values = {}) { return chrome.runtime.sendMessage({type, ...values}).then(result => { if (result?.error) { error(result.error); return null; } return result; }).catch(() => { error("Extension vừa cập nhật. Hãy tải lại trang để dùng PhishLens."); return null; }); }
-  function capture() { closeMenu(); notice.style.display = "none"; send("START_REGION"); }
+  function capture() { hideNotice(); send("START_REGION"); }
   item("Khoanh vùng để kiểm tra", "scan", capture);
   item("Chụp toàn vùng hiển thị", "scan", () => { closeMenu(); notice.style.display = "none"; send("START_REGION", {captureMode: "viewport"}); });
   item("Kiểm tra URL trang này", "globe", async () => { status.textContent = "Đang kiểm tra URL tại máy…"; await send("CHECK_PAGE"); const fresh = await send("GET_ASSISTANT"); if (fresh) update(fresh); });
@@ -51,13 +57,18 @@
   const menuFooter = make("p", "Chụp ảnh theo yêu cầu. AI luôn chờ bạn đồng ý.", {fontSize: "9px", lineHeight: "1.8", color: "#718098", margin: "11px 4px 0", borderTop: "1px solid #e8ecf4", paddingTop: "10px"}); menu.append(menuFooter);
   const notice = make("div", undefined, {display: "none", position: "absolute", right: "0", bottom: "62px", width: "264px", maxWidth: "calc(100vw - 24px)", padding: "16px", background: "#fff", color: "#29374c", border: "1px solid #f0cbd0", borderRadius: "15px", boxShadow: "0 12px 40px #14244524", boxSizing: "border-box", font: "12px/1.8 system-ui,-apple-system,Segoe UI,sans-serif"}); notice.setAttribute("role", "status"); notice.setAttribute("aria-live", "polite");
   const dismiss = make("button", "×", {...baseButton, position: "absolute", right: "9px", top: "7px", fontSize: "20px", color: "#7d8798", width: "25px", height: "25px", padding: "0"}); dismiss.type = "button"; dismiss.setAttribute("aria-label", "Ẩn thông báo này");
-  dismiss.addEventListener("click", () => { dismissed = config?.page?.digest; notice.style.display = "none"; });
+  dismiss.addEventListener("click", hideNotice);
   notice.append(make("strong", "URL có dấu hiệu rủi ro", {display: "block", color: "#ac3e4d", fontSize: "12px", marginRight: "18px"}), make("p", "Kết quả dựa trên chuỗi URL, chưa xác minh trang đích. Hãy kiểm tra thêm trước khi cung cấp thông tin.", {fontSize: "10px", color: "#6d7890", margin: "8px 0 12px"}));
-  const details = make("button", "Kiểm tra chi tiết →", {...baseButton, background: "#5754d6", color: "#fff", borderRadius: "8px", padding: "8px 12px", fontSize: "10px", fontWeight: "650"}); details.type = "button"; details.addEventListener("click", event => { if (event.isTrusted) { dismissed = config?.page?.digest; notice.style.display = "none"; send("OPEN_ASSISTANT", {check: true}); } }); notice.append(details, dismiss);
+  const details = make("button", "Kiểm tra chi tiết →", {...baseButton, background: "#5754d6", color: "#fff", borderRadius: "8px", padding: "8px 12px", fontSize: "10px", fontWeight: "650"}); details.type = "button"; details.addEventListener("click", event => { if (event.isTrusted) { hideNotice(); send("OPEN_ASSISTANT", {check: true}); } }); notice.append(details, dismiss);
+  notice.addEventListener("mouseenter", () => clearTimeout(noticeTimer));
+  notice.addEventListener("mouseleave", () => { if (noticeActive) expireNotice(); });
+  notice.addEventListener("focusin", () => clearTimeout(noticeTimer));
+  notice.addEventListener("focusout", event => { if (!notice.contains(event.relatedTarget) && noticeActive) expireNotice(); });
   function update(next) {
+    const previousDigest = config?.page?.digest;
     config = next; position = next.position || position;
-    if (!next.floatingEnabled) { dispose(); return; }
-    host.style.display = next.visible ? "block" : "none";
+    if (!next.floatingEnabled && !next.autoCheckEnabled) { dispose(); return; }
+    if (previousDigest !== next.page?.digest || !next.visible || next.pausedUntil || !next.autoCheckEnabled || !next.page?.noticeEligible) { if (noticeActive) hideNotice(); }
     if (!host.isConnected) document.documentElement.append(host);
     const record = next.page || {}, labels = {HIGH: "URL cần xác minh", WARNING: "URL cần kiểm tra", LOW: "URL đã kiểm tra", UNKNOWN: "URL chưa đủ rõ"};
     title.textContent = next.pausedUntil ? "Tạm nghỉ" : "PhishLens";
@@ -67,8 +78,15 @@
     const explanation = {idle: "Chủ động kiểm tra URL, tin nhắn hoặc vùng ảnh.", checking: "Đang kiểm tra URL tại máy…", disconnected: "Mở ứng dụng PhishLens trên máy để kết nối.", unavailable: "Chưa kiểm tra được URL. Hãy mở ứng dụng trên máy và thử lại."};
     status.textContent = !next.connected ? "Mở PhishLens trên máy rồi kết nối để kiểm tra." : next.pausedUntil ? "Tự kiểm URL đang tạm nghỉ. Bạn có thể tiếp tục bất kỳ lúc nào." : record.status === "ok" ? (record.risk === "LOW" ? "Chưa thấy dấu hiệu rõ trong chuỗi URL. Vẫn cần xác minh nguồn gửi." : labels[record.risk] + ". Chưa xác minh trang đích.") : explanation[record.status] || explanation.idle;
     if (record.status === "ok" && typeof record.score === "number") status.textContent += " Điểm mô hình: " + (record.score * 100).toLocaleString("vi-VN", {maximumFractionDigits: 1}) + "%; chưa phải xác suất đã kiểm chứng.";
-    notice.style.display = next.visible && !next.pausedUntil && next.autoCheckEnabled && record.status === "ok" && record.risk === "HIGH" && record.digest !== dismissed && !opened ? "block" : "none";
-    layout();
+    renderVisibility(); layout();
+    if (next.visible && !next.pausedUntil && next.autoCheckEnabled && record.noticeEligible && record.digest !== attempted && !opened && !document.hidden) {
+      attempted = record.digest;
+      send("CLAIM_ASSISTANT_NOTICE").then(result => {
+        if (!disposed && result?.show && config?.page?.digest === result.digest && config.visible && !config.pausedUntil && config.autoCheckEnabled && !document.hidden) {
+          noticeActive = true; renderVisibility(); layout(); expireNotice();
+        }
+      });
+    }
   }
   more.addEventListener("click", event => { if (event.isTrusted) toggleMenu(); });
   main.addEventListener("click", event => { if (!event.isTrusted) return; if (ignoreClick) { ignoreClick = false; return; } if (config?.pausedUntil) toggleMenu(); else capture(); });
@@ -87,10 +105,14 @@
   });
   main.addEventListener("pointercancel", () => { drag = null; ignoreClick = true; });
   menu.addEventListener("keydown", event => { if (event.key === "Escape") { closeMenu(); more.focus(); event.preventDefault(); } else if (["ArrowUp", "ArrowDown"].includes(event.key)) { const current = items.indexOf(root.activeElement), direction = event.key === "ArrowDown" ? 1 : -1; items[(current + direction + items.length) % items.length].focus(); event.preventDefault(); } });
-  const outside = event => { if (!event.composedPath().includes(host)) closeMenu(); }, resize = () => layout();
+  const outside = event => { if (opened && !event.composedPath().includes(host)) { closeMenu(); if (noticeActive) expireNotice(); } }, resize = () => layout();
+  const escape = event => { if (event.key === "Escape" && (noticeActive || opened)) hideNotice(); };
+  const visibility = () => { if (document.hidden) hideNotice(); else send("GET_ASSISTANT").then(result => { if (result && !disposed) update(result); }); };
   document.addEventListener("pointerdown", outside, true); window.addEventListener("resize", resize);
+  document.addEventListener("visibilitychange", visibility);
+  document.addEventListener("keydown", escape);
   const listener = (request, sender) => { if (sender.id !== chrome.runtime.id) return; if (request.type === "HIDE_FLOATING") dispose(); else if (request.type === "ASSISTANT_UPDATE") update(request.state); };
-  function dispose() { host.remove(); delete globalThis.__phishlensDock; chrome.runtime.onMessage.removeListener(listener); document.removeEventListener("pointerdown", outside, true); window.removeEventListener("resize", resize); }
+  function dispose() { disposed = true; clearTimeout(noticeTimer); host.remove(); delete globalThis.__phishlensDock; chrome.runtime.onMessage.removeListener(listener); document.removeEventListener("pointerdown", outside, true); window.removeEventListener("resize", resize); document.removeEventListener("visibilitychange", visibility); document.removeEventListener("keydown", escape); }
   root.append(dock, menu, notice); globalThis.__phishlensDock = host; chrome.runtime.onMessage.addListener(listener);
   send("GET_ASSISTANT").then(result => { if (result) update(result); });
 })();

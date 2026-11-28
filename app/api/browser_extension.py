@@ -2,17 +2,20 @@
 import inspect
 import re
 import hashlib
+from datetime import date
+from typing import Literal
 from contextlib import asynccontextmanager
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from starlette.concurrency import run_in_threadpool
 
 from app.domain.schemas import InputData
 from app.services.workspace import WorkspaceError
 from app.services.image_text import ImageTextService, MAX_BYTES, MIMES
 from app.services.analysis_jobs import AnalysisJobs
+from app.services import conversation_batch
 
 
 class PairInput(BaseModel):
@@ -31,6 +34,13 @@ class ExtensionAnalyze(InputData):
     save_history: bool = True
     save_content: bool = False
     explain_evidence: bool = False
+    analysis_target: Literal["message", "conversation"] = "message"
+
+    @model_validator(mode="after")
+    def conversation_scope(self):
+        if self.analysis_target == "conversation" and (self.mode != "text" or self.use_rag):
+            raise ValueError("Hội thoại cần chế độ văn bản; chưa hỗ trợ RAG trong luồng này.")
+        return self
 
 
 class JobStatus(BaseModel):
@@ -46,13 +56,57 @@ class JobStart(BaseModel):
     payload: ExtensionAnalyze
 
 
+class ConversationScope(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    mode: Literal["visible", "latest", "dates", "all"]
+    requested_limit: int = Field(ge=1, le=2000)
+    from_date: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    to_date: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    collected_count: int = Field(ge=1, le=2000)
+    stop_reason: str = Field(max_length=80)
+    unknown_dates: int = Field(default=0, ge=0, le=2000)
+    complete: bool = False
+
+    @model_validator(mode="after")
+    def date_range(self):
+        if self.mode == "dates" and not self.from_date:
+            raise ValueError("Cần ngày bắt đầu.")
+        for value in (self.from_date, self.to_date):
+            if value:
+                date.fromisoformat(value)
+        if self.from_date and self.to_date and self.from_date > self.to_date:
+            raise ValueError("Khoảng ngày không hợp lệ.")
+        return self
+
+
+class ConversationPreview(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    text: str = Field(min_length=1, max_length=conversation_batch.MAX_TEXT)
+
+
+class ConversationBatch(ConversationPreview):
+    llm_text: str = Field(min_length=1, max_length=conversation_batch.MAX_TEXT)
+    use_llm: bool = True
+    consent: bool = False
+    include_ml: bool = False
+    explain_evidence: bool = False
+    scope: ConversationScope
+
+
+class ConversationStart(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    client_key: str = Field(pattern=r"^[a-f0-9]{64}$")
+    request_key: str = Field(pattern=r"^[a-f0-9-]{36}$")
+    payload: ConversationBatch
+
+
 async def extension_access(request, call_next, products):
     identity = request.headers.get("x-phishlens-extension", "")
     origin = request.headers.get("origin", "")
     if not identity and request.method == "OPTIONS" and re.fullmatch(r"chrome-extension://[a-p]{32}", origin):
         identity = origin.rsplit("/", 1)[-1]
     expected = "chrome-extension://" + identity
-    allowed = {"/api/extension/connect", "/api/extension/session", "/api/extension/preview", "/api/extension/analyze", "/api/extension/disconnect", "/api/extension/image-text", "/api/extension/jobs/start", "/api/extension/jobs/status"}
+    allowed = {"/api/extension/connect", "/api/extension/session", "/api/extension/preview", "/api/extension/analyze", "/api/extension/disconnect", "/api/extension/image-text", "/api/extension/jobs/start", "/api/extension/jobs/status", "/api/extension/jobs/cancel", "/api/extension/conversation/preview", "/api/extension/conversation/start", "/api/extension/conversation/cancel"}
 
     def response(message, status):
         return JSONResponse({"detail": message}, status_code=status)
@@ -75,7 +129,8 @@ async def extension_access(request, call_next, products):
         except ValueError:
             declared = MAX_BYTES + 1
         image_request = request.url.path == "/api/extension/image-text"
-        if declared > (MAX_BYTES if image_request else 65536):
+        body_limit = 2_000_000 if request.url.path in {"/api/extension/conversation/preview", "/api/extension/conversation/start"} else 65536
+        if declared > (MAX_BYTES if image_request else body_limit):
             result = response("Yêu cầu quá lớn.", 413)
         elif image_request:
             # Handle bounded binary images here, outside the frozen JSON runtime.
@@ -99,7 +154,7 @@ async def extension_access(request, call_next, products):
                     result = JSONResponse(data)
                 except WorkspaceError as exc:
                     result = response(exc.message, exc.status)
-        elif len(await request.body()) > 65536:
+        elif len(await request.body()) > body_limit:
             result = response("Yêu cầu quá lớn.", 413)
         else:
             raw = request.headers.get("authorization", "")
@@ -152,7 +207,9 @@ def install_extension(app, products, analyze, analyze_type):
         user = request.state.account
         return {"guest": user is None, "user": {"display_name": user["display_name"] if user else "Chế độ khách"}, "ml_ready": data["ml"]["ready"],
             "llm_ready": data["llm"]["has_api_key"], "model": data["llm"]["model"], "rag_ready": data.get("rag", {}).get("ready", False),
-            "evidence_explanation_available": data.get("runtime", {}).get("evidence_explanation_available", False), "analysis_jobs": True,
+            "evidence_explanation_available": data.get("runtime", {}).get("evidence_explanation_available", False), "analysis_jobs": True, "analysis_queue": True,
+            "conversation_analysis_available": True,
+            "conversation_batch_available": True,
             "limits": data["limits"],
             "ocr": await run_in_threadpool(app.state.extension_ocr.status)}
 
@@ -187,6 +244,28 @@ def install_extension(app, products, analyze, analyze_type):
     @app.post("/api/extension/jobs/status")
     async def job_status(data: JobStatus, request: Request):
         return jobs.get(owner(request, data.client_key), data.id)
+
+    @app.post("/api/extension/jobs/cancel")
+    async def cancel_queued_job(data: JobStatus, request: Request):
+        return jobs.cancel_waiting(owner(request, data.client_key), data.id)
+
+    @app.post("/api/extension/conversation/preview")
+    async def conversation_preview(data: ConversationPreview):
+        return await run_in_threadpool(conversation_batch.preview, data.text)
+
+    @app.post("/api/extension/conversation/start")
+    async def conversation_start(data: ConversationStart, request: Request):
+        if data.payload.use_llm and not data.payload.consent:
+            raise WorkspaceError(422, "Hãy duyệt và đồng ý gửi phạm vi hội thoại tới AI.")
+        conversation_batch.windows(data.payload.llm_text)
+        scope = dict(request.scope); scope["state"] = dict(request.scope.get("state", {}))
+        detached = Request(scope)
+        return jobs.start(owner(request, data.client_key), data.request_key, data.payload.model_dump(),
+            lambda job: conversation_batch.run(job, data.payload, analyze, analyze_type, detached), tracked=True)
+
+    @app.post("/api/extension/conversation/cancel")
+    async def conversation_cancel(data: JobStatus, request: Request):
+        return jobs.cancel(owner(request, data.client_key), data.id)
 
     @app.post("/api/extension/disconnect")
     def disconnect(request: Request):

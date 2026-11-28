@@ -30,9 +30,10 @@ def main():
             data = {"user": {"display_name": "Demo điểm số"}, "ml_ready": True, "llm_ready": True, "rag_ready": False, "model": "UI fixture", "ocr": {"ready": False, "message": "Không dùng OCR trong kiểm giao diện điểm số."}}
         elif path == "preview":
             data = {"text": body["text"], "masked_fields": []}
-        elif path == "analyze":
+        elif path in {"analyze", "start"}:
+            if path == "start": body = body["payload"]
             assert not body["use_llm"] or body["consent"] and body.get("llm_text")
-            data = response
+            data = {"id": "fixture-job", "status": "complete", "result": response} if path == "start" else response
         else:
             raise AssertionError("Unexpected API path: " + path)
         route.fulfill(status=200, json=data, headers={"Access-Control-Allow-Origin": route.request.headers.get("origin", "*"), "Cache-Control": "no-store"})

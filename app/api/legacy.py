@@ -48,7 +48,12 @@ def create_app(settings: Settings | None = None, transport=None, model_service=N
                 declared = int(request.headers.get("content-length", "0"))
             except ValueError:
                 return JSONResponse({"detail": "Content-Length không hợp lệ."}, status_code=400)
-            if declared > 65_536 or len(await request.body()) > 65_536:
+            # Only the authenticated-by-origin extension adapter admits a
+            # larger conversation envelope. Each analysis window still uses
+            # the existing 8,000-character runtime contract.
+            conversation_envelope = request.url.path in {"/api/extension/conversation/preview", "/api/extension/conversation/start"} and bool(getattr(request.state, "extension_origin", None))
+            limit = 2_000_000 if conversation_envelope else 65_536
+            if declared > limit or len(await request.body()) > limit:
                 return JSONResponse({"detail": "Yêu cầu quá lớn."}, status_code=413)
         response = await call_next(request)
         response.headers.update({

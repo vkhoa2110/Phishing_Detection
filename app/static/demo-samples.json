@@ -1,0 +1,47 @@
+[
+  {
+    "id": "promotion",
+    "title": "Ưu đãi mua sắm cuối năm",
+    "sender": "An Gia Store · Chăm sóc khách hàng VIP",
+    "address": "uu-dai@example.org",
+    "subject": "Quà tặng dành riêng cho bạn — xác nhận trong hôm nay",
+    "preview": "Voucher 3.000.000 đồng dành cho khách hàng được chọn.",
+    "paragraphs": [
+      "Xin chào Quý khách,",
+      "Nhân dịp mua sắm cuối năm, An Gia Store gửi tặng bạn voucher trị giá 3.000.000 đồng. Địa chỉ email của bạn nằm trong danh sách khách hàng được chọn. Mã ưu đãi: AG-VIP-6284. Quyền nhận quà được giữ trong 30 phút kể từ khi bạn mở thư này.",
+      "Để kích hoạt voucher, hãy truy cập https://example.com/khuyen-mai/nhan-qua?ma=AG-VIP-6284 và điền địa chỉ nhận hàng. Tại bước xác thực, nhập số thẻ ngân hàng, ngày hết hạn và mã bảo mật CVV ở mặt sau thẻ để liên kết ưu đãi với phương thức thanh toán.",
+      "Mỗi hồ sơ cần thanh toán trước 49.000 đồng phí xác nhận. Khoản này được hoàn thành điểm mua sắm sau khi kích hoạt. Nếu nhân viên yêu cầu kiểm tra thủ công, hãy trả lời email này bằng mã OTP ngân hàng vừa gửi để chúng tôi hoàn tất hồ sơ nhận quà.",
+      "Vui lòng thao tác ngay trước khi mã hết hạn. Không chia sẻ ưu đãi với người khác và không liên hệ cửa hàng để kiểm tra vì đây là chương trình riêng của bộ phận chăm sóc khách hàng VIP.",
+      "Trân trọng,\nBộ phận Chăm sóc khách hàng VIP\nAn Gia Store"
+    ],
+    "focus": "Đối chiếu yêu cầu cung cấp bí mật và trả phí trước với trích dẫn trong kết quả."
+  },
+  {
+    "id": "workshop",
+    "title": "Lịch hội thảo của câu lạc bộ",
+    "sender": "Câu lạc bộ Công nghệ · Ban tổ chức",
+    "address": "cau-lac-bo@example.org",
+    "subject": "Mời tham gia buổi chia sẻ về an toàn thông tin",
+    "preview": "Lịch gặp mặt, nội dung chương trình và tài liệu tham khảo.",
+    "paragraphs": [
+      "Chào các bạn,",
+      "Câu lạc bộ tổ chức buổi chia sẻ về an toàn thông tin lúc 14 giờ thứ Sáu, tại phòng sinh hoạt đã thông báo trong nhóm lớp. Chương trình gồm phần trình bày dự án, thực hành nhận diện tin nhắn đáng ngờ và trao đổi cùng giảng viên.",
+      "Buổi chia sẻ miễn phí. Bạn có thể đến trực tiếp; không cần cung cấp thông tin thẻ, mật khẩu hoặc mã xác thực. Nếu có thay đổi lịch, ban tổ chức sẽ thông báo trong nhóm lớp đang sử dụng.",
+      "Tài liệu đọc thêm: https://example.org/tai-lieu/an-toan-thong-tin . Bạn không cần đăng nhập hoặc tải ứng dụng để tham gia. Khi có thắc mắc, vui lòng hỏi trực tiếp ban cán sự trong buổi học gần nhất.",
+      "Cảm ơn các bạn,\nBan tổ chức Câu lạc bộ Công nghệ"
+    ],
+    "focus": "Đọc nhận định nội dung và ô URL riêng; điểm URL không xác nhận danh tính người gửi."
+  },
+  {
+    "id": "short-message",
+    "title": "Thông báo cần thêm ngữ cảnh",
+    "sender": "Thông báo dịch vụ",
+    "address": "thong-bao@example.org",
+    "subject": "Cập nhật hồ sơ",
+    "preview": "Một thông báo ngắn, chưa thể xác minh nguồn gửi.",
+    "paragraphs": [
+      "Hồ sơ của bạn đang chờ cập nhật. Xem chi tiết tại https://example.com/ho-so và phản hồi trước ngày mai."
+    ],
+    "focus": "Quan sát cách hệ thống xử lý thông tin còn thiếu; không ép kết quả thành an toàn hoặc lừa đảo."
+  }
+]

@@ -600,4 +600,15 @@ function downloadResult() {
 $("print-result").addEventListener("click", () => { if (state.result && !state.busy) window.print(); });
 $("footer-help").addEventListener("click", () => $("how-dialog").showModal());
 $("install-guide").addEventListener("click", () => { $("extension-install").open = true; $("how-dialog").showModal(); $("extension-install").scrollIntoView({block: "nearest"}); });
+// One-use transfer from the local demo page. Loading a sample never sends AI.
+try {
+  const draft = sessionStorage.getItem("phishlens-demo-draft");
+  sessionStorage.removeItem("phishlens-demo-draft");
+  if (draft) {
+    const sample = JSON.parse(draft);
+    if (["text", "url"].includes(sample?.mode) && typeof sample.text === "string" && sample.text.trim() && sample.text.length <= 8000) {
+      setMode(sample.mode); $("input-text").value = sample.text;
+    }
+  }
+} catch { /* Disabled storage or an invalid draft leaves the normal editor. */ }
 updateCount(); updateOptions(); init();

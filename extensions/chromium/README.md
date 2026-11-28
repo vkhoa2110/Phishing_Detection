@@ -1,6 +1,116 @@
-# PhishLens Browser Extension — bản cục bộ 0.12.0
+# PhishLens Browser Extension — bản cục bộ 0.18.0
 
 Extension Manifest V3 với bảng bên cạnh trang, sáng/tối và ba thẻ Đường dẫn / Tin nhắn / Hình ảnh, dùng với PhishLens đang chạy trên máy, không cần đăng nhập. Model URL, RAG và kết nối LLM nằm ở backend; extension không chứa API key và không tự đọc toàn trang.
+
+## Mới ở 0.18: Gần đây, tiếp tục dùng khi chờ và bản in kết quả
+
+- **Gần đây:** danh sách tối đa 40 lượt URL, nội dung, ảnh, email và hội thoại trong phiên. Lọc Tất cả / Đang chạy / Cần chú ý / Đã xong; mở lại kết quả hoặc về tab nguồn. Email và các lượt kiểm tra trong bảng dùng chung danh sách. Không gọi lại AI để xem, làm mới hoặc dọn danh sách.
+- **Tiếp tục dùng · nhận kết quả sau:** khi AI đã nhận lượt kiểm tra, có thể rời màn hình chờ để mở kết quả khác hoặc nhập nội dung mới. Chỉ ngừng chờ ở giao diện, không hủy tác vụ trên máy chủ. Phần đã gửi được xóa khỏi ô nhập để tránh gửi lại ngoài ý muốn. Đóng/mở bảng vẫn giữ các mã lượt trong phiên.
+- **Hàng chờ:** cùng một phiên extension/tài khoản xử lý lần lượt, tối đa ba lượt đang chạy/chờ. Lượt thứ hai chờ thay vì gặp lỗi xung đột với lượt trước. Có thể hủy lượt chưa bắt đầu ngay trong tiến trình hoặc Gần đây; không gửi nội dung tới AI và không trừ hạn mức AI cho lượt đã hủy trước khi xử lý. Các giới hạn người dùng/hệ thống và ngân sách provider vẫn áp dụng; không tự gọi lại khi có lỗi.
+- **Kết luận dễ đối chiếu:** đưa hướng xử lý đầu tiên vào phần kết luận; giải thích ngay trường hợp nội dung LOW nhưng URL HIGH, nội dung HIGH nhưng URL LOW, hoặc chưa dùng/AI gặp lỗi. Giữ nguyên các verdict, điểm số và ngưỡng. Báo số URL đã chấm/tổng số có cả URL không hợp lệ.
+- **In / lưu PDF:** dùng hộp thoại in của trình duyệt trên bảng hiện tại; bản in bỏ nút điều khiển, có kết luận, bằng chứng, danh sách URL, thời điểm và định danh AI/prompt nếu có. Không gọi AI thêm. In PDF không đồng nghĩa đã kiểm thử hộp thoại in native trên mọi hệ điều hành.
+- Đóng tab nguồn không chặn đọc kết quả còn hạn. Đối chiếu/tô lại nguồn vẫn kiểm tra tab, document và snapshot; không tô dữ liệu của thư/hội thoại khác. Khi nguồn đã điều hướng, nút về tab không tự mở một URL cũ.
+- Nhận diện email mới không tự chuyển khỏi Gần đây, Trợ lý hoặc Cài đặt. Lỗi kỹ thuật của AI được ghi rõ **AI chưa hoàn tất**, phân biệt với thiếu ngữ cảnh trong nội dung.
+
+Danh sách chỉ lưu mã tác vụ, tham chiếu nguồn, thời gian, loại đầu vào, nhãn nền tảng cố định và trạng thái giới hạn trong `storage.session`; không lưu nội dung, tiêu đề email, URL trang nguồn, trích dẫn hoặc kết quả đầy đủ. Ghi đồng thời được tuần tự hóa để không mất lượt. Các kết nối tài khoản/khách được phân biệt bằng hash, không lưu token thêm vào index. Danh sách không thay thế lịch sử tài khoản; **Reload/cập nhật extension hoặc đóng trình duyệt sẽ xóa phiên**, và khởi động lại máy chủ làm mất kết quả RAM. Nút dọn chỉ xóa mục đã hoàn tất/lỗi/hết hạn, không dừng tác vụ đang chạy.
+
+Tham chiếu trong danh sách có trần một giờ từ khi tạo để hỗ trợ hàng chờ; kết quả đầy đủ trên máy chủ vẫn hết hạn 15 phút sau hoàn tất. Việc một mã còn trong danh sách không bảo đảm kết quả còn tồn tại; giao diện báo hết hạn khi máy chủ không còn kết quả. Dọn danh sách ngăn mở lại tự động các mục đã xóa.
+
+Focused/shadow dùng `message-core-1.2`, hội thoại dùng `conversation-core-1.1`: JSON schema và prompt công bố rõ giới hạn 240 ký tự cho mỗi trích dẫn và yêu cầu `missing_context=[]` khi không phải UNKNOWN. Giữ nguyên kiểm tra schema/quote và các ràng buộc phân loại; phản hồi không đạt vẫn là lỗi kỹ thuật. Chẩn đoán chỉ trả tên trường nằm trong allowlist. Thay đổi này chưa chứng minh cải thiện chất lượng phát hiện và không đổi các số liệu/prompt lịch sử thành kết quả của phiên bản mới. Cách biểu diễn giới hạn dựa trên [Pydantic Field constraints](https://docs.pydantic.dev/latest/concepts/fields/).
+
+Thiết kế dựa trên [vòng đời service worker](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/lifecycle), [storage.session và giới hạn truy cập](https://developer.chrome.com/docs/extensions/reference/api/storage#property-session) và [hướng dẫn thông báo trạng thái của W3C](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html). Không giữ worker sống bằng vòng lặp; chỉ theo dõi tác vụ khi bảng tương ứng đang hiển thị. Lượt đã xong không bị tải lại liên tục ở mỗi nhịp theo dõi.
+
+Kiểm luồng mới: `.venv/bin/python scripts/evaluation/check_extension_activity_ui.py --out <thư-mục-mới>`. Dùng Chromium, hộp thư dựng, provider giả và xuất PDF thật bằng bộ in Chromium; không lấy dữ liệu hộp thư thật. API/hàng chờ có kiểm riêng trong `tests/api/test_extension_job_queue.py`, hợp đồng schema trong `tests/messages/test_core_schema_contract.py`.
+
+**Cập nhật từ 0.17:** khởi động lại máy chủ để nạp hàng chờ/prompt, cập nhật ZIP/thư mục mới, Reload extension rồi F5 các tab đang dùng. `/api/extension/session` công bố `analysis_queue` để phân biệt backend đã cập nhật.
+
+## Sửa ở 0.17.1: kết nối ngay từ nút kiểm tra email
+
+Nút **Kiểm tra email này** tự tìm ứng dụng tại địa chỉ đã cấu hình, rồi cổng localhost 8001/8000 khi chưa có kết nối khách hoặc kết nối khách hết hạn. Không còn phải mở bảng PhishLens trước để khởi tạo kết nối. Bước tìm ứng dụng chỉ gửi yêu cầu trạng thái rỗng; nội dung vẫn theo chế độ duyệt/gửi đã chọn.
+
+Nút **Thử lại kiểm tra email** thực sự thử lại thao tác sau khi mở ứng dụng, thay vì chỉ hỏi trạng thái một lượt chưa được tạo. Nếu lượt trước đã gửi và còn chạy, dùng lại lượt đó. Không tự bật lại kết nối đã tạm ngừng hoặc tự chuyển tài khoản hết hạn sang khách.
+
+Cập nhật ZIP hoặc thư mục đã cài, **Reload** extension tại `brave://extensions` / `chrome://extensions`, rồi **F5 Gmail/Outlook** để thay nút cũ trong trang. Khởi động ứng dụng bằng `.venv/bin/python launch.py --profile focused --port 8001`.
+
+Kiểm hồi quy: `.venv/bin/python scripts/evaluation/check_extension_mail_connection_ui.py --baseline <ZIP-0.17.0> --out <thư-mục-mới>`. Dùng Chromium, giao diện hộp thư dựng và provider giả; không đọc hộp thư thật hoặc gọi AI bên ngoài.
+
+## Sửa ở 0.17: tải lịch sử Zalo và Messenger
+
+Bản 0.16 có hai lỗi đã tái hiện: Zalo có thể chỉ lấy 15 tin rồi báo không tìm thấy vùng cuộn; Messenger có thể nhầm ID của hàng giao diện bị tái sử dụng thành ID tin nhắn, dẫn tới báo “Có tin bị sửa”. Bộ fixture trước chưa bao phủ hai cấu trúc này.
+
+- **Zalo:** nhận đúng `messageViewScroll` là danh sách tin bên trong `messageView`, chọn viewport native `overflow:auto/scroll` của custom Scrollbars; không bỏ cuộc khi gặp nhiều lớp cuộn lồng nhau. Nhận bubble cũ/mới và sender theo marker của renderer công khai. Header Zalo nằm trước `article#chatView` được dùng để phát hiện đổi hội thoại.
+- **Messenger:** không dùng DOM `id`/`data-id` chung làm ID tin. Tin không có ID riêng được ghép theo thứ tự chồng lấn giữa các đợt tải; không khử trùng toàn lịch sử chỉ theo chữ. Các câu giống nhau ở những đoạn khác nhau được giữ riêng khi phân biệt được vị trí. Vẫn báo hạn chế nếu toàn bộ chuỗi tin giống nhau không có ID.
+- Timestamp, trạng thái đã đọc, avatar hoặc tên hiện/ẩn theo nhóm không bị xem là sửa nội dung. Khi một tin có ID ổn định cập nhật trong lúc tải, giữ bản mới nhất và báo số tin cập nhật. Sau khi khóa bản để duyệt, thay đổi nội dung của tin đang tải vẫn làm mất hiệu lực xác nhận.
+- Hỗ trợ viewport cuộn ngược dùng `column-reverse`/`scrollTop` âm, chờ các đợt tải chậm và danh sách rỗng tạm thời. Không mở API riêng hoặc đọc store của nền tảng.
+- Nếu chưa tải đủ, hiển thị rõ **đã lấy bao nhiêu/số yêu cầu**. Nếu chưa điều khiển được vùng cuộn, dành thời gian nhận diện lại và cho phép người dùng cuộn trong khung chat để tiếp tục gom tin. Mục **Thông tin tải hội thoại** có nút sao chép chẩn đoán chỉ chứa thông số cuộn, số lượng và trạng thái; không chứa tin nhắn, tên hoặc URL hội thoại.
+
+Kiểm hồi quy cấu trúc bị bỏ sót: `scripts/evaluation/check_extension_history_recycling_ui.py --baseline <ZIP-0.16> --out <thư-mục-mới>`. Chạy baseline tái hiện đúng lỗi rồi đối chiếu code hiện tại với nhiều trang 15 tin, ID hàng tái sử dụng, metadata thay đổi, tin lặp, viewport ngược và tải chậm. Đây là thử nghiệm bằng DOM dựng trong Chromium; chưa xác minh toàn bộ trên tài khoản thật. Marker Zalo được đối chiếu từ [asset renderer công khai của Zalo](https://zalo-chat-static.zadn.vn/v1/lazy/2.21dd5856eb8f1d31f964.js); không dùng dữ liệu tài khoản.
+
+**Cập nhật từ bản cũ:** Reload extension rồi **F5 cả tab Messenger/Zalo** để bỏ reader cũ đang nằm trong trang. Không cần khởi động lại backend nếu đã chạy bản 0.15 trở lên.
+
+## Mới ở 0.16: nhận diện chat rộng hơn và cảnh báo yên lặng
+
+Messenger/Facebook Tin nhắn nhận thêm danh sách không có nhãn, `role=log`, marker `messages_table`, grid lồng và danh sách cuộn có marker tin nhắn. Đợi tối đa hai giây khi khung chat mới đang tải. Không lấy danh sách liên hệ/tìm kiếm hoặc ô soạn; nếu có nhiều khung chat phù hợp ngang nhau thì yêu cầu giữ lại một khung. Đây là adapter DOM, chưa chứng nhận tương thích mọi đợt cập nhật giao diện hoặc kiểm thử tài khoản thật.
+
+Phạm vi có nút **50 / 200 / 500 tin**, nhớ chế độ và số tin lần trước theo nền tảng. Chỉ lưu các tùy chọn này, không lưu tên cuộc trò chuyện/nội dung. Lỗi đọc hiện ngay trong phần chọn phạm vi để thử lại, không thêm banner ở đầu bảng.
+
+**Tự kiểm URL** hoạt động độc lập với **Luôn hiện nút công cụ**. Mặc định không ghim nút trên trang; cấu hình nút nổi cũ được chuyển sang cách hiển thị yên lặng. Khi người dùng đã bật tự kiểm, chỉ URL HIGH có score ≥0,85 mới đủ điều kiện thông báo nền. Mốc này là quy tắc hiển thị để giảm gián đoạn, chưa được hiệu chỉnh thành xác suất hoặc chứng minh chất lượng phát hiện. Kiểm tra thủ công giữ ngưỡng/kết quả model hiện có.
+
+Thông báo và nút tạm thời **tự ẩn sau tám giây**; nút × hoặc Esc đóng ngay. Khi rê chuột/đặt focus trong thông báo thì chờ người dùng đọc xong. Cùng hostname chỉ nhắc tối đa một lần trong 30 phút, kể cả tải lại hoặc chuyển tab. Dấu `!` nhỏ vẫn ở biểu tượng extension để mở lại. Bộ nhớ phiên giữ tối đa 100 hash hostname và thời điểm; không lưu địa chỉ hoặc nội dung trang cho chống lặp.
+
+Địa chỉ giao diện ứng dụng chính xác như `drive.google.com/drive/…`, Gmail, Outlook Mail, luồng Messenger/Facebook Tin nhắn, Zalo và Telegram được bỏ qua ở lần chấm URL nền. Google root/search cũng được bỏ qua. Không suy ra nội dung/tệp/thư trong đó an toàn; URL ngoài và thao tác kiểm tra thủ công vẫn được chấm. Chỉ so exact hostname + route, không bỏ qua tên miền giả như `drive.google.com.attacker.example`. Model URL hiện có thể báo nhầm trên các địa chỉ hợp lệ; thay đổi này xử lý cách thông báo, không phải cải thiện đã đo của model.
+
+Kiểm fixture: `scripts/evaluation/check_extension_quiet_chat_ui.py --out <thư-mục-mới>`. Dùng extension/backend thật, score URL giả và DOM Messenger mô phỏng; không đăng nhập tài khoản thật hoặc gọi provider.
+
+Cập nhật: **Reload extension rồi F5 tab đang mở**. Nếu backend đang là bản trước 0.15 thì cần khởi động lại để dùng quét nhiều phần.
+
+## Mới ở 0.15: quét theo số tin, ngày hoặc lịch sử tải được
+
+Mở cuộc trò chuyện → PhishLens → **Chọn tin trong hội thoại** → chọn phạm vi rồi bấm **Tải hội thoại**:
+
+- **Các tin gần nhất:** nhập số tin, mặc định 100. Tiện ích đi tới cuối phần chat đang tải rồi cuộn ngược để lấy thêm tin.
+- **Theo khoảng ngày:** chọn từ ngày, có thể thêm ngày kết thúc. Hai ngày đều được tính trong phạm vi. Chỉ những tin đọc được ngày mới được lọc; ngày không rõ được báo riêng, không tự đoán năm.
+- **Toàn bộ lịch sử tải được:** tiếp tục cuộn tới khi trang không tải thêm hoặc chạm giới hạn đã chọn. Đây là lịch sử ứng dụng web cung cấp qua giao diện, không chứng nhận đã lấy toàn bộ dữ liệu trên máy chủ.
+- **Chọn tin đang hiển thị:** giữ cách chọn thủ công cũ cho đoạn ngắn.
+
+Ba chế độ tải lịch sử cho chọn **1–2.000 tin mỗi lần**, giới hạn bản chữ gửi **200.000 ký tự**. Bộ thu có trần dung lượng, 120 giây/240 lượt cuộn; không quét vô hạn. Giao diện báo số tin, lý do dừng, ngày lọc và ngày không đọc được. Có thể bấm **Dừng tải · giữ phần đã lấy**, bỏ chọn tin hoặc sửa người nói trước khi phân tích. Trang không có ID tin ổn định có thể làm thiếu các tin giống nhau khi khử trùng; giao diện báo hạn chế này.
+
+Với đoạn dài, máy chủ che dữ liệu rồi chia thành các cửa sổ tối đa **7.600 ký tự**, chồng lấn tối đa **1.200 ký tự** từ phần trước; không thay nội dung bằng tóm tắt. Duyệt gửi áp dụng cho toàn bản chữ, sau đó chạy từng phần với cùng prompt hội thoại, hạn mức và ngân sách chờ hiện có. Mỗi phần dùng một lượt hạn mức AI; phần giải thích có thể thêm request như luồng hiện tại. Không lưu lịch sử tài khoản cho lượt quét nhiều phần; kết quả RAM còn tối đa 15 phút sau khi hoàn tất.
+
+Kết quả hiển thị **đã xử lý bao nhiêu/tổng bao nhiêu phần** và mở được kết quả từng phần. Tổng hợp giữ mức cảnh báo cao nhất đã thấy; nếu chưa xử lý đủ hoặc có phần UNKNOWN thì không đưa toàn phạm vi về LOW. Đây là tổng hợp các cửa sổ có chồng lấn, không phải một lượt LLM đọc đồng thời toàn lịch sử. Nút **Dừng sau phần đang xử lý** giữ các phần hoàn tất. Lỗi provider/hạn mức dừng các phần tiếp theo, không retry để thay kết quả lỗi. Đóng bảng khi AI đã bắt đầu vẫn có thể lấy lại job khi máy chủ còn chạy.
+
+Lịch sử đã tải là snapshot: những tin bị ứng dụng gỡ khỏi DOM khi cuộn vẫn giữ trong RAM của tab chat để phân tích. Không xác minh được các chỉnh sửa phía máy chủ với tin không còn được trang tải. Đổi cuộc trò chuyện làm mất hiệu lực snapshot. **Xem tin gốc** chỉ tô khi tìm lại được đúng nội dung trong DOM; nếu tin chưa được tải, cần cuộn về đoạn đó để đối chiếu.
+
+Kiểm thử lịch sử: `scripts/evaluation/check_extension_history_ui.py --platform zalo --out <thư-mục-mới>`. Hỗ trợ thêm `messenger`, `facebook`, `telegram-a`, `telegram-k`. Fixture dựng lịch sử phân trang và gỡ các trang cũ khỏi DOM, provider giả; chưa kiểm trên tài khoản chat thật. Kiểm API/chia phần/hạn mức/dừng: `tests/api/test_conversation_batch.py`.
+
+Cập nhật từ 0.14: **khởi động lại backend**, Reload extension và tải lại tab chat. Backend cũ chưa có `conversation_batch_available` sẽ được báo trước khi gửi AI.
+
+## Mới ở 0.14: hội thoại Zalo, Messenger và Telegram
+
+Các nền tảng dưới đây dùng chung phần chọn phạm vi của bản 0.15. Nút **Chọn tin trong hội thoại** ghi tên nền tảng của tab hiện tại. Cấp quyền khi trình duyệt hỏi. Tiện ích chỉ đọc khung chat được chọn, không lấy danh sách bên trái, thông tin nhóm hoặc ô đang soạn. Bản 0.15 chỉ cuộn tải lịch sử sau khi bạn bấm Tải hội thoại.
+
+| Nền tảng | Trang hỗ trợ | Phạm vi |
+|---|---|---|
+| Zalo Web | `https://chat.zalo.me/` | Khung hội thoại đang mở |
+| Messenger | `https://www.messenger.com/`, `https://messenger.com/` | Trang hội thoại đầy đủ |
+| Facebook Tin nhắn | `https://www.facebook.com/messages/`, `https://web.facebook.com/messages/` | Trang Tin nhắn; không đọc bảng tin hoặc cửa sổ chat nổi |
+| Telegram Web | `https://web.telegram.org/a/`, `https://web.telegram.org/k/` | Hai bộ đọc riêng cho Web A / Web K |
+
+Các ứng dụng desktop/điện thoại và website khác chưa có bộ đọc tự động. Có thể dán đoạn chat, bôi đen hoặc khoanh vùng ảnh trên trang web để kiểm tra.
+
+**Ở lựa chọn Chọn tin đang hiển thị**, chọn/bỏ từng tin và kiểm tra nhãn **Bạn / Người 1 / Người 2 / Chưa rõ người gửi**. Tên người gửi đọc được từ vùng nhãn được thay bằng bí danh trong bản hội thoại; nội dung tin vẫn cần bạn kiểm tra thông tin riêng tư. Nếu không nhận diện được người nói, nhất là trên Messenger, tiện ích để **Chưa rõ người gửi**, cho người dùng sửa; không đoán theo màu bong bóng hoặc vị trí. Tối đa **30 tin và 8.000 ký tự**; số tin và số ký tự được hiển thị, không tự cắt để vừa hạn mức. Tin chứa ảnh/tệp có ghi chú; không tự đọc nội dung ảnh hoặc tải tệp đính kèm.
+
+Bấm **Kiểm tra đoạn đã chọn**. Chế độ mặc định hiển thị bản chữ đã che và chờ đồng ý; lựa chọn Gửi ngay được áp dụng sau thao tác chọn tin này. Mở/chuyển chat, bật trợ lý hoặc mở bảng không tự gửi AI. Prompt `conversation-core-1.0` phân tích thứ tự/người nói và diễn biến nhiều lượt; đây là profile mới, chưa có đánh giá chất lượng độc lập. URL vẫn được chấm riêng. RAG chưa bật cho luồng hội thoại.
+
+Kết quả ghi rõ phạm vi đoạn đã chọn. **Xem tin gốc** cuộn tới tin phù hợp và tô tin đó; đoạn đã che/sửa có thể không khớp để tô. Đổi cuộc trò chuyện, sửa hoặc gỡ tin đã chọn làm mất hiệu lực ngữ cảnh gửi/đối chiếu. Không tự gửi lại; đọc lại và chọn lại nếu cần. Đóng bảng trong lúc chờ vẫn có thể lấy lại job khi backend còn chạy và đoạn nguồn còn hợp lệ; extension chỉ giữ con trỏ job/ngữ cảnh trong session, không lưu transcript vào storage.
+
+Muốn có nút trực tiếp trong trang chat, vào **Trợ lý**, bật riêng **Zalo Web**, **Messenger / Facebook** hoặc **Telegram Web**. Nút chỉ mở phần chọn tin. Có thể dùng menu chuột phải **Chọn hội thoại để kiểm tra bằng PhishLens** trên các trang hỗ trợ. Tắt từng tùy chọn để bỏ nút của nền tảng đó. Cấu hình Zalo cũ được giữ khi nâng cấp; hai nền tảng mới mặc định tắt.
+
+Sau cập nhật: chạy backend hiện tại, **Reload** extension và tải lại tab chat. Backend cũ thiếu `conversation_analysis_available` sẽ được báo cập nhật trước khi gọi AI. Bộ đọc nhận diện DOM có giới hạn; nếu không nhận diện được đúng một khung chat sẽ báo lỗi và giữ cách bôi đen/khoanh vùng, không đọc toàn bộ trang làm phương án thay thế. Đã kiểm Chromium bằng DOM/AI mô phỏng; **chưa xác nhận bằng tài khoản thật trên các nền tảng**, bố cục có thể thay đổi. Messenger dùng cấu trúc accessibility của trang, mức tương thích cần kiểm tra trực tiếp.
+
+Kiểm thử: `scripts/evaluation/check_extension_conversation_ui.py --platform zalo --out <thư-mục-mới>` chạy extension/backend thật trong profile/database tách biệt, mô phỏng trang chat và provider. Giá trị `--platform`: `zalo`, `messenger`, `facebook`, `telegram-a`, `telegram-k`. Không đăng nhập hoặc gửi nội dung chat thật; quyền host được cấp sẵn trong bản manifest tách biệt để chạy headless, chưa kiểm hộp thoại cấp quyền native.
+
+Bộ đọc Telegram đối chiếu cấu trúc từ mã nguồn công khai [Web A](https://github.com/Ajaxy/telegram-tt/blob/master/src/components/middle/message/Message.tsx) và [Web K](https://github.com/morethanwords/tweb/blob/master/src/components/chat/bubbles.ts); không truy cập API nội bộ hay giải mã lịch sử. Quyền host của Chromium áp dụng theo host, không giới hạn đường dẫn; bộ phát hiện URL và content script của PhishLens giới hạn Facebook vào `/messages/`. Xem [tài liệu match patterns của Chrome](https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns).
 
 ## Mới ở 0.12: email và kết quả cạnh nhau
 
@@ -89,7 +199,7 @@ Nút nổi có thể **kéo đổi vị trí**, tự bám mép trái/phải và 
 
 Vào **Trợ lý → Tự kiểm URL khi mở trang**, cấp quyền trang khi Chrome hỏi. Khi kết nối được ứng dụng, extension chấm **chuỗi URL HTTP/HTTPS** qua backend tại máy khi mở/đổi URL hoặc chọn tab, kể cả lúc đóng bảng. Không đọc DOM, chụp ảnh, OCR, gọi AI hoặc lưu lịch sử trong luồng tự động. URL gửi localhost bao gồm path/query; hãy cân nhắc nếu URL chứa thông tin riêng. Không gửi URL đến website đích hoặc provider. Bỏ qua tab ẩn danh và origin của chính ứng dụng đã kết nối.
 
-URL HIGH/WARNING có dấu `!` trên biểu tượng; UNKNOWN có `?`. Nếu có nút nổi, cảnh báo hiện tại chỗ, có thể đóng hoặc mở chi tiết. LOW ghi “URL đã kiểm tra”, không chứng nhận trang an toàn. Mất kết nối/lỗi dịch vụ hiển thị chưa kiểm tra được, không tạo điểm thấp. Không chặn điều hướng hoặc kiểm nội dung website đích, nên đây là hỗ trợ sau khi mở trang, không phải bộ lọc chống truy cập.
+Chỉ URL HIGH đủ điều kiện thông báo nền (xem chính sách 0.16 ở trên) có dấu `!` và cảnh báo tạm thời. LOW/UNKNOWN hoặc HIGH dưới mốc thông báo không bật khung cảnh báo; kết quả thủ công vẫn hiển thị đúng trạng thái của model. Mất kết nối/lỗi dịch vụ hiển thị chưa kiểm tra được, không tạo điểm thấp. Không chặn điều hướng hoặc kiểm nội dung website đích, nên đây là hỗ trợ sau khi mở trang, không phải bộ lọc chống truy cập.
 
 Lưu điểm gần nhất tối đa 5 phút theo tab, kiểm lỗi không lặp trong 15 giây; tối đa hai lượt URL đồng thời, timeout 12 giây. Bản ghi phiên chỉ chứa hash URL, thời điểm, trạng thái và score; không lưu URL gốc trong cache nền. Hash không bảo đảm ẩn danh. Tạm nghỉ/ẩn website/tắt tự kiểm/đổi kết nối hủy tác vụ đang chờ và bỏ kết quả muộn. Không tự chạy lại sau khi backend vừa mở; chọn lại tab, điều hướng hoặc kiểm thủ công để thử lại.
 
@@ -102,7 +212,7 @@ Kết quả có thang cảnh báo Thấp / Cần kiểm tra / Cao. Điểm URL h
 3. Extension tự cắt vùng và đọc chữ bằng OCR tại máy, rồi mở bản chữ đã che để duyệt. Kiểm tra/sửa chữ → đánh dấu đồng ý → **Đồng ý và phân tích**. Chưa đồng ý thì chưa gọi AI.
 4. **Tải ảnh từ máy** là chức năng riêng ở thẻ Hình ảnh: chọn/kéo thả/Ctrl+V → có thể cắt lại → Đọc chữ từ ảnh.
 
-Muốn gọi thao tác nhanh trên các trang, vào **Trợ lý → Hiện nút PhishLens trên trang**. Chrome hỏi quyền truy cập trang; sau khi cấp, nút nổi xuất hiện trên HTTP/HTTPS. Tắt tùy chọn để gỡ nút; quyền đã cấp có thể thu hồi trong phần chi tiết extension của Chrome. Bật nút nổi riêng không tự phân tích URL/nội dung. Trình duyệt có thể hạn chế các trang hệ thống, cửa hàng extension, PDF/viewer hoặc trang đặc biệt.
+Muốn gọi thao tác nhanh trên các trang, vào **Trợ lý → Luôn hiện nút công cụ**. Chrome hỏi quyền truy cập trang; sau khi cấp, nút nổi xuất hiện trên HTTP/HTTPS. Tắt tùy chọn để gỡ nút; quyền đã cấp có thể thu hồi trong phần chi tiết extension của Chrome. Bật nút nổi riêng không tự phân tích URL/nội dung. Trình duyệt có thể hạn chế các trang hệ thống, cửa hàng extension, PDF/viewer hoặc trang đặc biệt.
 
 Kết nối tài khoản từ phiên bản cũ vẫn được hỗ trợ đến khi thu hồi/hết hạn. Bạn có thể thu hồi chúng trong Tài khoản trên web. Giao diện mới không tạo mã hoặc kết nối tài khoản; mặc định dùng khách. Nếu token cũ hết hạn lúc mở extension, extension chuyển sang khách và ghi rõ trạng thái.
 

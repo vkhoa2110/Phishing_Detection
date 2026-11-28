@@ -21,7 +21,7 @@ from app.services.rag.action_retrieval import ActionAwareRAG, POLICY as RETRIEVA
 from app.services.rag.retrieval import RAGService
 import app.services.rag.evidence as evidence_selection
 
-PIPELINE = "focused-core-1.1-candidate"
+PIPELINE = "focused-core-1.2-candidate"
 
 
 def manifest(settings, thinking, hybrid):

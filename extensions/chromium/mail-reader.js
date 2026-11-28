@@ -70,7 +70,7 @@
     currentState = result.status || "idle";
     host.dataset.status = currentState;
     mainButton.disabled = currentState === "running";
-    mainButton.textContent = currentState === "running" ? "◌ Đang kiểm tra email…" : currentState === "complete" ? "✓ " + result.label : currentState === "review" ? "Duyệt bản gửi trong PhishLens" : currentState === "error" ? "Chưa kiểm tra được email" : "✦ Kiểm tra email này";
+    mainButton.textContent = currentState === "running" ? "◌ Đang kiểm tra email…" : currentState === "complete" ? "✓ " + result.label : currentState === "review" ? "Duyệt bản gửi trong PhishLens" : currentState === "error" ? "Thử lại kiểm tra email" : "✦ Kiểm tra email này";
     detailsButton.hidden = currentState !== "complete" && currentState !== "running";
     retryButton.hidden = !["complete", "error"].includes(currentState);
     caption.hidden = !["complete", "error"].includes(currentState);
@@ -122,7 +122,7 @@
       detailsButton = document.createElement("button"); detailsButton.type = "button"; detailsButton.textContent = "Chi tiết";
       retryButton = document.createElement("button"); retryButton.type = "button"; retryButton.textContent = "↻"; retryButton.title = "Kiểm tra lại email"; retryButton.setAttribute("aria-label", "Kiểm tra lại email");
       caption = document.createElement("small"); caption.setAttribute("role", "status"); caption.setAttribute("aria-live", "polite");
-      mainButton.addEventListener("click", event => { if (!event.isTrusted) return; if (currentState === "complete") globalThis.PhishLensMailAnnotations?.focus({}); else if (currentState === "error") updateJob(signature); else check(); });
+      mainButton.addEventListener("click", event => { if (!event.isTrusted) return; if (currentState === "complete") globalThis.PhishLensMailAnnotations?.focus({}); else check(currentState === "error"); });
       retryButton.addEventListener("click", event => { if (event.isTrusted) check(true); });
       detailsButton.addEventListener("click", event => { if (event.isTrusted) chrome.runtime.sendMessage({type: "MAIL_DETAILS", contextId: signature}).then(result => { if (result?.error) paint({status: "error", message: result.error}); }).catch(() => {}); });
       actions.append(mainButton, detailsButton, retryButton); bar.append(actions, caption); root.append(bar); document.documentElement.append(host);

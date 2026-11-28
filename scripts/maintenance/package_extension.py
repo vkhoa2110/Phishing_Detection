@@ -7,7 +7,7 @@ import tempfile
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
-FILES = ("manifest.json", "background.js", "workspace.js", "analysis-jobs.js", "assistant.js", "mail.js", "mail-reader.js", "mail-annotations.js", "region-capture.js", "region.js", "floating.js", "check.html", "check.js", "images.js", "check.css", "README.md",
+FILES = ("manifest.json", "background.js", "workspace.js", "activity.js", "activity-ui.js", "analysis-jobs.js", "assistant.js", "mail.js", "mail-reader.js", "mail-annotations.js", "conversation-platforms.js", "conversation.js", "conversation-reader.js", "conversation-history.js", "conversation-helper.js", "conversation-ui.js", "region-capture.js", "region.js", "floating.js", "check.html", "check.js", "images.js", "check.css", "README.md",
          "icons/16.png", "icons/48.png", "icons/128.png")
 
 

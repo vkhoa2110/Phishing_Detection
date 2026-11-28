@@ -1,5 +1,5 @@
 from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator, model_validator
 
 Risk = Literal["HIGH", "WARNING", "LOW", "UNKNOWN"]
 
@@ -19,6 +19,7 @@ class InputData(BaseModel):
 
 
 class AnalyzeInput(InputData):
+    analysis_target: Literal["message", "conversation"] = "message"
     use_llm: bool = True
     include_ml: bool = False
     use_rag: bool = False
@@ -27,6 +28,12 @@ class AnalyzeInput(InputData):
     endpoint: str = Field(default="", max_length=500)
     model: str = Field(default="", max_length=150)
     api_key: SecretStr = Field(default_factory=lambda: SecretStr(""))
+
+    @model_validator(mode="after")
+    def conversation_scope(self):
+        if self.analysis_target == "conversation" and (self.mode != "text" or self.use_rag):
+            raise ValueError("Hội thoại cần chế độ văn bản; đối chiếu RAG chưa hỗ trợ cho luồng này.")
+        return self
 
     @field_validator("api_key")
     @classmethod

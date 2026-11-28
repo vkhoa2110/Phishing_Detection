@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light"><title>PhishLens · Không gian demo</title>
+  <link rel="icon" href="/static/shield.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/demo.css"><script src="/static/demo.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/check"><img src="/static/shield.svg" alt="" width="32" height="36">PhishLens<span>.</span></a><span class="demo-tag">KHÔNG GIAN DEMO</span><a class="app-link" href="/check">Mở ứng dụng ↗</a></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">KIỂM TRA TRƯỚC KHI TIN</p><h1>Một email. Nhiều điều cần nhìn rõ.</h1><p>Chọn nội dung, kiểm tra và đối chiếu từng dấu hiệu.</p></div><span id="server-status" class="status" role="status">Đang kết nối…</span></section>
+    <div class="workspace">
+      <aside class="scenarios"><p class="eyebrow">TÌNH HUỐNG</p><nav id="samples" aria-label="Chọn mẫu trình diễn"></nav><button id="image-sample" class="scenario" type="button" aria-pressed="false"><span class="scenario-number">04</span><span><strong>Ưu đãi trong ảnh</strong><small>Khoanh vùng · Đọc chữ · Kiểm tra</small></span><span aria-hidden="true">›</span></button><div class="sample-origin"><span class="origin-dot"></span>Mẫu tự soạn, tên và thông tin giả định. Chưa có nhãn người.</div><a href="/api/browser/download" class="download-link">Tải extension (.zip) ↓</a></aside>
+      <section class="message-panel" aria-label="Nội dung trình diễn">
+        <div class="message-toolbar"><span id="sample-kind">EMAIL MINH HỌA</span><div><button id="copy-sample" class="secondary" type="button">Sao chép nội dung</button><button id="open-check" class="primary" type="button">Dùng mẫu này để kiểm tra ↗</button></div></div>
+        <article id="mail" class="mail"><div class="mail-heading"><h2 id="subject"></h2><div class="sender-row"><span id="avatar" class="avatar" aria-hidden="true">AG</span><div><strong id="sender"></strong><span id="address"></span></div><span class="mail-time">Hôm nay</span></div></div><div id="mail-body" class="mail-body"></div></article>
+        <section id="image-panel" class="image-panel" hidden><div><p class="eyebrow">KIỂM TRA NỘI DUNG TRÊN TRANG</p><h2>Khoanh vùng ảnh này bằng extension</h2><p>Nhấn <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>, kéo quanh ảnh và duyệt phần chữ đã đọc.</p></div><img id="ocr-card" src="/static/demo-voucher.svg" width="1100" height="560" alt="Ảnh ưu đãi minh họa, có yêu cầu gửi OTP và thanh toán phí trước"><button id="download-image" class="secondary" type="button">Tải ảnh PNG để thử trên extension ↓</button></section>
+        <div class="context-bar"><span aria-hidden="true">✦</span><p id="focus"></p></div>
+      </section>
+    </div>
+    <details class="presenter"><summary>Kịch bản trình bày · khoảng 5 phút <span aria-hidden="true">+</span></summary><ol><li><strong>Chọn email khuyến mãi.</strong> Sao chép vào extension hoặc bôi đen nội dung → chuột phải → “Phân tích đoạn chọn bằng PhishLens”. Duyệt bản đã che rồi gửi AI.</li><li><strong>Đọc kết quả.</strong> Chỉ ra nhận định, trích dẫn, giải thích và hướng xử lý. Mở chi tiết URL để phân biệt điểm mô hình với kết luận nội dung.</li><li><strong>Đối chứng bằng thư hội thảo.</strong> Bấm “Dùng mẫu này để kiểm tra” để thử ứng dụng web. Kết quả được gọi mới, không điền sẵn.</li><li><strong>Khoanh vùng ảnh.</strong> Chọn mẫu 04, dùng phím tắt hoặc chuột phải để khoanh ảnh. Chữ được đọc tại máy; kiểm tra bản chữ trước khi gửi AI.</li><li><strong>Nếu đang dùng Gmail / Outlook.</strong> Mở một thư thử nghiệm của bạn, bấm “Kiểm tra email này”, sau đó “Chi tiết”. Đây là luồng riêng của hộp thư thật; trang này chỉ chứa nội dung minh họa.</li></ol><p>Chế độ khách không lưu lịch sử. Demo dùng tình huống có chủ đích, không thay thế đánh giá chất lượng bằng bộ nhãn độc lập. Chỉ toàn vùng đang hiển thị của trang được chụp, không phải màn hình hệ điều hành.</p></details>
+    <footer><span>PhishLens · URL tại máy · AI phân tích hành vi · Đọc chữ từ ảnh</span><span>Không cần đăng nhập để dùng thử</span></footer>
+  </main><div id="notice" class="notice" role="status" hidden></div>
+</body></html>

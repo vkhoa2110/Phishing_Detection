@@ -14,6 +14,7 @@ from app.domain.claim_grounding import VERSION as PRESENTATION_VERSION, guard_pr
 from app.domain.schemas import AnalyzeInput
 from app.services.llm.client import LLMFailure
 from app.services.llm import decision_explanation
+from app.services.llm import conversation
 
 VERSION = "server-managed-runtime-1.0"
 PRESENTATION_SHA256 = hashlib.sha256((ROOT / "app/domain/claim_grounding.py").read_bytes()).hexdigest()
@@ -58,8 +59,11 @@ class BudgetedLLM:
         budget.calls += 1
         try:
             async with asyncio.timeout(remaining):
-                result = (await decision_explanation.describe(self.service, **kwargs) if stage == "describe_evidence"
-                          else await getattr(self.service, stage)(**kwargs))
+                if stage == "analyze" and conversation.TARGET.get() == "conversation":
+                    result = await conversation.analyze(self.service, **kwargs)
+                else:
+                    result = (await decision_explanation.describe(self.service, **kwargs) if stage == "describe_evidence"
+                              else await getattr(self.service, stage)(**kwargs))
                 if stage == "analyze" and self.guard_reasons:
                     result = guard_presentation(result)
                 if isinstance(result, dict) and result.get("code") == "TIMEOUT":
@@ -107,6 +111,7 @@ class ManagedAnalysis:
     async def analyze(self, data):
         budget = RequestBudget(self.seconds)
         token = ACTIVE_BUDGET.set(budget)
+        target_token = conversation.TARGET.set(data.analysis_target)
         try:
             result = await self.service.analyze(data)
             llm = result["llm"]
@@ -122,6 +127,10 @@ class ManagedAnalysis:
                 "budget_scope": budget_scope(self.profile),
                 "calls_attempted": budget.calls, "timed_out_stage": budget.timed_out_stage}
             result["execution"]["runtime"]["reason_presentation_sha256"] = PRESENTATION_SHA256 if self.profile in FOCUSED_PROFILES else None
+            if data.analysis_target == "conversation":
+                result["analysis_target"] = "conversation"
+                result["execution"]["llm"]["requested_profile"] = conversation.PROFILE
+                result["execution"]["llm"]["assessment_scope"] = "selected_conversation"
             grounding = result.get("llm", {}).get("claim_grounding")
             if grounding:
                 result["execution"]["llm"]["reason_presentation"] = grounding["version"]
@@ -129,6 +138,7 @@ class ManagedAnalysis:
                     result["final"]["requires_review"] = True
             return result
         finally:
+            conversation.TARGET.reset(target_token)
             ACTIVE_BUDGET.reset(token)
 
 

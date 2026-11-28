@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "PhishLens — Kiểm tra dấu hiệu lừa đảo",
-  "version": "0.12.0",
-  "description": "Kiểm tra URL, email và ảnh bằng PhishLens trên máy. Chọn xem trước hoặc gửi AI ngay khi bạn yêu cầu kiểm tra.",
+  "version": "0.18.0",
+  "description": "Kiểm tra URL, email, ảnh và hội thoại Zalo, Messenger, Telegram. Chọn nội dung và duyệt trước khi gửi AI.",
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "contextMenus", "storage", "sidePanel", "scripting", "alarms"],
   "optional_host_permissions": ["<all_urls>"],

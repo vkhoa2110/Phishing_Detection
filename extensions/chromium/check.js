@@ -31,13 +31,15 @@
     }
     return scale;
   }
-  let images, ready = false, assistantState = null, pendingLocal = false, currentTabId = null, pendingReview = false, pendingRegion = false, lastMail = "", mailQueued = false, activeJob = null, hasIncoming = false;
+  let images, conversations, activity, backgroundWatch = null, ready = false, assistantState = null, pendingLocal = false, currentTabId = null, currentChatPlatform = null, pendingReview = false, pendingRegion = false, lastMail = "", mailQueued = false, activeJob = null, hasIncoming = false, incomingConversation = null;
   const mailOrigins = ["https://mail.google.com/*", "https://outlook.live.com/*", "https://outlook.office.com/*", "https://outlook.office365.com/*"];
   function showView(view) {
     const main = document.querySelector("main"), previous = document.body.dataset.view;
     state.scrolls[previous] = main.scrollTop;
     document.body.dataset.view = view;
     $("connection").hidden = view !== "connection"; $("assistant-screen").hidden = view !== "assistant";
+    $("activity-screen").hidden = view !== "activity";
+    if (view === "activity") activity?.enter(); else activity?.leave();
     document.querySelectorAll("[data-view-target]").forEach(button => { if (button.dataset.viewTarget === view) button.setAttribute("aria-current", "page"); else button.removeAttribute("aria-current"); });
     if (view === "assistant" || view === "check") updateAssistant().catch(() => {});
     main.scrollTop = state.scrolls[view] || 0;
@@ -72,7 +74,7 @@
     $("analyze-label").textContent = state.busy ? "Đang xử lý…" : $("use-ai").checked ? direct ? "Phân tích ngay" : "Tiếp tục · Duyệt nội dung" : "Kiểm tra đường dẫn";
     $("include-ml").disabled = state.busy || !$("use-ai").checked;
     $("explain-evidence").disabled = state.busy || !$("use-ai").checked || mode() !== "text" || !state.status?.evidence_explanation_available;
-    $("use-rag").disabled = state.busy || !$("use-ai").checked || mode() !== "text" || !state.status?.rag_ready;
+    $("use-rag").disabled = state.busy || !$("use-ai").checked || mode() !== "text" || !state.status?.rag_ready || Boolean(conversations?.context());
     $("save-history").disabled = state.busy || Boolean(state.status?.guest);
     $("save-content").disabled = state.busy || Boolean(state.status?.guest) || !$("save-history").checked;
     $("read-image").disabled = state.busy || !images?.hasImage() || !state.status?.ocr?.ready;
@@ -80,10 +82,14 @@
     $("confirm-label").textContent = direct ? "Phân tích ngay" : "Đồng ý và phân tích";
     document.querySelector(".consent-label").hidden = direct;
     $("consent").disabled = state.busy;
-    for (const id of ["connect", "disconnect", "settings-toggle", "cancel", "detach", "use-current-tab", "clear-input", "edit-result", "new-analysis", "quick-capture", "quick-viewport", "read-email", "mail-assist-enabled", "floating-enabled", "quick-page", "auto-check-enabled", "pause-assistant", "reset-hidden-sites", "send-review", "send-direct"]) $(id).disabled = state.busy;
+    for (const id of ["connect", "disconnect", "settings-toggle", "cancel", "detach", "use-current-tab", "clear-input", "edit-result", "new-analysis", "quick-capture", "quick-viewport", "read-email", "mail-assist-enabled", "floating-enabled", "quick-page", "auto-check-enabled", "pause-assistant", "reset-hidden-sites", "send-review", "send-direct", "read-conversation", "chat-assist-enabled", "chat-assist-messenger", "chat-assist-telegram", "conversation-reselect"]) $(id).disabled = state.busy;
     $("clear-input").hidden = !$("input-text").value;
     document.querySelectorAll("[data-view-target]").forEach(button => { button.disabled = state.busy; });
     $("input-count").textContent = $("input-text").value.length;
+    const conversationHistory = Boolean(conversations?.context()?.history);
+    $("input-text").maxLength = $("approved-text").maxLength = conversationHistory ? 200000 : 8000;
+    $("input-limit").textContent = conversationHistory ? "200.000" : "8.000";
+    if (conversationHistory) { $("save-history").disabled = true; $("save-content").disabled = true; }
     $("submit-hint").textContent = $("use-ai").checked ? direct ? "Che thông tin rồi gửi AI" : "Duyệt nội dung ở bước tiếp theo" : "Kiểm tra URL tại máy";
     $("ai-description").textContent = $("use-ai").checked ? direct ? "Gửi khi bạn yêu cầu kiểm tra" : "Duyệt trước khi gửi" : "Phân tích dấu hiệu trong nội dung";
     $("send-provider").textContent = state.status?.model ? "Nội dung được che trước khi gửi tới " + state.status.model + "." : "Nội dung được che trước khi gửi tới dịch vụ AI đã cấu hình.";
@@ -114,8 +120,12 @@
   async function perform(action, title = "Đang kiểm tra", description = "PhishLens đang xử lý nội dung bạn đã chọn.") {
     if (state.busy) return; state.busy = true; controls(); showError();
     $("progress-title").textContent = title; $("progress-description").textContent = description; $("progress").hidden = false;
-    try { await action(); } catch (error) { showError(error.message); }
-    finally { state.busy = false; $("progress").hidden = true; controls(); if (pendingRegion && ready && state.status) queueMicrotask(receiveRegion); else if (mailQueued && ready) { mailQueued = false; queueMicrotask(() => readEmail(true)); } }
+    try { await action(); } catch (error) {
+      if (error.background) notify("Lượt kiểm tra vẫn chạy. Mở Gần đây để xem kết quả.");
+      else if (error.cancelled) { state.pending = null; $("approved-text").value = ""; $("consent").checked = false; showView("activity"); notify("Đã hủy lượt đang chờ."); }
+      else showError(error.message);
+    }
+    finally { state.busy = false; $("progress").hidden = true; $("conversation-job-stop").hidden = true; controls(); if (pendingRegion && ready && state.status) queueMicrotask(receiveRegion); else if (mailQueued && ready) { mailQueued = false; queueMicrotask(() => readEmail(true)); } }
   }
   async function session(timeout = 75000) {
     const data = await request("session", {}, state.connection, timeout);
@@ -148,6 +158,7 @@
   function setTab(value, save = true, internal = false) {
     if (state.busy && !internal) return;
     if (value === state.mode && !internal) return;
+    if (!internal && value !== state.mode) conversations?.forget();
     state.aiPreferences[state.mode] = $("use-ai").checked;
     if (save) state.drafts[state.mode] = $("input-text").value;
     state.editRevision++;
@@ -165,13 +176,13 @@
     $("use-ai").checked = state.aiPreferences[value]; clearResult(); showError(); controls();
   }
   document.querySelectorAll("[data-mode]").forEach(el => {
-    el.addEventListener("click", () => setTab(el.dataset.mode));
+    el.addEventListener("click", () => { conversations?.forget(); setTab(el.dataset.mode); });
     el.addEventListener("keydown", event => { const keys = ["url", "text", "image"], index = keys.indexOf(state.mode); if (["ArrowRight", "ArrowLeft"].includes(event.key)) { event.preventDefault(); const value = keys[(index + (event.key === "ArrowRight" ? 1 : 2)) % 3]; setTab(value); $("tab-" + value).focus(); } });
   });
   async function browserTab() {
     const win = await chrome.windows.getCurrent();
     if (win.type === "popup") {
-      const identity = state.mailContext?.tabId || currentTabId;
+      const identity = conversations?.context()?.tabId || state.mailContext?.tabId || currentTabId;
       if (Number.isInteger(identity)) {
         try { const tab = await chrome.tabs.get(identity); if (tab.active && /^https?:\/\//i.test(tab.url || "")) return tab; } catch { /* The source tab was closed. */ }
       }
@@ -207,7 +218,7 @@
     catch { applySendMode(previous); showError("Chưa lưu được cách gửi. Hãy thử lại."); }
   });
   $("detach").addEventListener("click", () => {
-    const input = activeJob ? {job: activeJob} : {mode: mode(), text: $("input-text").value, mail: state.mailContext ? {context: state.mailContext} : null};
+    const input = activeJob ? {job: activeJob} : conversations?.context() ? {conversationRequest: true, sourceTab: conversations.context().tabId} : {mode: mode(), text: $("input-text").value, mail: state.mailContext ? {context: state.mailContext} : null};
     chrome.runtime.sendMessage({type: "DETACH_WORKSPACE", input}).then(result => { if (result?.error) showError(result.error); }).catch(error => showError(error.message));
   });
   async function connectGuest(bases) {
@@ -235,7 +246,7 @@
     const previous = state.connection;
     await chrome.storage.local.set({autoConnectDisabled: true});
     await clearConnection();
-    state.connection = null; state.status = null; state.pending = null; images.clear(); forgetMail();
+    state.connection = null; state.status = null; state.pending = null; images.clear(); forgetMail(); conversations?.forget();
     $("connection").hidden = false; $("disconnect").hidden = true; $("review").hidden = true; $("check-form").hidden = false; clearResult();
     for (const key of Object.keys(state.drafts)) state.drafts[key] = ""; $("input-text").value = ""; $("approved-text").value = "";
     $("connection-status").textContent = "Đã tạm ngừng · Bấm để kết nối lại"; $("connection-dot").classList.remove("connected");
@@ -243,7 +254,7 @@
     if (previous?.token) { try { await request("disconnect", {}, previous, 2500); } catch { /* Local access is already stopped. Account devices can also be revoked on the web. */ } }
   }));
   $("quick-page").addEventListener("click", async () => {
-    try { const url = await currentTab(); setTab("url"); $("input-text").value = url; $("use-ai").checked = false; await perform(prepareAnalysis, "Đang kiểm tra URL", "Mô hình chạy tại máy, không gọi AI."); }
+    try { const url = await currentTab(); conversations?.forget(); setTab("url"); $("input-text").value = url; $("use-ai").checked = false; await perform(prepareAnalysis, "Đang kiểm tra URL", "Mô hình chạy tại máy, không gọi AI."); }
     catch (reason) { showError(reason.message); }
   });
   $("input-text").addEventListener("input", () => { forgetMail(); state.dirty = true; state.editRevision++; clearResult(); showError(); controls(); });
@@ -253,7 +264,7 @@
     const pasted = event.clipboardData?.getData("text/plain");
     if (!pasted || event.clipboardData.items.length && [...event.clipboardData.items].some(item => item.kind === "file")) return;
     const input = $(id), length = input.value.length - (input.selectionEnd - input.selectionStart) + pasted.length;
-    if (length > input.maxLength) { event.preventDefault(); showError("Nội dung vượt 8.000 ký tự. Hãy chọn phần cần kiểm tra; bản hiện tại được giữ lại."); return; }
+    if (length > input.maxLength) { event.preventDefault(); showError(`Nội dung vượt ${input.maxLength.toLocaleString("vi-VN")} ký tự. Hãy thu hẹp phạm vi; bản hiện tại được giữ lại.`); return; }
     if (id === "input-text" && state.mode === "url" && !state.busy && !state.pending && /\s/.test(pasted.trim())) {
       event.preventDefault();
       if (state.drafts.text && state.drafts.text !== pasted && !confirm("Thay bản tin nhắn đang soạn bằng nội dung vừa dán?")) return;
@@ -265,7 +276,7 @@
     if (state.busy) return;
     if (fromReview) $("input-text").value = $("approved-text").value;
     state.pending = null; $("approved-text").value = ""; $("consent").checked = false;
-    if (fresh) { forgetMail(); for (const key of Object.keys(state.drafts)) state.drafts[key] = ""; $("input-text").value = ""; images.clear(); lastMail = ""; }
+    if (fresh) { forgetMail(); conversations?.forget(); for (const key of Object.keys(state.drafts)) state.drafts[key] = ""; $("input-text").value = ""; images.clear(); lastMail = ""; }
     state.drafts[state.mode] = $("input-text").value;
     state.dirty = Boolean($("input-text").value); state.editRevision++;
     clearResult(); showError(); controls();
@@ -276,29 +287,45 @@
   $("cancel").addEventListener("click", () => editInput(true));
   $("edit-result").addEventListener("click", () => editInput());
   $("new-analysis").addEventListener("click", () => editInput(false, true));
-  $("clear-input").addEventListener("click", () => { forgetMail(); $("input-text").value = ""; state.drafts[state.mode] = ""; state.dirty = false; state.editRevision++; clearResult(); controls(); $("input-text").focus(); });
+  $("clear-input").addEventListener("click", () => { forgetMail(); conversations?.forget(); $("input-text").value = ""; state.drafts[state.mode] = ""; state.dirty = false; state.editRevision++; clearResult(); controls(); $("input-text").focus(); });
   document.addEventListener("keydown", event => {
     if (document.body.dataset.view !== "check" || state.busy) return;
     if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
       event.preventDefault();
+      if (conversations?.pickerOpen()) { if (!$("conversation-continue").disabled) $("conversation-continue").click(); return; }
       if (state.pending) { if (!$("confirm").disabled) $("confirm").click(); else $("consent").focus(); }
       else if (!state.result && !$("analyze").disabled) $("check-form").requestSubmit();
     }
     if (event.key === "Escape" && state.pending) { event.preventDefault(); editInput(true); }
   });
   document.querySelectorAll("[data-example]").forEach(el => el.addEventListener("click", () => {
+    conversations?.forget();
     forgetMail(); setTab("text"); $("input-text").value = el.dataset.example === "suspicious" ? "Tài khoản sắp bị khóa. Hãy gửi mã OTP cho nhân viên tại https://xac-minh.example/ để xác minh trong 10 phút." : "Nhắc cả nhóm: cuộc họp bắt đầu lúc 14 giờ thứ Sáu ở phòng học cũ. Mọi người chuẩn bị phần trình bày nhé.";
     notify("Đã điền mẫu minh họa tự soạn. Chưa chạy phân tích."); controls();
   }));
   async function prepareAnalysis({allowDirect = false} = {}) {
+    if (conversations?.context()) {
+      if (!state.status?.conversation_analysis_available) throw new Error("Khởi động lại máy chủ PhishLens bản mới để phân tích hội thoại.");
+      if (conversations.context().history && !state.status?.conversation_batch_available) throw new Error("Khởi động lại máy chủ PhishLens bản mới để kiểm tra hội thoại dài.");
+      await conversations.validate();
+    }
     const text = $("input-text").value.trim(); if (!text) throw new Error("Bạn chưa nhập nội dung hoặc chưa đọc chữ từ ảnh."); clearResult();
     const payload = {mode: mode(), text, use_llm: $("use-ai").checked, include_ml: $("use-ai").checked && $("include-ml").checked,
       use_rag: $("use-ai").checked && mode() === "text" && Boolean(state.status?.rag_ready) && $("use-rag").checked,
       save_history: !state.status?.guest && $("save-history").checked, save_content: $("save-history").checked && $("save-content").checked, consent: false};
     if (state.status?.evidence_explanation_available) payload.explain_evidence = payload.use_llm && mode() === "text" && $("explain-evidence").checked;
-    if (!payload.use_llm) { render(await request("analyze", payload)); return; }
+    if (conversations?.context()) { payload.analysis_target = "conversation"; payload.use_rag = false; }
+    if (!payload.use_llm) {
+      if (conversations?.context()?.history) {
+        const job = await chrome.runtime.sendMessage({type: "START_ANALYSIS", payload, conversation: conversations.context(), kind: state.mode, sourceTab: currentTabId});
+        if (job?.error) throw new Error(job.error); activeJob = job.record; render(await waitForJob(job.record, job));
+      } else if (state.status?.analysis_jobs) {
+        const job = await chrome.runtime.sendMessage({type: "START_ANALYSIS", payload, context: state.mailContext, kind: state.mode, sourceTab: currentTabId});
+        if (job?.error) throw new Error(job.error); activeJob = job.record; render(await waitForJob(job.record, job));
+      } else render(await request("analyze", payload)); return;
+    }
     if (!state.status?.llm_ready) throw new Error("Máy chủ chưa cấu hình AI. Bạn có thể tắt AI để kiểm tra URL tại máy.");
-    const preview = await request("preview", {mode: payload.mode, text});
+    const preview = await request(conversations?.context()?.history ? "conversation/preview" : "preview", conversations?.context()?.history ? {text} : {mode: payload.mode, text});
     if (typeof preview.text !== "string" || !preview.text.trim()) throw new Error("Chưa chuẩn bị được nội dung gửi AI. Hãy thử lại.");
     // The saved preference authorizes explicit check actions, not passive mail
     // changes, opening the panel, connection changes, or failed requests.
@@ -311,10 +338,12 @@
     $("approved-text").value = preview.text; $("consent").checked = false;
     describeProvider(payload);
     $("masked-note").textContent = preview.masked_fields.length ? "Đã che một số thông tin riêng tư. Bạn có thể sửa bản bên dưới." : "Kiểm tra và xóa thông tin riêng tư trước khi gửi.";
+    if (preview.parts) $("masked-note").textContent += ` Hội thoại sẽ được phân tích theo ${preview.parts} phần có chồng lấn; mỗi phần dùng một lượt hạn mức AI. Không lưu lịch sử cho lượt quét này.`;
     $("review").hidden = false; $("check-form").hidden = true; $("intro").hidden = true; $("review").scrollIntoView({block: "start"});
   }
   async function analyzeApproved(payload, text) {
-    const job = await chrome.runtime.sendMessage({type: "START_ANALYSIS", payload: {...payload, consent: true, llm_text: text}, context: state.mailContext});
+    await conversations?.validate();
+    const job = await chrome.runtime.sendMessage({type: "START_ANALYSIS", payload: {...payload, consent: true, llm_text: text}, context: state.mailContext, conversation: conversations?.context(), kind: state.mode, sourceTab: currentTabId});
     if (typeof job?.error === "string") throw new Error(job.error);
     activeJob = job.record;
     const data = await waitForJob(job.record, job);
@@ -322,19 +351,49 @@
   }
   async function waitForJob(record, initial = null) {
     let job = initial;
+    const interrupted = new Promise((resolve, reject) => { backgroundWatch = () => { const error = new Error("background"); error.background = true; reject(error); }; });
+    $("job-background").hidden = false;
+    $("conversation-job-stop").hidden = !record.batch; $("conversation-job-stop").disabled = false;
+    try {
     while (true) {
-      if (!job) job = await chrome.runtime.sendMessage({type: "ANALYSIS_STATUS", record});
+      if (!job) job = await Promise.race([chrome.runtime.sendMessage({type: "ANALYSIS_STATUS", record}), interrupted]);
       if (typeof job?.error === "string") throw new Error(job.error);
-      if (job.status === "error") throw new Error(job.error?.message || "Chưa hoàn tất lượt kiểm tra.");
+      if (job.status === "error") { const error = new Error(job.error?.message || "Chưa hoàn tất lượt kiểm tra."); error.cancelled = job.error?.status === 499; throw error; }
       if (job.status === "complete") return job.result;
-      await new Promise(resolve => setTimeout(resolve, 900)); job = null;
+      $("job-cancel-queued").hidden = !job.queued; $("job-cancel-queued").disabled = false;
+      $("conversation-job-stop").hidden = !record.batch || Boolean(job.queued);
+      if (job.queued) $("progress-description").textContent = "Đang chờ xử lý. Bạn có thể tiếp tục dùng và nhận kết quả sau.";
+      else if (job.progress) {
+        $("progress-description").textContent = job.progress.cancel_requested ? `Đang dừng sau phần hiện tại · Đã xong ${job.progress.completed}/${job.progress.total} phần` : `Đang kiểm tra phần ${job.progress.current || 1}/${job.progress.total} · Đã xong ${job.progress.completed} phần`;
+        $("conversation-job-stop").disabled = Boolean(job.progress.cancel_requested);
+      }
+      await Promise.race([new Promise(resolve => setTimeout(resolve, 900)), interrupted]); job = null;
     }
+    } finally { backgroundWatch = null; $("job-background").hidden = true; $("job-cancel-queued").hidden = true; }
   }
+  $("job-cancel-queued").addEventListener("click", async () => {
+    if (!activeJob) return; $("job-cancel-queued").disabled = true;
+    try { const value = await chrome.runtime.sendMessage({type: "CANCEL_QUEUED_JOB", record: activeJob}); if (typeof value?.error === "string") throw new Error(value.error); }
+    catch (error) { showError(error.message); $("job-cancel-queued").disabled = false; }
+  });
+  $("job-background").addEventListener("click", () => {
+    if (!backgroundWatch) return;
+    backgroundWatch(); state.pending = null; state.dirty = false; $("approved-text").value = ""; $("consent").checked = false;
+    state.drafts[state.mode] = ""; $("input-text").value = ""; forgetMail(); conversations?.forget(); images?.clear(); clearResult();
+    showView("activity");
+  });
+  $("conversation-job-stop").addEventListener("click", async () => {
+    if (!activeJob?.batch) return; $("conversation-job-stop").disabled = true;
+    try { const value = await chrome.runtime.sendMessage({type: "CANCEL_CONVERSATION_JOB", record: activeJob}); if (value?.error) throw new Error(value.error); }
+    catch (error) { showError(error.message); $("conversation-job-stop").disabled = false; }
+  });
   async function resumeJob(record) {
     if (state.busy) { if (activeJob?.id === record.id) showView("check"); else notify("Một kết quả đang mở. Đợi hoàn tất rồi bấm Chi tiết lại."); return; }
     forgetMail(); clearResult(); state.pending = null; pendingReview = false; activeJob = record;
+    conversations?.forget();
     state.mailContext = record.context || null; showView("check");
     await perform(async () => {
+      if (record.conversation) await conversations.restore(record.conversation, true);
       const data = await waitForJob(record);
       setTab(data.mode === "url" ? "url" : "text", true, true);
       activeJob = record;
@@ -345,11 +404,12 @@
   function describeProvider(payload) {
     $("provider-note").textContent = "Bản chữ dưới đây được gửi tới " + state.status.model + "." + (state.mode === "image" ? " Ảnh gốc không được gửi." : "") + (payload.use_rag ? " Có đối chiếu tài liệu." : "");
   }
+  activity = window.PhishLensActivityUI({open: resumeJob, busy: () => state.busy, hasDraft: () => Boolean(state.pending || !state.result && state.dirty && $("input-text").value.trim()), notify, error: showError});
   $("check-form").addEventListener("submit", event => { event.preventDefault(); perform(() => prepareAnalysis({allowDirect: true}), "Chuẩn bị bản kiểm tra", "Đang che thông tin riêng tư."); });
   $("confirm").addEventListener("click", () => perform(async () => {
     if (!state.pending || state.aiSendMode !== "direct" && !$("consent").checked) return;
     const edited = $("approved-text").value;
-    const checked = await request("preview", {mode: "text", text: edited});
+    const checked = await request(conversations?.context()?.history ? "conversation/preview" : "preview", conversations?.context()?.history ? {text: edited} : {mode: "text", text: edited});
     if (edited !== $("approved-text").value || state.aiSendMode !== "direct" && !$("consent").checked) return;
     if (checked.text !== edited && state.aiSendMode !== "direct") {
       $("approved-text").value = checked.text; $("consent").checked = false;
@@ -410,12 +470,30 @@
     capture.addEventListener("click", () => startRegion()); toolbar.append(capture); result.append(toolbar);
     mailResultTools(data, result);
     const hero = node("div", undefined, "result-hero " + data.final.risk_level);
-    hero.append(node("span", data.mode === "url" ? "KIỂM TRA ĐƯỜNG DẪN" : "PHÂN TÍCH NỘI DUNG", "section-kicker"));
+    hero.append(node("span", data.analysis_target === "conversation" ? "PHÂN TÍCH ĐOẠN HỘI THOẠI" : data.mode === "url" ? "KIỂM TRA ĐƯỜNG DẪN" : "PHÂN TÍCH NỘI DUNG", "section-kicker"));
     const heading = node("h2", data.final.label); heading.prepend(icon("shield")); hero.append(heading);
     const llm = data.llm, verdict = llm.status === "ok" ? llm.verdict : null;
     hero.append(riskScale(data.final.risk_level));
     if (data.mode === "url" && data.urls.length === 1) { const score = urlScore(data.urls[0]); if (score) hero.append(score); }
     hero.append(node("p", verdict?.summary || (llm.status === "error" ? llm.message : "Nhận định này dựa trên chuỗi đường dẫn. Bật AI để đánh giá hành vi trong thông điệp."))); result.append(hero);
+    const nextAction = verdict?.recommended_actions?.[0];
+    if (nextAction) {
+      const next = node("div", undefined, "hero-next-action"); next.append(node("strong", "Nên làm ngay"), node("p", nextAction)); hero.append(next);
+    }
+    const urlAssessment = data.assessments.url, urlAlarm = ["HIGH", "WARNING"].includes(urlAssessment.risk_level);
+    const contentAlarm = verdict && ["HIGH", "WARNING"].includes(verdict.risk_level);
+    let scopeNote = "", scopeTitle = "";
+    if (data.mode !== "url" && urlAlarm && !contentAlarm) {
+      scopeTitle = "Liên kết vẫn cần kiểm tra riêng";
+      scopeNote = verdict?.risk_level === "LOW" ? "Nội dung chưa cho thấy hành vi lừa đảo rõ, nhưng có liên kết bị mô hình URL cảnh báo. Hãy xác minh địa chỉ trước khi mở hoặc điền thông tin." : "Chưa kết luận được hành vi trong nội dung. Có liên kết bị mô hình URL cảnh báo; hãy xác minh trước khi sử dụng.";
+    } else if (data.mode !== "url" && contentAlarm && data.urls.length && urlAssessment.risk_level === "LOW") {
+      scopeTitle = "Điểm URL thấp không loại bỏ dấu hiệu trong nội dung";
+      scopeNote = "Nhận định nội dung và điểm đường dẫn đánh giá hai phạm vi khác nhau. Hãy đối chiếu yêu cầu trong thông điệp với các bằng chứng bên dưới.";
+    } else if (data.mode !== "url" && (llm.status === "error" || llm.status === "disabled")) {
+      scopeTitle = llm.status === "error" ? "Phần nội dung chưa được phân tích xong" : "Lượt này chỉ kiểm tra đường dẫn";
+      scopeNote = "Kết quả URL được giữ bên dưới. Chưa có kết luận AI cho hành vi trong thông điệp.";
+    }
+    if (scopeNote) { const note = node("aside", undefined, "scope-notice"); note.append(node("strong", scopeTitle), node("p", scopeNote)); result.append(note); }
     const grid = node("div", undefined, "assessment-grid");
     for (const [title, value, level] of [["KIỂM TRA ĐƯỜNG DẪN", data.urls.length ? risks[data.assessments.url.risk_level] || "Chưa chấm được" : "Không có URL", data.assessments.url.risk_level], ["PHÂN TÍCH AI", verdict ? risks[verdict.risk_level] : llm.status === "disabled" ? "Chưa dùng AI" : "Chưa hoàn tất", verdict?.risk_level]]) {
       const card = node("div", undefined, "assessment-card"); card.append(node("small", title), node("strong", value, "risk " + (level || ""))); grid.append(card);
@@ -423,6 +501,10 @@
 
     }
     result.append(grid);
+    const totals = node("p", undefined, "result-coverage");
+    const processed = data.urls.filter(item => item.status === "ok").length, allURLs = data.urls.length + (data.invalid_urls?.length || 0);
+    totals.textContent = allURLs ? `Đường dẫn: ${processed}/${allURLs} đã chấm${processed < allURLs ? " · Có đường dẫn chưa xử lý được" : ""}` : "Không có đường dẫn trong đầu vào";
+    result.append(totals);
 
     if (verdict) {
       const analysis = node("section", undefined, "surface result-section"); analysis.append(node("h3", "Dấu hiệu trong nội dung"));
@@ -476,6 +558,8 @@
       result.append(node("p", data.history.content_saved ? "Đã lưu nội dung đã che và kết quả chi tiết." : "Đã lưu thông tin lượt kiểm tra; không lưu nội dung.", "result-meta"));
     }
     else if (data.history?.status === "error") result.append(node("p", data.history.message, "result-meta"));
+    const print = node("button", "In / lưu PDF", "secondary"); print.id = "print-result"; print.type = "button";
+    print.addEventListener("click", () => window.print()); actions.append(print);
     const download = node("button", "Tải JSON", "secondary"); download.type = "button"; download.addEventListener("click", () => {
       const uri = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: "application/json"})), anchor = node("a"); anchor.href = uri; anchor.download = "phishlens_result.json"; anchor.click(); setTimeout(() => URL.revokeObjectURL(uri), 1000);
     }); actions.append(download); result.append(actions);
@@ -485,8 +569,19 @@
         "Nội dung: " + (verdict ? risks[verdict.risk_level] : "Chưa có nhận định AI"), ...(verdict?.recommended_actions || []), "Kết quả hỗ trợ nhận diện, không bảo đảm an toàn."].join("\n");
       navigator.clipboard.writeText(text).then(() => notify("Đã sao chép tóm tắt, không kèm nội dung gốc hoặc URL."), () => showError("Chưa sao chép được. Bạn có thể tải kết quả JSON."));
     }); result.append(copy);
+    conversations?.render(data, result);
+    const metadata = node("div", undefined, "print-only report-metadata");
+    const stamp = new Date(activeJob?.created || Date.now()).toLocaleString("vi-VN");
+    metadata.append(node("p", "PhishLens · " + stamp), node("p", "AI: " + (llm.model || "Không sử dụng / chưa có định danh") + (llm.prompt_version ? " · " + llm.prompt_version : "")), node("p", "Kết quả hỗ trợ nhận diện trong phạm vi đã phân tích; chưa xác minh danh tính người gửi hoặc nội dung website đích."));
+    result.append(metadata);
     result.hidden = false; result.scrollIntoView({block: "start"});
   }
+  let printDetails = [];
+  window.addEventListener("beforeprint", () => {
+    printDetails = [...$("result").querySelectorAll("details")].map(element => [element, element.open]);
+    for (const [element] of printDetails) if (element.id === "url-details") element.open = true;
+  });
+  window.addEventListener("afterprint", () => { for (const [element, open] of printDetails) element.open = open; printDetails = []; });
   images = window.PhishLensImages({busy: () => state.busy, controls, request, perform, error: error => showError(error.message),
     editVersion: () => state.editRevision,
     canReplace: () => {
@@ -494,7 +589,7 @@
       if ((state.pending || state.result || state.mode === "image" && state.dirty && $("input-text").value) && !confirm("Dùng ảnh mới và thay nội dung đang kiểm tra?")) return false;
       state.pending = null; $("approved-text").value = ""; $("consent").checked = false; clearResult(); controls(); return true;
     },
-    selectImage: () => setTab("image"), input: () => $("input-text").value,
+    selectImage: () => { conversations?.forget(); setTab("image"); }, input: () => $("input-text").value,
     clearInput: () => { $("input-text").value = ""; state.drafts.image = ""; state.dirty = false; state.editRevision++; if (state.mode === "image") $("text-input").hidden = true; clearResult(); controls(); },
     setInput: text => { forgetMail(); $("input-text").value = text; state.drafts.image = text; state.dirty = Boolean(text); state.editRevision++; clearResult(); controls(); }});
   async function startRegion(captureMode = "region") {
@@ -511,6 +606,8 @@
   $("quick-capture").addEventListener("click", () => startRegion()); $("capture-tab").addEventListener("click", () => startRegion());
   $("quick-viewport").addEventListener("click", () => startRegion("viewport"));
   async function readEmail(automatic = false) {
+    // Passive mailbox changes must not steal the Recent/Settings/Assistant view.
+    if (automatic && document.body.dataset.view !== "check") return;
     if (state.busy || !state.status) { if (automatic) mailQueued = Boolean(state.status); return; }
     if (automatic && state.dirty) return;
     await perform(async () => {
@@ -520,7 +617,7 @@
       if (automatic && mail.text === lastMail) return;
       if (state.dirty && !confirm("Thay bản đang chỉnh sửa bằng email đang mở?")) return;
       $("review").hidden = true; state.pending = null; $("consent").checked = false; $("approved-text").value = "";
-      forgetMail(); setTab("text", true, true); state.mailContext = mail.context; $("input-text").value = mail.text; state.dirty = false; lastMail = mail.text; $("use-ai").checked = true;
+      forgetMail(); conversations?.forget(); setTab("text", true, true); state.mailContext = mail.context; $("input-text").value = mail.text; state.dirty = false; lastMail = mail.text; $("use-ai").checked = true;
       if (state.status.llm_ready && (!automatic || state.aiSendMode !== "direct")) await prepareAnalysis({allowDirect: !automatic});
       else if (state.status.llm_ready) controls();
       else { controls(); notify("Đã lấy email. Máy chủ chưa cấu hình AI."); }
@@ -543,19 +640,24 @@
     if (!config || config.error) return;
     assistantState = config;
     const mailSettings = await chrome.runtime.sendMessage({type: "GET_MAIL_SETTINGS"});
+    const chatSettings = await chrome.runtime.sendMessage({type: "GET_CHAT_SETTINGS"});
+    for (const [id, platform] of [["chat-assist-enabled", "zalo"], ["chat-assist-messenger", "messenger"], ["chat-assist-telegram", "telegram"]]) $(id).checked = Boolean(chatSettings?.sites?.[platform] ?? (platform === "zalo" && chatSettings?.enabled));
+    currentChatPlatform = PhishLensChatPlatforms.detect(tab?.url);
+    $("conversation-actions").hidden = !currentChatPlatform;
+    $("read-conversation").textContent = "Chọn tin trong hội thoại" + (currentChatPlatform ? " · " + currentChatPlatform.label : "");
     $("mail-assist-enabled").checked = Boolean(mailSettings?.enabled);
     $("mail-actions").hidden = !mailOrigins.some(origin => tab?.url?.startsWith(origin.slice(0, -1)));
     $("floating-enabled").checked = config.floatingEnabled; $("auto-check-enabled").checked = config.autoCheckEnabled;
     $("floating-note").textContent = config.floatingEnabled ? "Nút ở góc trang · Kéo để đổi vị trí; mở menu để ẩn hoặc tạm nghỉ." : "Tùy chọn · Khoanh nhanh bằng Alt + Shift + S";
     $("assistant-status-title").textContent = config.pausedUntil ? "Trợ lý đang tạm nghỉ" : config.autoCheckEnabled ? "Tự kiểm URL đang bật" : config.floatingEnabled ? "Sẵn sàng ngay trên trang" : "Chọn cách dùng PhishLens";
-    $("assistant-status-note").textContent = !config.connected ? "Mở ứng dụng PhishLens trên máy để dùng phân tích và OCR." : config.pausedUntil ? "Tự tiếp tục sau " + new Date(config.pausedUntil).toLocaleTimeString("vi-VN", {hour: "2-digit", minute: "2-digit"}) + ". Bạn có thể bật lại bất kỳ lúc nào." : config.autoCheckEnabled ? "URL được chấm tại máy khi mở trang. Nội dung và ảnh vẫn chờ bạn chọn." : "Nội dung chỉ được đọc khi bạn chủ động chọn kiểm tra.";
+    $("assistant-status-note").textContent = !config.connected ? "Mở ứng dụng PhishLens trên máy để dùng phân tích và OCR." : config.pausedUntil ? "Tự tiếp tục sau " + new Date(config.pausedUntil).toLocaleTimeString("vi-VN", {hour: "2-digit", minute: "2-digit"}) + ". Bạn có thể bật lại bất kỳ lúc nào." : config.autoCheckEnabled ? "Chỉ nhắc khi có dấu hiệu URL cao; tự ẩn sau 8 giây. Không nhắc lại cùng website trong 30 phút." : "Nội dung chỉ được đọc khi bạn chủ động chọn kiểm tra.";
     if (mailSettings?.enabled) { $("assistant-status-note").textContent = "Email đang mở được đưa vào bản duyệt. AI chờ bạn xác nhận."; if (!config.autoCheckEnabled && !config.floatingEnabled) $("assistant-status-title").textContent = "Trợ lý email đang bật"; }
     $("pause-assistant").querySelector("span").textContent = config.pausedUntil ? "Bật lại trợ lý" : "Tạm nghỉ 1 giờ";
     $("reset-hidden-sites").textContent = config.hiddenCount ? "Hiện lại trên " + config.hiddenCount + " trang đã ẩn" : "Hiện lại trên các trang đã ẩn";
     let host = "Chọn một tab web"; try { if (/^https?:/.test(tab?.url)) host = new URL(tab.url).hostname; } catch { /* Unsupported tabs remain manual. */ }
     $("current-page").hidden = !/^https?:\/\//.test(tab?.url || "");
     $("page-host").textContent = host;
-    const status = config.page || {}, messages = {idle: "Chưa kiểm tra URL trang này.", checking: "Đang kiểm tra URL tại máy…", disconnected: "Cần kết nối PhishLens trên máy.", unavailable: "Chưa kiểm tra được. Bạn có thể thử thủ công."};
+    const status = config.page || {}, messages = {idle: "Chưa kiểm tra URL trang này.", checking: "Đang kiểm tra URL tại máy…", disconnected: "Cần kết nối PhishLens trên máy.", unavailable: "Chưa kiểm tra được. Bạn có thể thử thủ công.", app_surface: "Kiểm tra nội dung hoặc liên kết bên trong trang."};
     $("page-status").textContent = config.pausedUntil ? "Trợ lý đang tạm nghỉ." : status.status === "ok" ? ({HIGH: "URL có dấu hiệu rủi ro · cần xác minh.", WARNING: "URL cần kiểm tra thêm.", LOW: "Chưa thấy dấu hiệu rõ trong chuỗi URL.", UNKNOWN: "Chưa đủ căn cứ kết luận về URL."}[status.risk] || "Chưa có kết luận.") : messages[status.status] || messages.idle;
     $("page-indicator").className = "page-indicator " + (!config.pausedUntil && status.status === "ok" ? status.risk : "");
   }
@@ -600,6 +702,7 @@
   }
   chrome.runtime.onMessage.addListener((message, sender) => {
     if (sender.id !== chrome.runtime.id) return;
+    if (message.type === "CONVERSATION_CHANGED") conversations?.changed(message.tabId, message.contextId);
     if (message.type === "ASSISTANT_CHANGED" && message.tabId === currentTabId) updateAssistant().catch(() => {});
     if (message.type === "REGION_AVAILABLE") chrome.windows.getCurrent().then(win => { if (win.id === message.windowId) receiveRegion().catch(reason => showError(reason.message)); });
     if (message.type === "EMAIL_CHANGED" && ready && $("mail-assist-enabled").checked && message.tabId === currentTabId) {
@@ -613,17 +716,40 @@
     if (input.targetWindowId !== undefined && (await chrome.windows.getCurrent()).id !== input.targetWindowId) return null;
     if (input.windowId !== undefined && (await chrome.windows.getCurrent()).id !== input.windowId) return null;
     hasIncoming = true;
+    if (input.conversationRequest) {
+      if (!ready) incomingConversation = input.sourceTab;
+      else await conversations.open(input.sourceTab).catch(error => showError(error.message));
+      return true;
+    }
     if (input.job) { if (!ready) { incomingJob = input.job; return true; } await resumeJob(input.job); return true; }
     if (state.busy) { notify("Một lượt kiểm tra đang chạy. Hãy chọn lại đoạn sau khi có kết quả."); return false; }
     if ((state.pending || state.dirty && $("input-text").value.trim() !== input.text) && !confirm("Thay nội dung đang kiểm tra bằng phần bạn vừa chọn?")) return false;
     $("review").hidden = true; $("check-form").hidden = false; state.pending = null; $("approved-text").value = ""; $("consent").checked = false;
-    activeJob = null; forgetMail(); clearResult(); setTab(input.mode === "url" ? "url" : "text"); state.mailContext = input.mail?.context || null; $("input-text").value = input.text || ""; if (input.warning) showError(input.warning);
+    activeJob = null; forgetMail(); conversations?.forget(); clearResult(); setTab(input.mode === "url" ? "url" : "text"); state.mailContext = input.mail?.context || null; $("input-text").value = input.text || ""; if (input.warning) showError(input.warning);
     if (input.review && input.mode === "text") pendingReview = true;
     if (input.autoLocal && input.mode === "url") pendingLocal = true;
     controls(); showView("check");
     if (pendingReview && ready && state.status?.llm_ready) { pendingReview = false; await perform(() => prepareAnalysis({allowDirect: true}), "Chuẩn bị email", "Đang che thông tin riêng tư."); }
     return true;
   }
+  conversations = window.PhishLensConversationUI({browserTab, busy: () => state.busy, ready: () => Boolean(state.status), hasDraft: () => Boolean(state.pending || state.result || state.dirty),
+    error: error => showError(error.message), clearError: () => showError(), controls,
+    apply: text => { state.pending = null; $("approved-text").value = ""; $("consent").checked = false; forgetMail(); setTab("text", true, true); $("input-text").value = text; state.dirty = false; $("use-ai").checked = true; $("use-rag").checked = false; },
+    prepare: () => perform(() => prepareAnalysis({allowDirect: true}), "Chuẩn bị đoạn hội thoại", "Đang che thông tin trong các tin bạn chọn.")});
+  const openConversation = () => conversations.open().catch(error => showError(error.message));
+  $("read-conversation").addEventListener("click", () => {
+    if (state.busy) return;
+    const site = currentChatPlatform;
+    if (!site) { showError("Mở Zalo, Messenger hoặc Telegram Web để chọn tin."); return; }
+    chrome.permissions.request({origins: site.origins}).then(allowed => { if (!allowed) throw new Error("Chưa cấp quyền đọc " + site.label + "."); return conversations.open(); }).catch(error => showError(error.message));
+  });
+  $("conversation-reselect").addEventListener("click", openConversation);
+  for (const [id, platform] of [["chat-assist-enabled", "zalo"], ["chat-assist-messenger", "messenger"], ["chat-assist-telegram", "telegram"]]) $(id).addEventListener("change", () => {
+    const enabled = $(id).checked, site = PhishLensChatPlatforms.get(platform);
+    const allowed = enabled ? chrome.permissions.request({origins: site.origins}) : Promise.resolve(true);
+    allowed.then(async value => { if (!value) throw new Error("Chưa cấp quyền " + site.label + "."); const result = await chrome.runtime.sendMessage({type: "SET_CHAT_ASSIST", platform, enabled}); if (result?.error) throw new Error(result.error); $(id).checked = result.sites[platform]; })
+      .catch(error => { $(id).checked = false; showError(error.message); });
+  });
   let incomingJob = null;
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "local" && changes.aiSendMode) applySendMode(changes.aiSendMode.newValue);
@@ -632,11 +758,11 @@
   });
   (async () => {
     await chrome.storage.local.setAccessLevel({accessLevel: "TRUSTED_CONTEXTS"});
-    const preferences = await chrome.storage.local.get(["base", "theme", "connection", "floatingEnabled", "autoConnectDisabled", "aiSendMode"]), memory = await chrome.storage.session.get(["connection", "panelInput", "workspaceInput", "analysisCurrent"]);
+    const preferences = await chrome.storage.local.get(["base", "theme", "connection", "dockPinned", "autoConnectDisabled", "aiSendMode"]), memory = await chrome.storage.session.get(["connection", "panelInput", "workspaceInput", "analysisCurrent"]);
     applySendMode(preferences.aiSendMode);
     document.documentElement.dataset.theme = preferences.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     if (preferences.base) $("base-url").value = baseURL(preferences.base);
-    $("floating-enabled").checked = Boolean(preferences.floatingEnabled && await chrome.permissions.contains({origins: ["<all_urls>"]}));
+    $("floating-enabled").checked = Boolean(preferences.dockPinned && await chrome.permissions.contains({origins: ["<all_urls>"]}));
     if ($("floating-enabled").checked) $("floating-note").textContent = "Nút ở góc trang · Chỉ đọc vùng bạn chủ động chọn";
     const key = location.hash.slice(1); history.replaceState(null, "", location.pathname + location.search);
     if (/^input-[a-f0-9-]{36}$/.test(key)) {
@@ -656,9 +782,14 @@
     } else {
       await connectGuest([baseURL(preferences.base || $("base-url").value), "http://127.0.0.1:8001", "http://127.0.0.1:8000"]);
     }
-    if (!hasIncoming && memory.analysisCurrent && Date.now() - memory.analysisCurrent.created < 900000) incomingJob = memory.analysisCurrent;
+    if (!hasIncoming && memory.analysisCurrent && Date.now() - memory.analysisCurrent.created < 900000) {
+      // Honor the scoped Recent index, including a user's removal of an item.
+      try { const value = await chrome.runtime.sendMessage({type: "ACTIVITY_OPEN", id: memory.analysisCurrent.id}); if (value?.record) incomingJob = value.record; }
+      catch { /* A cleared/expired pointer must not interrupt a fresh editor. */ }
+    }
   })().catch(error => { showView("connection"); showError(error.message); }).finally(() => {
     ready = true; controls();
+    if (incomingConversation) { const tabId = incomingConversation; incomingConversation = null; conversations.open(tabId).catch(error => showError(error.message)); }
     if (incomingJob && state.status) { const job = incomingJob; incomingJob = null; resumeJob(job); }
     updateAssistant().then(() => { if ($("mail-assist-enabled").checked && !$("mail-actions").hidden && !pendingReview && !activeJob) readEmail(true); }).catch(() => {}); receiveRegion().catch(reason => showError(reason.message));
     if (pendingReview && state.status?.llm_ready) { pendingReview = false; perform(() => prepareAnalysis({allowDirect: true}), "Chuẩn bị email", "Đang che thông tin riêng tư."); }
