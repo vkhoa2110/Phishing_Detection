@@ -58,7 +58,9 @@
     const direct = state.aiSendMode === "direct";
     document.body.dataset.stage = stage;
     document.body.dataset.busy = String(state.busy);
-    $("submit-area").hidden = stage !== "edit";
+    const qrOnly = state.mode === "image" && images?.hasQR() && !$("input-text").value.trim();
+    $("submit-area").hidden = stage !== "edit" || qrOnly;
+    document.querySelector(".analysis-options").hidden = Boolean(qrOnly);
     $("review-actions").hidden = stage !== "review";
     $("result-navigation").hidden = stage !== "result";
     $("intro").hidden = stage !== "edit";
@@ -77,7 +79,7 @@
     $("use-rag").disabled = state.busy || !$("use-ai").checked || mode() !== "text" || !state.status?.rag_ready || Boolean(conversations?.context());
     $("save-history").disabled = state.busy || Boolean(state.status?.guest);
     $("save-content").disabled = state.busy || Boolean(state.status?.guest) || !$("save-history").checked;
-    $("read-image").disabled = state.busy || !images?.hasImage() || !state.status?.ocr?.ready;
+    $("read-image").disabled = state.busy || !images?.hasImage() || !(state.status?.ocr?.ready || state.status?.ocr?.qr_ready);
     $("confirm").disabled = state.busy || !direct && !$("consent").checked;
     $("confirm-label").textContent = direct ? "Phân tích ngay" : "Đồng ý và phân tích";
     document.querySelector(".consent-label").hidden = direct;
@@ -141,7 +143,7 @@
     $("connection-status").textContent = (state.status.ml_ready ? "Sẵn sàng" : "URL chưa sẵn sàng");
     $("connection-dot").classList.add("connected"); $("connection").hidden = true; $("disconnect").hidden = false;
     showView("check");
-    if (!state.status.ocr?.ready) $("ocr-status").textContent = state.status.ocr?.message || "Cần cập nhật backend để dùng đọc ảnh. Khởi động lại PhishLens.";
+    if (!state.status.ocr?.ready && !state.status.ocr?.qr_ready) $("ocr-status").textContent = state.status.ocr?.message || "Cần cập nhật backend để dùng đọc ảnh. Khởi động lại PhishLens.";
   }
   function clearMailMarks() {
     const marks = state.mailMarks; state.mailMarks = null;
@@ -590,6 +592,12 @@
       state.pending = null; $("approved-text").value = ""; $("consent").checked = false; clearResult(); controls(); return true;
     },
     selectImage: () => { conversations?.forget(); setTab("image"); }, input: () => $("input-text").value,
+    checkURL: async url => {
+      if (state.busy || state.pending) return;
+      forgetMail(); conversations?.forget(); setTab("url"); $("input-text").value = url;
+      $("use-ai").checked = false; state.aiPreferences.url = false; state.dirty = true; state.editRevision++; controls();
+      await perform(() => prepareAnalysis(), "Đang kiểm tra URL trong QR", "Chấm đường dẫn tại máy.");
+    },
     clearInput: () => { $("input-text").value = ""; state.drafts.image = ""; state.dirty = false; state.editRevision++; if (state.mode === "image") $("text-input").hidden = true; clearResult(); controls(); },
     setInput: text => { forgetMail(); $("input-text").value = text; state.drafts.image = text; state.dirty = Boolean(text); state.editRevision++; clearResult(); controls(); }});
   async function startRegion(captureMode = "region") {
@@ -697,7 +705,8 @@
     await images.load(new File([raw], result.captureMode === "viewport" ? "Vung-hien-thi.png" : "Vung-vua-khoanh.png", {type: "image/png"}), result.captureMode === "viewport" ? "Toàn vùng hiển thị" : "Vùng vừa khoanh trên trang");
     await perform(async () => {
       const text = await images.read(false);
-      if (text && state.status.llm_ready) await prepareAnalysis({allowDirect: true});
+      if (images.hasQR()) notify("Đã đọc mã QR. Chọn đường dẫn để kiểm tra.");
+      else if (text && state.status.llm_ready) await prepareAnalysis({allowDirect: true});
     }, "Đang đọc vùng bạn chọn", "Chỉ vùng vừa khoanh được đọc tại máy. Hãy duyệt chữ trước khi gửi AI.");
   }
   chrome.runtime.onMessage.addListener((message, sender) => {

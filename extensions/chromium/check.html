@@ -104,8 +104,9 @@
 <div id="image-preview" hidden><div class="image-heading"><span id="image-name">Ảnh đã chọn</span><button id="remove-image" type="button" class="icon-button" aria-label="Xóa ảnh"><svg><use href="#i-close"/></svg></button></div>
 <div id="crop-wrap" class="crop-wrap"><canvas id="image-canvas" aria-label="Ảnh xem trước; kéo chuột để chọn vùng chữ"></canvas><div id="crop-selection" hidden></div></div>
 <div class="crop-toolbar"><span>Kéo trên ảnh để chọn vùng chữ</span><button id="reset-crop" class="inline-link" type="button">Toàn ảnh</button></div>
-<button id="read-image" class="secondary full-width" type="button"><svg><use href="#i-text"/></svg>Đọc chữ từ ảnh</button></div>
+<button id="read-image" class="secondary full-width" type="button"><svg><use href="#i-text"/></svg>Đọc chữ và mã QR</button></div>
 <p id="ocr-status" class="image-notice" role="status">Ảnh được đọc tại máy. Chưa gửi ảnh đến AI.</p>
+<section id="image-qr" class="image-qr" hidden aria-labelledby="image-qr-title"><div class="field-heading"><h3 id="image-qr-title">Mã QR trong ảnh</h3><span id="image-qr-count" class="micro"></span></div><div id="image-qr-codes"></div><p id="image-qr-note" class="micro" role="status"></p></section>
 </div>
 <div id="text-input"><div class="field-heading"><label for="input-text" id="input-label">Đường dẫn cần kiểm tra</label><div class="editor-tools"><button id="use-current-tab" type="button" class="inline-link">Dùng tab hiện tại</button><button id="clear-input" type="button" class="inline-link">Xóa</button></div></div>
 <textarea id="input-text" rows="3" maxlength="8000" placeholder="https://duong-dan-ban-muon-kiem-tra…" required spellcheck="false"></textarea>

@@ -42,7 +42,9 @@ def diagnostics(profile):
     rag = (ROOT / config.rag_model_dir).is_dir() and (ROOT / config.rag_index_dir).is_dir()
     print("Tài liệu RAG:", "đã có thư mục model/index; ứng dụng sẽ kiểm tra khi nạp" if rag else "chưa đủ asset; vẫn có thể kiểm tra URL / AI không RAG")
     from app.services.image_text import ImageTextService
-    print("Đọc ảnh OCR:", "sẵn sàng tiếng Việt/Anh tại máy" if ImageTextService().status()["ready"] else "chưa cài; vẫn dùng URL/văn bản được, xem docs/guides/OCR.md")
+    image_status = ImageTextService().status()
+    print("Đọc ảnh OCR:", "sẵn sàng tiếng Việt/Anh tại máy" if image_status["ready"] else "chưa cài; xem docs/guides/OCR.md")
+    print("Giải mã QR:", "sẵn sàng tại máy" if image_status.get("qr_ready") else "chưa cài; cài requirements/ocr.txt rồi khởi động lại")
     return available
 
 

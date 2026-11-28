@@ -375,3 +375,10 @@ body[data-selecting-conversation=true] #action-dock { display:none!important; }
   .evidence-item, .url-row { break-inside: avoid; overflow-wrap: anywhere; }
   .report-metadata { border-top: 1px solid #bbb; margin-top: 12px; padding-top: 8px; font-size: 9px; color: #444; break-inside: avoid; }
 }
+/* QR payloads stay plain text and wrap inside the image workflow. */
+.image-qr {margin-top: 18px; border-top: 1px solid var(--line); padding-top: 16px;}
+.image-qr h3 {font-size: 15px; margin: 0;}
+.image-qr-card {border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 10px; min-width: 0;}
+.image-qr-card > strong {font-size: 13px;}
+.image-qr-value {font: inherit; font-size: 13px; overflow-wrap: anywhere; white-space: pre-wrap; unicode-bidi: plaintext; max-height: 160px; overflow: auto;}
+.image-qr-card summary {font-size: 12px; cursor: pointer;}

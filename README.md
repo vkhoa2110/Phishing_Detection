@@ -2,6 +2,8 @@
 
 Ứng dụng tiếng Việt kiểm tra dấu hiệu lừa đảo trong tin nhắn, email và URL. FastAPI phục vụ giao diện web; model URL chạy cục bộ, LLM phân tích nội dung, RAG bổ sung tài liệu tham khảo khi được bật.
 
+Extension **0.19.0** bổ sung đọc URL trong mã QR từ ảnh hoặc vùng khoanh, bằng ZXing-C++ tại máy. Bấm URL đã giải mã để kiểm tra cục bộ, không tự mở trang hoặc gửi dữ liệu QR tới AI. Cài nhóm phụ thuộc ảnh và khởi động lại backend; [cách dùng và giới hạn](docs/guides/OCR.md).
+
 ## Chạy nhanh
 
 Dùng Python 3.11 hoặc 3.12 tại thư mục gốc:

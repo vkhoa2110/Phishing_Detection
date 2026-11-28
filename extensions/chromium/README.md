@@ -1,6 +1,16 @@
-# PhishLens Browser Extension — bản cục bộ 0.18.0
+# PhishLens Browser Extension — bản cục bộ 0.19.0
 
 Extension Manifest V3 với bảng bên cạnh trang, sáng/tối và ba thẻ Đường dẫn / Tin nhắn / Hình ảnh, dùng với PhishLens đang chạy trên máy, không cần đăng nhập. Model URL, RAG và kết nối LLM nằm ở backend; extension không chứa API key và không tự đọc toàn trang.
+
+## Mới ở 0.19: đọc URL ẩn trong mã QR
+
+Ảnh tải/dán hoặc vùng vừa khoanh được đọc cả chữ và QR tại máy. Thẻ **Mã QR trong ảnh** hiển thị nguyên URL dưới dạng văn bản; bấm **Kiểm tra đường dẫn này** để chấm bằng model URL cục bộ. Thao tác này không mở trang đích hoặc gọi AI; quay về thẻ Hình ảnh vẫn giữ ảnh và các mã vừa đọc. QR chứa Wi-Fi, mã chuyển tiền, lệnh ứng dụng hoặc dữ liệu khác chỉ có phần xem nội dung, chưa được phân tích tự động.
+
+Backend dùng **ZXing-C++ 3.2.0.post1**; cài `requirements/ocr.txt` và khởi động lại máy chủ. QR hoạt động cả khi chưa cài Tesseract; thiếu ZXing thì OCR vẫn dùng được. Ảnh tối đa 5 MiB / 12 triệu pixel, 8 nội dung QR khác nhau mỗi lượt; mã trùng được gộp, vượt giới hạn có thông báo. Bộ giải mã chạy tiến trình riêng, tối đa 5 giây; lỗi QR không làm mất chữ OCR đã đọc. Vùng QR nhận dạng được được che trắng trước bước OCR để tránh đọc các ô mã thành chữ nhiễu.
+
+Nội dung QR không tự ghép vào văn bản gửi LLM hoặc lưu vào storage. Với vùng chụp có QR, tiện ích hiển thị các mã để chọn kiểm tra trước; không tự gửi phần chữ OCR sang AI. Nhận dạng QR thành công chỉ xác định dữ liệu mã hóa, không xác nhận URL hoặc người gửi an toàn. Chưa diễn giải giao dịch VietQR hay kiểm chứng chất lượng trên ảnh thực tế có nhãn người. [Cách dùng, cài đặt và giới hạn](../../docs/guides/OCR.md).
+
+Thư viện và cách dùng Pillow được đối chiếu với [tài liệu chính thức ZXing-C++](https://github.com/zxing-cpp/zxing-cpp/blob/master/wrappers/python/README.md). Không phụ thuộc `BarcodeDetector` của trình duyệt.
 
 ## Mới ở 0.18: Gần đây, tiếp tục dùng khi chờ và bản in kết quả
 
@@ -259,6 +269,6 @@ Backend phải đang chạy. Đây là bản demo cục bộ; chưa kiểm nghi�
 
 Tài liệu API trình duyệt: [activeTab](https://developer.chrome.com/docs/extensions/develop/concepts/activeTab), [contextMenus](https://developer.chrome.com/docs/extensions/reference/api/contextMenus), [storage](https://developer.chrome.com/docs/extensions/reference/api/storage), [nhận diện trang thuộc extension](https://developer.chrome.com/docs/extensions/reference/api/runtime#method-getContexts), [kết nối khác origin](https://developer.chrome.com/docs/extensions/develop/concepts/network-requests).
 
-Khi thả vùng chọn, OCR tự chạy tại máy; gọi LLM luôn chờ duyệt/đồng ý. Ảnh tĩnh PNG/JPEG/WebP tối đa 5 MiB/12 triệu điểm ảnh; OCR chưa phân tích thị giác hoặc QR. Chưa kiểm Edge/Windows/macOS.
+Khi thả vùng chọn, OCR và QR tự đọc tại máy. Vùng có QR hiển thị các mã để chọn kiểm tra; phần chữ khác tuân theo lựa chọn duyệt từng lượt hoặc gửi ngay đã lưu. Ảnh tĩnh PNG/JPEG/WebP tối đa 5 MiB/12 triệu điểm ảnh; chưa phân tích thị giác hoặc xác minh giao dịch QR. Chưa kiểm Edge/Windows/macOS.
 
 Tham khảo: [scripting](https://developer.chrome.com/docs/extensions/reference/api/scripting), [captureVisibleTab](https://developer.chrome.com/docs/extensions/reference/api/tabs#method-captureVisibleTab), [vòng đời worker MV3](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/lifecycle).

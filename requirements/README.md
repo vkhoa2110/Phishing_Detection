@@ -9,6 +9,6 @@ Tất cả lệnh chạy từ thư mục gốc repository.
 | Đánh giá | `python -m pip install -r requirements/evaluation.txt` | Dev và Matplotlib |
 | RAG / embedding | `python -m pip install -r requirements/rag.txt` | Base, Transformers, PyTorch, E5; cài torch CPU trước theo hướng dẫn RAG |
 | Chỉ thu thập nguồn | `python -m pip install -r requirements/rag-collection.txt` | HTTPX, BeautifulSoup, Trafilatura |
-| OCR ảnh tùy chọn | `python -m pip install -r requirements/ocr.txt` | Pillow; cần cài Tesseract + vie/eng riêng theo [hướng dẫn](../docs/guides/OCR.md) |
+| OCR / QR ảnh tùy chọn | `python -m pip install -r requirements/ocr.txt` | Pillow và ZXing-C++; OCR cần cài Tesseract + vie/eng riêng theo [hướng dẫn](../docs/guides/OCR.md) |
 
 Các lệnh dùng cùng môi trường Python đã chọn; trên máy hiện tại là `.venv/bin/python`. Các phụ thuộc phục vụ biên soạn báo cáo được giữ riêng trên máy cục bộ.

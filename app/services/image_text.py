@@ -1,5 +1,6 @@
 """Local OCR for user-selected raster images; no files, URLs or provider calls."""
 from io import BytesIO
+from importlib.util import find_spec
 import os
 from pathlib import Path
 import shutil
@@ -9,6 +10,7 @@ import warnings
 
 from app.core.settings import ROOT
 from app.services.workspace import WorkspaceError
+from app.services import qr_codes
 
 MAX_BYTES = 5 * 1024 * 1024
 MAX_PIXELS = 12_000_000
@@ -41,13 +43,15 @@ class ImageTextService:
                     available = result.returncode == 0 and {"vie", "eng"}.issubset(languages)
             except (ImportError, OSError, subprocess.TimeoutExpired):
                 pass
-            self._status = {"ready": available, "languages": ["vie", "eng"] if available else [], "local_only": True,
+            qr_ready = qr_codes.available() and find_spec("PIL") is not None
+            self._status = {"ready": available, "languages": ["vie", "eng"] if available else [], "qr_ready": qr_ready, "local_only": True,
                 "max_bytes": MAX_BYTES, "max_pixels": MAX_PIXELS,
-                "message": "Đọc chữ tiếng Việt/Anh tại máy" if available else "Chưa cài OCR tiếng Việt/Anh. Xem hướng dẫn OCR; bạn vẫn có thể dán văn bản."}
+                "message": "Đọc chữ tiếng Việt/Anh tại máy" if available else "Đọc mã QR tại máy; chưa cài OCR tiếng Việt/Anh." if qr_ready else "Chưa cài bộ đọc ảnh. Xem hướng dẫn OCR; bạn vẫn có thể dán văn bản."}
         return dict(self._status)
 
     def extract(self, payload, mime):
-        if not self.status()["ready"]:
+        capabilities = self.status()
+        if not capabilities["ready"] and not capabilities.get("qr_ready"):
             raise WorkspaceError(503, "Chưa có OCR cục bộ. Cài Tesseract tiếng Việt/Anh theo hướng dẫn rồi khởi động lại PhishLens.")
         if mime not in MIMES or not payload:
             raise WorkspaceError(415, "Chọn ảnh PNG, JPEG hoặc WebP.")
@@ -73,20 +77,43 @@ class ImageTextService:
                         normalized = BytesIO(); image.save(normalized, format="PNG")
             except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
                 raise WorkspaceError(415, "Không đọc được ảnh. Hãy xuất lại thành PNG hoặc JPEG và thử lại.") from exc
-            try:
-                result = subprocess.run([*self.command(), "stdin", "stdout", "-l", "vie+eng", "--psm", "6"],
-                    input=normalized.getvalue(), capture_output=True, timeout=20, env=self.env)
-            except subprocess.TimeoutExpired as exc:
-                raise WorkspaceError(504, "Đọc ảnh quá lâu. Hãy cắt ảnh nhỏ hơn hoặc dán văn bản.") from exc
-            except OSError as exc:
-                raise WorkspaceError(503, "OCR chưa sẵn sàng. Kiểm tra cài đặt Tesseract.") from exc
-            if result.returncode:
-                raise WorkspaceError(422, "Không trích được chữ từ ảnh này. Thử ảnh rõ hơn hoặc cắt sát nội dung.")
-            text = "".join(c for c in result.stdout.decode("utf-8", "replace") if c.isprintable() or c in "\n\t").strip()
-            if len(text) > 8000:
-                raise WorkspaceError(413, "Ảnh có hơn 8.000 ký tự. Hãy cắt thành từng vùng; ứng dụng không tự cắt mất nội dung.")
-            return {"text": text, "status": "ok" if text else "empty", "width": width, "height": height,
+            qr = qr_codes.extract(normalized.getvalue()) if capabilities.get("qr_ready") else {"status": "unavailable", "codes": [], "truncated": False}
+            text, ocr_status, ocr_error = "", "unavailable", None
+            if capabilities["ready"]:
+                try:
+                    # QR patterns otherwise become spurious OCR words/numbers.
+                    if qr["codes"]:
+                        from PIL import ImageDraw
+                        drawing = ImageDraw.Draw(image)
+                        for code in qr["codes"]:
+                            for box in code.get("positions", []):
+                                drawing.rectangle((max(0, box["x"] - 2), max(0, box["y"] - 2),
+                                    min(width, box["x"] + box["width"] + 2), min(height, box["y"] + box["height"] + 2)), fill="white")
+                        normalized = BytesIO(); image.save(normalized, format="PNG")
+                    text = self._read_text(normalized.getvalue())
+                    ocr_status = "ok" if text else "empty"
+                except WorkspaceError as exc:
+                    if not qr["codes"]:
+                        raise
+                    ocr_status, ocr_error = "error", exc.message
+            return {"text": text, "status": "ok" if text or qr["codes"] else "empty", "width": width, "height": height,
+                "ocr_status": ocr_status, "ocr_error": ocr_error, "qr": qr,
                 "local_only": True, "image_saved": False, "provider_calls": 0,
-                "notice": "Hãy sửa lỗi nhận dạng, đặc biệt dấu tiếng Việt, số và URL, trước khi phân tích. OCR chỉ đọc chữ, chưa phân tích hình ảnh hoặc giải mã QR."}
+                "notice": "Kiểm tra lại chữ, số và URL trước khi phân tích."}
         finally:
             self.slots.release()
+
+    def _read_text(self, png):
+        try:
+            result = subprocess.run([*self.command(), "stdin", "stdout", "-l", "vie+eng", "--psm", "6"],
+                input=png, capture_output=True, timeout=20, env=self.env)
+        except subprocess.TimeoutExpired as exc:
+            raise WorkspaceError(504, "Đọc ảnh quá lâu. Hãy cắt ảnh nhỏ hơn hoặc dán văn bản.") from exc
+        except OSError as exc:
+            raise WorkspaceError(503, "OCR chưa sẵn sàng. Kiểm tra cài đặt Tesseract.") from exc
+        if result.returncode:
+            raise WorkspaceError(422, "Không trích được chữ từ ảnh này. Thử ảnh rõ hơn hoặc cắt sát nội dung.")
+        text = "".join(c for c in result.stdout.decode("utf-8", "replace") if c.isprintable() or c in "\n\t").strip()
+        if len(text) > 8000:
+            raise WorkspaceError(413, "Ảnh có hơn 8.000 ký tự. Hãy cắt thành từng vùng; ứng dụng không tự cắt mất nội dung.")
+        return text
